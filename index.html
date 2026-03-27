@@ -508,13 +508,9 @@
       try{var p=new URLSearchParams({action:'add',dateKey:dk,name:n,count:c,note:nt||''});
       var r=await fetch(API_URL+'?'+p);var j=await r.json();
       if(j.data){if(j.data['4/12'])j.data['4/12'].date='4/12（日）';if(j.data['5/2'])j.data['5/2'].date='5/2（六）';data=j.data;}
-      // Save share context for the share button
-      _lastShare = { name: n, dateLabel: data[dk]?.date || dk, count: c, type: isMeal ? 'meal' : 'hike' };
       showToast('✓ 已加入');
       }catch{showToast('儲存失敗');}render();
     }
-
-    var _lastShare = null;
 
     var _ek='',_en='';
     function editPerson(dk,nm,ct,nt){
@@ -592,18 +588,6 @@
         '<div class="status-pill '+(isOnline?'online':'offline')+'"><span class="status-dot"></span>'+(isOnline?'已連線 Google Sheet':'離線模式')+'</div>';
 
       var h='';
-
-      // Share banner (shown after successful signup)
-      if (_lastShare && liffReady) {
-        var s = _lastShare;
-        var typeText = s.type === 'meal' ? '🍽 只吃飯' : '⛰️ 爬山＋吃飯';
-        h += '<div class="share-banner">';
-        h += '<div class="share-banner-text">✅ ' + esc(s.name) + ' 已報名 ' + esc(s.dateLabel) + '</div>';
-        h += '<div class="share-banner-sub">' + s.count + ' 人 · ' + typeText + '</div>';
-        h += '<button class="share-btn" id="share-line-btn">📤 分享到 LINE 群組</button>';
-        h += '<button class="share-dismiss" id="share-dismiss-btn">不用了，謝謝</button>';
-        h += '</div>';
-      }
 
       // Vote section
       h+='<div class="vote-section"><div class="vote-label">Current Votes</div>';
@@ -698,21 +682,6 @@
       document.querySelectorAll('.edit-btn').forEach(function(b){
         b.onclick=function(){editPerson(b.dataset.dk,b.dataset.nm,parseInt(b.dataset.ct),b.dataset.nt);};
       });
-      // Share banner buttons
-      var shareBtn = document.getElementById('share-line-btn');
-      if (shareBtn && _lastShare) {
-        shareBtn.onclick = function() {
-          var s = _lastShare;
-          shareToLine(s.name, s.dateLabel, s.count, s.type);
-        };
-      }
-      var dismissBtn = document.getElementById('share-dismiss-btn');
-      if (dismissBtn) {
-        dismissBtn.onclick = function() {
-          _lastShare = null;
-          render();
-        };
-      }
     }
 
     function exportDate(k){
