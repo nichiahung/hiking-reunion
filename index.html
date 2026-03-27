@@ -282,6 +282,10 @@
     .person-note {
       font-size: 11px; color: var(--ember); font-style: italic;
     }
+    .person-meal {
+      font-size: 10px; font-weight: 700; color: #e67e22;
+      background: #fef3e2; border-radius: 6px; padding: 1px 7px;
+    }
     .person-right { display: flex; align-items: center; gap: 10px; }
     .person-ct {
       font-size: 13px; font-weight: 600; color: var(--stone);
@@ -331,6 +335,27 @@
     }
     .form-row { display: flex; align-items: center; justify-content: space-between; }
     .form-label { font-size: 14px; font-weight: 600; color: var(--pine); }
+
+    .toggle-row {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .toggle-label { font-size: 14px; font-weight: 600; color: var(--pine); }
+    .toggle-switch {
+      position: relative; width: 44px; height: 24px; cursor: pointer;
+    }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider {
+      position: absolute; inset: 0; background: var(--cloud);
+      border-radius: 12px; transition: background 0.2s;
+    }
+    .toggle-slider::before {
+      content: ''; position: absolute; left: 3px; top: 3px;
+      width: 18px; height: 18px; background: #fff;
+      border-radius: 50%; transition: transform 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+    .toggle-switch input:checked + .toggle-slider { background: var(--amber); }
+    .toggle-switch input:checked + .toggle-slider::before { transform: translateX(20px); }
     .stepper { display: flex; align-items: center; gap: 14px; }
     .step-btn {
       width: 36px; height: 36px; border-radius: 50%;
@@ -631,7 +656,21 @@
       pb.onclick=function(){cs.textContent=parseInt(cs.textContent)+1;};
       st.appendChild(mb);st.appendChild(cs);st.appendChild(pb);
       sr.appendChild(sl);sr.appendChild(st);d.appendChild(sr);
-      var ni=document.createElement('input');ni.className='input';ni.placeholder='備註（選填）';ni.value=nt||'';d.appendChild(ni);
+      var ni=document.createElement('input');ni.className='input';ni.placeholder='其他備註（選填）';
+      var hasMeal=nt&&nt.includes('只吃飯');
+      var cleanNote=(nt||'').replace('只吃飯','').replace(/^[,，\s]+|[,，\s]+$/g,'');
+      ni.value=cleanNote;
+      d.appendChild(ni);
+
+      // Meal toggle
+      var tr=document.createElement('div');tr.className='toggle-row';
+      var tl=document.createElement('label');tl.className='toggle-label';tl.textContent='🍽 只吃飯（不爬山）';
+      var ts=document.createElement('label');ts.className='toggle-switch';
+      var ti=document.createElement('input');ti.type='checkbox';ti.checked=hasMeal;
+      var tsp=document.createElement('span');tsp.className='toggle-slider';
+      ts.appendChild(ti);ts.appendChild(tsp);
+      tr.appendChild(tl);tr.appendChild(ts);d.appendChild(tr);
+
       var ac=document.createElement('div');ac.className='form-actions';ac.style.cssText='display:flex;gap:8px;';
       var db=document.createElement('button');db.className='cancel-btn';db.textContent='🗑 刪除';
       db.style.cssText='flex:0 0 auto;padding:11px 16px;border:1.5px solid #f5c6c6;border-radius:12px;background:#fff5f5;color:#c0392b;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:background 0.2s;';
@@ -640,7 +679,10 @@
       db.onclick=function(){if(confirm('確定要刪除 '+nm+' 嗎？')){deletePerson(_ek,_en);d.remove();}};
       var cb=document.createElement('button');cb.className='cancel-btn';cb.textContent='取消';cb.onclick=function(){d.remove();};
       var sb=document.createElement('button');sb.className='confirm-btn';sb.textContent='✓ 儲存';
-      sb.onclick=function(){updatePerson(_ek,_en,parseInt(cs.textContent),ni.value.trim());};
+      sb.onclick=function(){
+        var newNote=[ti.checked?'只吃飯':'',ni.value.trim()].filter(Boolean).join('，');
+        updatePerson(_ek,_en,parseInt(cs.textContent),newNote);
+      };
       ac.appendChild(db);ac.appendChild(cb);ac.appendChild(sb);d.appendChild(ac);
       row.after(d);
     }
@@ -673,7 +715,8 @@
       var sk=dk.replace('/','_'), f=document.getElementById('form-'+sk), b=document.getElementById('addbtn-'+sk);
       if(f){f.classList.add('active');b.style.display='none';}
       f.querySelector('.input-name').value=''; f.querySelector('.input-note').value='';
-      f.querySelector('.step-val').textContent='1'; f.querySelector('.input-name').focus();
+      f.querySelector('.step-val').textContent='1'; f.querySelector('.input-meal').checked=false;
+      f.querySelector('.input-name').focus();
     }
     function closeForm(dk) {
       var sk=dk.replace('/','_');
@@ -687,7 +730,10 @@
     function submitForm(dk) {
       var f=document.getElementById('form-'+dk.replace('/','_'));
       var nm=f.querySelector('.input-name').value.trim(), ct=parseInt(f.querySelector('.step-val').textContent), nt=f.querySelector('.input-note').value.trim();
-      if(!nm){showToast('請輸入姓名');return;} closeForm(dk); addPerson(dk,nm,ct,nt);
+      var meal=f.querySelector('.input-meal').checked;
+      if(!nm){showToast('請輸入姓名');return;}
+      var fullNote = [meal?'只吃飯':'', nt].filter(Boolean).join('，');
+      closeForm(dk); addPerson(dk,nm,ct,fullNote);
     }
 
     function render() {
@@ -736,7 +782,9 @@
             <div class="person-left">
               <span class="person-name">${esc(p.name)}</span>
               ${p.count>1?`<span class="person-extra">+${p.count-1}</span>`:''}
-              ${p.note?`<span class="person-note">${esc(p.note)}</span>`:''}
+              ${p.note&&p.note.includes('只吃飯')?`<span class="person-meal">🍽 只吃飯</span>`:''}
+              ${p.note&&!p.note.includes('只吃飯')&&p.note?`<span class="person-note">${esc(p.note)}</span>`:''}
+              ${p.note&&p.note.includes('只吃飯')&&p.note.replace('只吃飯','').trim()?`<span class="person-note">${esc(p.note.replace('只吃飯','').replace(/^[,，\s]+|[,，\s]+$/g,''))}</span>`:''}
             </div>
             <div class="person-right">
               <span class="person-ct">${p.count} 人</span>
@@ -752,7 +800,11 @@
             <div class="stepper"><button class="step-btn" onclick="stepCount('${k}',-1)">−</button>
             <span class="step-val">1</span><button class="step-btn" onclick="stepCount('${k}',1)">+</button></div>
           </div>
-          <input class="input input-note" placeholder="備註（選填）">
+          <div class="toggle-row">
+            <label class="toggle-label">🍽 只吃飯（不爬山）</label>
+            <label class="toggle-switch"><input type="checkbox" class="input-meal"><span class="toggle-slider"></span></label>
+          </div>
+          <input class="input input-note" placeholder="其他備註（選填）">
           <div class="form-actions"><button class="cancel-btn" onclick="closeForm('${k}')">取消</button>
           <button class="confirm-btn" onclick="submitForm('${k}')">✓ 加入</button></div>
         </div>`;
