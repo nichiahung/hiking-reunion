@@ -20,549 +20,302 @@
       --stone: #8a9085;
       --shadow: rgba(27,58,38,0.08);
     }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
+    * { margin:0; padding:0; box-sizing:border-box; }
     body {
-      min-height: 100vh;
-      background: var(--snow);
-      font-family: 'DM Sans', 'Noto Sans TC', sans-serif;
-      color: var(--forest);
-      overflow-x: hidden;
-      -webkit-font-smoothing: antialiased;
+      min-height:100vh; background:var(--snow);
+      font-family:'DM Sans','Noto Sans TC',sans-serif;
+      color:var(--forest); overflow-x:hidden;
+      -webkit-font-smoothing:antialiased;
     }
 
-    /* === MOUNTAIN SCENE === */
-    .scene { position: relative; width: 100%; overflow: hidden; }
-
+    /* === SCENE === */
+    .scene { position:relative; width:100%; overflow:hidden; }
     .sky {
-      position: absolute; inset: 0;
-      background: linear-gradient(180deg,
-        #eef5ef 0%,
-        #e2eddf 25%,
-        #d8e6d4 50%,
-        #dbe8d8 75%,
-        var(--snow) 100%
-      );
+      position:absolute; inset:0;
+      background:linear-gradient(180deg, #eef5ef 0%, #e2eddf 25%, #d8e6d4 50%, #dbe8d8 75%, var(--snow) 100%);
     }
-
-    .mountains-far, .mountains-mid, .mountains-near {
-      position: absolute; bottom: 0; left: -5%; width: 110%;
-    }
-
+    .mountains-far,.mountains-mid,.mountains-near { position:absolute; bottom:0; left:-5%; width:110%; }
     .mist-layer {
-      position: absolute; bottom: 0; left: 0; right: 0; height: 60%;
-      background: linear-gradient(180deg,
-        transparent 0%,
-        rgba(244,248,245,0.3) 30%,
-        rgba(244,248,245,0.7) 60%,
-        var(--snow) 100%
-      );
-      pointer-events: none;
+      position:absolute; bottom:0; left:0; right:0; height:60%;
+      background:linear-gradient(180deg, transparent 0%, rgba(244,248,245,0.3) 30%, rgba(244,248,245,0.7) 60%, var(--snow) 100%);
+      pointer-events:none;
     }
 
     /* === HEADER === */
     .header-wrap {
-      position: relative; z-index: 2;
-      background: var(--peak);
-      padding: 40px 20px 36px;
-      text-align: center;
+      position:relative; z-index:2; background:var(--peak);
+      padding:36px 20px 32px; text-align:center;
     }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes scaleIn {
-      from { opacity: 0; transform: scale(0.8); }
-      to { opacity: 1; transform: scale(1); }
-    }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes scaleIn { from{opacity:0;transform:scale(0.85)} to{opacity:1;transform:scale(1)} }
+    @keyframes countUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
 
     .header-logo {
-      width: 84px; height: 84px; object-fit: contain;
-      margin-bottom: 20px;
-      animation: scaleIn 0.6s ease-out both;
+      width:80px; height:80px; object-fit:contain;
+      margin-bottom:18px; animation:scaleIn 0.6s ease-out both;
     }
+    @media(min-width:768px){.header-logo{width:92px;height:92px;}}
 
     .title-en {
-      font-family: 'Playfair Display', serif;
-      font-size: 14px; font-weight: 600;
-      letter-spacing: 4px; text-transform: uppercase;
-      color: var(--sage);
-      margin-bottom: 6px;
-      animation: fadeUp 0.6s ease-out 0.15s both;
+      font-family:'Playfair Display',serif; font-size:12px; font-weight:600;
+      letter-spacing:5px; text-transform:uppercase; color:var(--mist);
+      margin-bottom:6px; animation:fadeUp 0.6s ease-out 0.12s both;
     }
-
     .title-main {
-      font-family: 'Noto Sans TC', sans-serif;
-      font-size: 32px; font-weight: 800;
-      color: var(--forest);
-      letter-spacing: 3px;
-      margin-bottom: 4px;
-      animation: fadeUp 0.6s ease-out 0.25s both;
+      font-family:'Noto Sans TC',sans-serif; font-size:30px; font-weight:800;
+      color:var(--forest); letter-spacing:3px; margin-bottom:2px;
+      animation:fadeUp 0.6s ease-out 0.22s both;
     }
-
-    .title-dot {
-      display: inline-block;
-      font-family: 'Playfair Display', serif;
-      color: var(--sage);
-      margin: 0 6px;
-    }
-
+    .title-dot { font-family:'Playfair Display',serif; color:var(--sage); margin:0 5px; }
     .title-sub {
-      font-family: 'Playfair Display', serif;
-      font-size: 18px; font-weight: 600;
-      color: var(--pine);
-      letter-spacing: 2px;
-      margin-bottom: 20px;
-      animation: fadeUp 0.6s ease-out 0.35s both;
+      font-family:'Playfair Display',serif; font-size:16px; font-weight:600;
+      color:var(--pine); letter-spacing:2px; margin-bottom:18px;
+      animation:fadeUp 0.6s ease-out 0.32s both;
     }
-
+    @media(min-width:768px){
+      .title-main{font-size:38px;} .title-sub{font-size:20px;} .title-en{font-size:13px;letter-spacing:6px;}
+    }
     .desc {
-      font-size: 14px; color: var(--stone); line-height: 1.8;
-      margin-bottom: 20px;
-      animation: fadeUp 0.6s ease-out 0.45s both;
+      font-size:13.5px; color:var(--stone); line-height:1.9; margin-bottom:18px;
+      animation:fadeUp 0.6s ease-out 0.4s both;
     }
-    .desc br { display: block; content: ''; margin-top: 2px; }
-
     .status-pill {
-      display: inline-flex; align-items: center; gap: 6px;
-      font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
-      padding: 5px 16px; border-radius: 20px;
-      animation: fadeUp 0.5s ease-out 0.55s both;
+      display:inline-flex; align-items:center; gap:6px;
+      font-size:10.5px; font-weight:700; letter-spacing:0.5px;
+      padding:4px 14px; border-radius:20px;
+      animation:fadeUp 0.5s ease-out 0.48s both;
     }
-    .status-pill.online { background: #e6f4ea; color: #1e7e34; }
-    .status-pill.offline { background: #fce8e8; color: #b71c1c; }
-    .status-dot {
-      width: 7px; height: 7px; border-radius: 50%;
-      animation: pulse 2s ease-in-out infinite;
-    }
-    .online .status-dot { background: #1e7e34; }
-    .offline .status-dot { background: #b71c1c; }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
+    .status-pill.online{background:#e6f4ea;color:#1e7e34;}
+    .status-pill.offline{background:#fce8e8;color:#b71c1c;}
+    .status-dot{width:6px;height:6px;border-radius:50%;animation:pulse 2s ease-in-out infinite;}
+    .online .status-dot{background:#1e7e34;} .offline .status-dot{background:#b71c1c;}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.35}}
 
     /* === DIVIDER === */
-    .mountain-divider {
-      position: relative; z-index: 1; margin-top: -1px;
-      background: var(--peak);
-    }
-    .mountain-divider svg { display: block; width: 100%; height: auto; }
+    .mountain-divider{position:relative;z-index:1;margin-top:-1px;background:var(--peak);}
+    .mountain-divider svg{display:block;width:100%;height:auto;}
 
-    /* === MAIN CONTENT === */
-    .main {
-      position: relative; z-index: 2;
-      max-width: 560px; margin: 0 auto;
-      padding: 0 16px 140px;
-    }
+    /* === MAIN === */
+    .main{position:relative;z-index:2;max-width:560px;margin:0 auto;padding:0 16px 140px;}
+    @media(min-width:768px){.main{max-width:720px;padding:0 28px 140px;}}
+    @media(min-width:1024px){.main{max-width:800px;padding:0 40px 140px;}}
 
-    /* === VOTE BAR === */
+    /* === VOTE === */
     .vote-section {
-      background: var(--peak); border-radius: 20px;
-      padding: 24px; margin-bottom: 20px;
-      box-shadow: 0 2px 16px var(--shadow);
-      animation: fadeUp 0.5s ease-out 0.6s both;
+      background:var(--peak); border-radius:20px;
+      padding:24px 22px; margin-bottom:20px;
+      box-shadow:0 2px 20px var(--shadow);
+      animation:fadeUp 0.5s ease-out 0.55s both;
     }
-
+    @media(min-width:768px){.vote-section{padding:28px 32px;}}
     .vote-label {
-      font-family: 'Playfair Display', serif;
-      font-size: 11px; font-weight: 600;
-      letter-spacing: 3px; text-transform: uppercase;
-      color: var(--sage); text-align: center;
-      margin-bottom: 18px;
+      font-family:'Playfair Display',serif; font-size:10.5px; font-weight:600;
+      letter-spacing:3.5px; text-transform:uppercase; color:var(--mist);
+      text-align:center; margin-bottom:18px;
     }
 
-    .vote-row {
-      display: flex; align-items: center; gap: 12px;
-      margin-bottom: 10px;
-    }
-    .vote-date {
-      font-size: 14px; font-weight: 700; color: var(--forest);
-      width: 40px; text-align: right;
-      font-family: 'DM Sans', sans-serif;
-    }
-    .vote-track {
-      flex: 1; height: 28px; background: #eef2ee;
-      border-radius: 14px; overflow: hidden; position: relative;
-    }
-    .vote-fill {
-      height: 100%; border-radius: 14px;
-      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      min-width: 28px;
-    }
-    .vote-fill::after {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.2) 50%, transparent 100%);
-      border-radius: 14px;
-    }
-    .vote-num {
-      font-size: 15px; font-weight: 800; width: 48px;
-      font-family: 'DM Sans', sans-serif;
+    /* Vote group */
+    .vote-group { margin-bottom:14px; }
+    .vote-group:last-of-type { margin-bottom:0; }
+    .vote-row { display:flex; align-items:center; gap:10px; margin-bottom:6px; }
+    .vote-date { font-size:14px; font-weight:700; color:var(--forest); width:38px; text-align:right; font-family:'DM Sans',sans-serif; }
+    .vote-track { flex:1; height:26px; background:#eef2ee; border-radius:13px; overflow:hidden; }
+    .vote-fill { height:100%; border-radius:13px; transition:width 0.8s cubic-bezier(0.4,0,0.2,1); min-width:26px; position:relative; }
+    .vote-fill::after { content:''; position:absolute; inset:0; background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.18) 50%,transparent 100%); border-radius:13px; }
+    .vote-num { font-size:15px; font-weight:800; width:46px; font-family:'DM Sans',sans-serif; }
+
+    /* Vote count subtitle */
+    .vote-subtitle {
+      padding-left:50px; margin-top:1px; margin-bottom:2px;
+      font-size:11px; color:var(--stone); font-weight:500;
     }
 
     .vote-result {
-      text-align: center; margin-top: 16px;
-      font-size: 13px; font-weight: 600; color: var(--pine);
-      padding: 8px 16px; border-radius: 12px;
-      background: var(--snow);
+      text-align:center; margin-top:18px;
+      font-size:13px; font-weight:600; color:var(--pine);
+      padding:8px 16px; border-radius:12px; background:var(--snow);
     }
 
-    /* === DATE CARDS === */
-    .cards-grid { display: flex; flex-direction: column; gap: 16px; }
+    /* === CARDS === */
+    .cards-grid{display:flex;flex-direction:column;gap:16px;}
+    @media(min-width:768px){.cards-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}}
 
     .date-card {
-      background: var(--peak); border-radius: 20px;
-      padding: 22px; position: relative; overflow: hidden;
-      box-shadow: 0 2px 16px var(--shadow);
-      border-left: 5px solid var(--cloud);
-      transition: transform 0.2s, box-shadow 0.2s;
-      animation: fadeUp 0.5s ease-out both;
+      background:var(--peak); border-radius:20px;
+      padding:22px; position:relative; overflow:hidden;
+      box-shadow:0 2px 20px var(--shadow);
+      border-left:5px solid var(--cloud);
+      transition:transform 0.2s,box-shadow 0.2s;
+      animation:fadeUp 0.5s ease-out both;
     }
-    .date-card:nth-child(1) { animation-delay: 0.7s; }
-    .date-card:nth-child(2) { animation-delay: 0.8s; }
-
-    .date-card:hover { transform: translateY(-2px); box-shadow: 0 6px 24px var(--shadow); }
-
-    .date-card.lead-amber { border-left-color: var(--amber); }
-    .date-card.lead-green { border-left-color: var(--sage); }
-
-    /* Card corner decoration */
+    .date-card:nth-child(1){animation-delay:0.65s;}
+    .date-card:nth-child(2){animation-delay:0.75s;}
+    @media(min-width:768px){.date-card{padding:26px;}}
+    .date-card:hover{transform:translateY(-2px);box-shadow:0 6px 28px var(--shadow);}
+    .date-card.lead-amber{border-left-color:var(--amber);}
+    .date-card.lead-green{border-left-color:var(--sage);}
     .date-card::before {
-      content: ''; position: absolute; top: -30px; right: -30px;
-      width: 80px; height: 80px; border-radius: 50%;
-      background: var(--cloud); opacity: 0.4;
+      content:''; position:absolute; top:-30px; right:-30px;
+      width:80px; height:80px; border-radius:50%;
+      background:var(--cloud); opacity:0.3;
     }
 
-    .card-top {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 18px; position: relative;
-    }
+    .card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;position:relative;}
     .card-date-text {
-      font-family: 'DM Sans', 'Noto Sans TC', sans-serif;
-      font-size: 19px; font-weight: 800; color: var(--forest);
-      display: flex; align-items: center; gap: 8px;
+      font-family:'DM Sans','Noto Sans TC',sans-serif;
+      font-size:18px; font-weight:800; color:var(--forest);
+      display:flex; align-items:center; gap:8px;
     }
-    .lead-tag {
-      font-size: 10px; font-weight: 700;
-      padding: 3px 10px; border-radius: 10px;
-      letter-spacing: 0.5px;
-    }
-    .lead-amber .lead-tag { background: #fef3e2; color: var(--amber); }
-    .lead-green .lead-tag { background: #e6f4ea; color: #1e7e34; }
-
+    @media(min-width:768px){.card-date-text{font-size:20px;}}
+    .lead-tag { font-size:10px; font-weight:700; padding:3px 10px; border-radius:10px; letter-spacing:0.5px; }
+    .lead-amber .lead-tag{background:#fef3e2;color:var(--amber);}
+    .lead-green .lead-tag{background:#e6f4ea;color:#1e7e34;}
     .card-total {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px; font-weight: 800; color: var(--peak);
-      background: linear-gradient(135deg, var(--pine), var(--sage));
-      padding: 5px 16px; border-radius: 20px;
+      font-family:'DM Sans',sans-serif; font-size:13px; font-weight:800;
+      color:var(--peak); background:linear-gradient(135deg,var(--pine),var(--sage));
+      padding:5px 14px; border-radius:20px;
     }
+
+    /* Section labels inside card */
+    .section-label {
+      font-size:12px; font-weight:700; color:var(--stone);
+      letter-spacing:0.5px; margin-bottom:6px; margin-top:4px;
+      display:flex; align-items:center; gap:6px;
+    }
+    .section-label span { font-size:11px; font-weight:600; color:var(--sage); }
+    .section-divider { height:1px; background:var(--cloud); margin:10px 0; }
 
     /* People */
-    .people { display: flex; flex-direction: column; gap: 5px; margin-bottom: 18px; }
-
+    .people{display:flex;flex-direction:column;gap:4px;margin-bottom:6px;}
     .person {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 10px 12px; border-radius: 12px;
-      background: var(--snow); border: 1px solid var(--cloud);
-      transition: background 0.15s;
+      display:flex; justify-content:space-between; align-items:center;
+      padding:9px 10px; border-radius:10px;
+      background:var(--snow); border:1px solid transparent;
+      transition:background 0.15s,border-color 0.15s;
     }
-    .person:hover { background: #edf4ee; }
-
-    .person-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-    .person-name {
-      font-size: 15px; font-weight: 600; color: var(--forest);
-    }
-    .person-extra {
-      font-size: 11px; font-weight: 700; color: var(--sage);
-      background: var(--cloud); border-radius: 6px; padding: 1px 7px;
-    }
-    .person-note {
-      font-size: 11px; color: var(--ember); font-style: italic;
-    }
-    .person-meal {
-      font-size: 10px; font-weight: 700; color: #e67e22;
-      background: #fef3e2; border-radius: 6px; padding: 1px 7px;
-    }
-    .person-right { display: flex; align-items: center; gap: 10px; }
-    .person-ct {
-      font-size: 13px; font-weight: 600; color: var(--stone);
-      font-family: 'DM Sans', sans-serif;
-    }
+    .person:hover{background:#edf4ee;border-color:var(--cloud);}
+    .person-left{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+    .person-name{font-size:14.5px;font-weight:600;color:var(--forest);}
+    @media(min-width:768px){.person-name{font-size:15px;}}
+    .person-extra{font-size:10.5px;font-weight:700;color:var(--sage);background:var(--cloud);border-radius:6px;padding:1px 6px;}
+    .person-meal{font-size:10px;font-weight:700;color:#e67e22;background:#fef3e2;border-radius:6px;padding:1px 7px;}
+    .person-note{font-size:10.5px;color:var(--ember);font-style:italic;}
+    .person-right{display:flex;align-items:center;gap:8px;}
+    .person-ct{font-size:12.5px;font-weight:600;color:var(--stone);font-family:'DM Sans',sans-serif;}
     .edit-btn {
-      border: none; background: var(--cloud); cursor: pointer;
-      width: 28px; height: 28px; border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 14px; line-height: 1;
-      opacity: 0.6; transition: opacity 0.2s, background 0.2s;
+      border:none; background:var(--cloud); cursor:pointer;
+      width:26px; height:26px; border-radius:8px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:13px; line-height:1; opacity:0.5; transition:opacity 0.2s,background 0.2s;
     }
-    .edit-btn:hover { opacity: 1; background: #c8dcc2; }
+    .edit-btn:hover{opacity:1;background:#c8dcc2;}
 
-    /* Add button */
+    /* Add/Export buttons */
     .add-btn {
-      width: 100%; padding: 12px; border: 2px dashed var(--cloud);
-      border-radius: 14px; background: transparent;
-      color: var(--sage); font-size: 14px; font-weight: 700;
-      cursor: pointer; font-family: inherit;
-      transition: all 0.2s;
-      letter-spacing: 0.5px;
+      width:100%; padding:11px; border:2px dashed var(--cloud); border-radius:12px;
+      background:transparent; color:var(--sage); font-size:13.5px; font-weight:700;
+      cursor:pointer; font-family:inherit; transition:all 0.2s; letter-spacing:0.3px;
     }
-    .add-btn:hover {
-      border-color: var(--sage); background: rgba(107,158,122,0.04);
-      color: var(--pine);
-    }
+    .add-btn:hover{border-color:var(--sage);background:rgba(107,158,122,0.04);color:var(--pine);}
     .export-btn {
-      width: 100%; padding: 10px; margin-top: 8px;
-      border: 1.5px solid var(--cloud); border-radius: 12px;
-      background: var(--snow); color: var(--pine);
-      font-size: 13px; font-weight: 600; cursor: pointer;
-      font-family: inherit; transition: all 0.2s;
-      letter-spacing: 0.3px;
+      width:100%; padding:9px; margin-top:8px;
+      border:1.5px solid var(--cloud); border-radius:10px;
+      background:var(--snow); color:var(--pine);
+      font-size:12px; font-weight:600; cursor:pointer;
+      font-family:inherit; transition:all 0.2s; letter-spacing:0.3px;
     }
-    .export-btn:hover { background: var(--cloud); color: var(--forest); }
+    .export-btn:hover{background:var(--cloud);color:var(--forest);}
 
-    /* Form */
-    .add-form {
-      display: none; flex-direction: column; gap: 10px;
-      padding: 16px; background: var(--snow);
-      border-radius: 14px; border: 1px solid var(--cloud);
-    }
-    .add-form.active { display: flex; }
-
+    /* Forms */
+    .add-form{display:none;flex-direction:column;gap:10px;padding:16px;background:var(--snow);border-radius:14px;border:1px solid var(--cloud);}
+    .add-form.active{display:flex;}
     .input {
-      padding: 11px 14px; border: 1.5px solid var(--cloud);
-      border-radius: 12px; font-size: 15px;
-      background: var(--peak); color: var(--forest);
-      outline: none; font-family: inherit;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      padding:10px 13px; border:1.5px solid var(--cloud); border-radius:10px;
+      font-size:14.5px; background:var(--peak); color:var(--forest);
+      outline:none; font-family:inherit; transition:border-color 0.2s,box-shadow 0.2s;
     }
-    .input:focus {
-      border-color: var(--sage);
-      box-shadow: 0 0 0 3px rgba(107,158,122,0.1);
-    }
-    .form-row { display: flex; align-items: center; justify-content: space-between; }
-    .form-label { font-size: 14px; font-weight: 600; color: var(--pine); }
-
-    .toggle-row {
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .toggle-label { font-size: 14px; font-weight: 600; color: var(--pine); }
-    .toggle-switch {
-      position: relative; width: 44px; height: 24px; cursor: pointer;
-    }
-    .toggle-switch input { opacity: 0; width: 0; height: 0; }
-    .toggle-slider {
-      position: absolute; inset: 0; background: var(--cloud);
-      border-radius: 12px; transition: background 0.2s;
-    }
-    .toggle-slider::before {
-      content: ''; position: absolute; left: 3px; top: 3px;
-      width: 18px; height: 18px; background: #fff;
-      border-radius: 50%; transition: transform 0.2s;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
-    }
-    .toggle-switch input:checked + .toggle-slider { background: var(--amber); }
-    .toggle-switch input:checked + .toggle-slider::before { transform: translateX(20px); }
-    .stepper { display: flex; align-items: center; gap: 14px; }
+    .input:focus{border-color:var(--sage);box-shadow:0 0 0 3px rgba(107,158,122,0.1);}
+    .form-row{display:flex;align-items:center;justify-content:space-between;}
+    .form-label{font-size:13.5px;font-weight:600;color:var(--pine);}
+    .toggle-row{display:flex;align-items:center;justify-content:space-between;}
+    .toggle-label{font-size:13.5px;font-weight:600;color:var(--pine);}
+    .toggle-switch{position:relative;width:42px;height:23px;cursor:pointer;}
+    .toggle-switch input{opacity:0;width:0;height:0;}
+    .toggle-slider{position:absolute;inset:0;background:var(--cloud);border-radius:12px;transition:background 0.2s;}
+    .toggle-slider::before{content:'';position:absolute;left:3px;top:3px;width:17px;height:17px;background:#fff;border-radius:50%;transition:transform 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.12);}
+    .toggle-switch input:checked+.toggle-slider{background:var(--amber);}
+    .toggle-switch input:checked+.toggle-slider::before{transform:translateX(19px);}
+    .stepper{display:flex;align-items:center;gap:12px;}
     .step-btn {
-      width: 36px; height: 36px; border-radius: 50%;
-      border: 1.5px solid var(--cloud); background: var(--peak);
-      font-size: 18px; font-weight: 700; color: var(--pine);
-      cursor: pointer; display: flex; align-items: center;
-      justify-content: center; line-height: 1;
-      transition: background 0.15s;
+      width:34px; height:34px; border-radius:50%;
+      border:1.5px solid var(--cloud); background:var(--peak);
+      font-size:17px; font-weight:700; color:var(--pine);
+      cursor:pointer; display:flex; align-items:center; justify-content:center;
+      line-height:1; transition:background 0.15s;
     }
-    .step-btn:hover { background: var(--cloud); }
-    .step-val {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 20px; font-weight: 800; color: var(--forest);
-      min-width: 24px; text-align: center;
-    }
-    .form-actions { display: flex; gap: 8px; }
+    .step-btn:hover{background:var(--cloud);}
+    .step-val{font-family:'DM Sans',sans-serif;font-size:19px;font-weight:800;color:var(--forest);min-width:22px;text-align:center;}
+    .form-actions{display:flex;gap:8px;}
     .cancel-btn {
-      flex: 1; padding: 11px; border: 1.5px solid var(--cloud);
-      border-radius: 12px; background: var(--peak);
-      color: var(--stone); font-size: 14px; font-weight: 600;
-      cursor: pointer; font-family: inherit;
+      flex:1; padding:10px; border:1.5px solid var(--cloud); border-radius:10px;
+      background:var(--peak); color:var(--stone); font-size:13.5px; font-weight:600;
+      cursor:pointer; font-family:inherit;
     }
     .confirm-btn {
-      flex: 1; padding: 11px; border: none; border-radius: 12px;
-      background: linear-gradient(135deg, var(--pine), var(--sage));
-      color: var(--peak); font-size: 14px; font-weight: 700;
-      cursor: pointer; font-family: inherit;
-      box-shadow: 0 2px 8px rgba(45,90,63,0.2);
-      transition: box-shadow 0.2s, transform 0.2s;
+      flex:1; padding:10px; border:none; border-radius:10px;
+      background:linear-gradient(135deg,var(--pine),var(--sage)); color:var(--peak);
+      font-size:13.5px; font-weight:700; cursor:pointer; font-family:inherit;
+      box-shadow:0 2px 8px rgba(45,90,63,0.18); transition:box-shadow 0.2s,transform 0.2s;
     }
-    .confirm-btn:hover { box-shadow: 0 4px 16px rgba(45,90,63,0.3); transform: translateY(-1px); }
-    .confirm-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+    .confirm-btn:hover{box-shadow:0 4px 16px rgba(45,90,63,0.25);transform:translateY(-1px);}
 
     /* Footer */
-    .footer {
-      text-align: center; margin-top: 24px;
-      animation: fadeUp 0.5s ease-out 0.9s both;
-    }
-    .footer-rule {
-      font-size: 13px; color: var(--stone); font-weight: 600;
-      margin-bottom: 14px; letter-spacing: 0.5px;
-    }
+    .footer{text-align:center;margin-top:20px;animation:fadeUp 0.5s ease-out 0.85s both;}
+    .footer-rule{font-size:12.5px;color:var(--stone);font-weight:600;margin-bottom:12px;letter-spacing:0.3px;}
     .refresh-btn {
-      border: 1.5px solid var(--cloud); background: var(--peak);
-      color: var(--pine); font-size: 13px; font-weight: 600;
-      padding: 9px 24px; border-radius: 12px;
-      cursor: pointer; font-family: inherit;
-      transition: all 0.2s;
-      box-shadow: 0 1px 4px var(--shadow);
+      border:1.5px solid var(--cloud); background:var(--peak); color:var(--pine);
+      font-size:12.5px; font-weight:600; padding:8px 22px; border-radius:10px;
+      cursor:pointer; font-family:inherit; transition:all 0.2s;
+      box-shadow:0 1px 4px var(--shadow);
     }
-    .refresh-btn:hover { background: var(--snow); box-shadow: 0 2px 8px var(--shadow); }
+    .refresh-btn:hover{background:var(--snow);box-shadow:0 2px 8px var(--shadow);}
 
     /* Bottom mountains */
-    .bottom-scene {
-      position: fixed; bottom: 0; left: 0; right: 0;
-      pointer-events: none; z-index: 0; height: 200px;
-    }
-    .bottom-scene svg { width: 100%; height: 100%; }
+    .bottom-scene{position:fixed;bottom:0;left:0;right:0;pointer-events:none;z-index:0;height:180px;}
+    .bottom-scene svg{width:100%;height:100%;}
 
     /* Loading */
-    .loading-wrap {
-      min-height: 100vh; display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      background: var(--peak); gap: 16px;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .spinner {
-      width: 36px; height: 36px;
-      border: 3px solid var(--cloud); border-top-color: var(--pine);
-      border-radius: 50%; animation: spin 0.8s linear infinite;
-    }
-    .loading-text {
-      font-size: 14px; color: var(--stone);
-      font-family: 'DM Sans', sans-serif; letter-spacing: 1px;
-    }
+    .loading-wrap{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--peak);gap:14px;}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .spinner{width:34px;height:34px;border:3px solid var(--cloud);border-top-color:var(--pine);border-radius:50%;animation:spin 0.8s linear infinite;}
+    .loading-text{font-size:13px;color:var(--stone);font-family:'DM Sans',sans-serif;letter-spacing:1.5px;}
 
     /* Toast */
     .toast {
-      position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
-      background: var(--forest); color: var(--peak);
-      padding: 12px 28px; border-radius: 14px;
-      font-size: 13px; font-weight: 600; z-index: 100;
-      opacity: 0; transition: opacity 0.3s; pointer-events: none;
-      box-shadow: 0 8px 32px rgba(27,58,38,0.25);
-      letter-spacing: 0.3px;
+      position:fixed; bottom:28px; left:50%; transform:translateX(-50%);
+      background:var(--forest); color:var(--peak);
+      padding:11px 26px; border-radius:14px;
+      font-size:13px; font-weight:600; z-index:100;
+      opacity:0; transition:opacity 0.3s; pointer-events:none;
+      box-shadow:0 8px 32px rgba(27,58,38,0.2); letter-spacing:0.3px;
     }
-    .toast.show { opacity: 1; }
-
-    /* ============================================
-       RWD BREAKPOINTS
-       ============================================ */
-
-    /* Small phones (< 380px) */
-    @media (max-width: 380px) {
-      .header-wrap { padding: 24px 14px 28px; }
-      .header-logo { width: 64px; height: 64px; margin-bottom: 14px; }
-      .title-en { font-size: 11px; letter-spacing: 3px; }
-      .title-main { font-size: 24px; letter-spacing: 2px; }
-      .title-sub { font-size: 15px; margin-bottom: 14px; }
-      .desc { font-size: 13px; }
-      .main { padding: 0 12px 120px; }
-      .vote-section { padding: 16px 14px; border-radius: 16px; }
-      .vote-date { font-size: 13px; width: 36px; }
-      .vote-track { height: 22px; }
-      .vote-num { font-size: 13px; width: 42px; }
-      .date-card { padding: 16px 14px; border-radius: 16px; }
-      .card-date-text { font-size: 16px; }
-      .card-total { font-size: 12px; padding: 4px 12px; }
-      .person { padding: 8px 10px; }
-      .person-name { font-size: 14px; }
-      .person-ct { font-size: 12px; }
-      .edit-btn { width: 26px; height: 26px; font-size: 13px; }
-      .add-btn { padding: 10px; font-size: 13px; }
-      .input { padding: 10px 12px; font-size: 14px; }
-      .step-btn { width: 32px; height: 32px; font-size: 16px; }
-      .step-val { font-size: 17px; }
-      .cancel-btn, .confirm-btn { padding: 10px; font-size: 13px; }
-      .scene { height: 100px; }
-      .bottom-scene { height: 120px; }
-    }
-
-    /* Regular phones (381px - 479px) */
-    @media (min-width: 381px) and (max-width: 479px) {
-      .header-wrap { padding: 28px 16px 32px; }
-      .header-logo { width: 72px; height: 72px; }
-      .title-main { font-size: 28px; }
-      .title-sub { font-size: 16px; }
-      .main { padding: 0 14px 130px; }
-      .scene { height: 120px; }
-    }
-
-    /* Large phones (480px - 767px) */
-    @media (min-width: 480px) and (max-width: 767px) {
-      .main { max-width: 520px; }
-      .scene { height: 140px; }
-    }
-
-    /* Tablets (768px+) */
-    @media (min-width: 768px) {
-      .header-wrap { padding: 48px 32px 44px; }
-      .header-logo { width: 100px; height: 100px; margin-bottom: 24px; }
-      .title-en { font-size: 15px; letter-spacing: 6px; }
-      .title-main { font-size: 42px; letter-spacing: 4px; }
-      .title-sub { font-size: 22px; margin-bottom: 24px; }
-      .desc { font-size: 15px; line-height: 2; }
-      .main { max-width: 720px; padding: 0 28px 140px; }
-      .vote-section { padding: 28px 32px; margin-bottom: 24px; }
-      .vote-track { height: 30px; border-radius: 15px; }
-      .vote-fill { border-radius: 15px; }
-      .vote-num { font-size: 16px; }
-      .cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-      .date-card { padding: 26px; }
-      .card-date-text { font-size: 20px; }
-      .person { padding: 12px 16px; }
-      .person-name { font-size: 16px; }
-      .scene { height: 180px; }
-      .bottom-scene { height: 220px; }
-    }
-
-    /* Desktop (1024px+) */
-    @media (min-width: 1024px) {
-      .main { max-width: 840px; padding: 0 40px 160px; }
-      .header-wrap { padding: 56px 40px 52px; }
-      .title-main { font-size: 48px; }
-      .title-sub { font-size: 24px; }
-      .vote-section { padding: 32px 40px; }
-      .cards-grid { gap: 24px; }
-      .date-card { padding: 30px; }
-      .card-date-text { font-size: 22px; }
-      .person-name { font-size: 17px; }
-      .scene { height: 200px; }
-    }
-
-    /* Large desktop (1280px+) */
-    @media (min-width: 1280px) {
-      .main { max-width: 920px; }
-      .header-wrap { max-width: 960px; margin: 0 auto; }
-    }
+    .toast.show{opacity:1;}
   </style>
 </head>
 <body>
 
-  <!-- Top scene: layered mountains with natural peaks -->
+  <!-- Mountain scene -->
   <div class="scene" style="height:200px;">
     <div class="sky"></div>
-    <!-- Layer 1: Far distant mountains - soft, low -->
     <svg class="mountains-far" viewBox="0 0 1440 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" style="opacity:0.15;">
       <path d="M0,200 L0,130 L60,125 L140,90 L200,105 L280,65 L340,95 L420,55 L480,85 L540,70 L620,100 L700,60 L760,80 L840,50 L920,90 L1000,65 L1060,85 L1140,55 L1200,80 L1280,100 L1360,75 L1440,110 L1440,200Z" fill="#6b9e7a"/>
     </svg>
-    <!-- Layer 2: Mid mountains - more defined peaks -->
     <svg class="mountains-mid" viewBox="0 0 1440 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" style="opacity:0.25;">
       <path d="M0,200 L0,150 L80,140 L150,100 L210,125 L300,75 L370,110 L450,60 L530,105 L600,85 L680,120 L760,70 L830,100 L920,55 L1000,95 L1080,75 L1150,105 L1240,65 L1320,100 L1400,85 L1440,120 L1440,200Z" fill="#5c9465"/>
     </svg>
-    <!-- Layer 3: Near mountains - sharp, dramatic -->
     <svg class="mountains-near" viewBox="0 0 1440 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" style="opacity:0.45;">
       <path d="M0,200 L0,155 L50,148 L120,115 L170,135 L240,90 L310,120 L380,80 L440,110 L520,65 L580,100 L660,75 L720,105 L800,60 L860,95 L940,70 L1010,100 L1080,55 L1160,90 L1220,75 L1300,110 L1380,90 L1440,130 L1440,200Z" fill="#3d7c47"/>
     </svg>
-    <!-- Treeline detail on nearest mountains -->
     <svg style="position:absolute;bottom:0;left:-5%;width:110%;opacity:0.55;" viewBox="0 0 1440 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M0,200 L0,170 L40,165 L80,155 L110,160 L150,140 L180,155 L220,135 L260,150 L300,130 L340,148 L380,125 L420,142 L460,120 L500,140 L540,125 L580,138 L620,118 L660,135 L700,120 L740,140 L780,115 L820,135 L860,110 L900,130 L940,118 L980,138 L1020,112 L1060,132 L1100,120 L1140,140 L1180,125 L1220,142 L1260,130 L1300,148 L1340,135 L1380,150 L1420,140 L1440,155 L1440,200Z" fill="#2d5a3f"/>
     </svg>
@@ -583,10 +336,10 @@
     <div id="status"></div>
   </div>
 
-  <!-- Mountain divider -->
+  <!-- Divider -->
   <div class="mountain-divider">
-    <svg viewBox="0 0 1440 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M0,0 L0,0 Q200,50 400,20 Q600,55 800,15 Q1000,50 1200,25 Q1350,45 1440,30 L1440,60 L0,60Z" fill="var(--snow)"/>
+    <svg viewBox="0 0 1440 50" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,0 Q200,45 400,18 Q600,48 800,12 Q1000,42 1200,20 Q1350,40 1440,25 L1440,50 L0,50Z" fill="var(--snow)"/>
     </svg>
   </div>
 
@@ -599,304 +352,230 @@
 
   <!-- Bottom mountains -->
   <div class="bottom-scene">
-    <svg viewBox="0 0 1440 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M0,200 L0,140 Q100,80 220,120 Q340,60 480,110 Q600,50 740,100 Q880,55 1020,105 Q1140,65 1280,115 Q1380,85 1440,130 L1440,200Z" fill="#dceade" opacity="0.5"/>
-      <path d="M0,200 L0,160 Q140,110 300,145 Q440,95 600,140 Q740,100 900,145 Q1040,110 1200,150 Q1340,125 1440,160 L1440,200Z" fill="#c8dcc2" opacity="0.4"/>
-      <path d="M0,200 L0,180 Q180,155 360,172 Q540,148 720,170 Q900,152 1080,175 Q1260,160 1440,180 L1440,200Z" fill="#b8d0b0" opacity="0.3"/>
+    <svg viewBox="0 0 1440 180" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,180 L0,120 Q100,70 220,110 Q340,55 480,100 Q600,45 740,95 Q880,50 1020,100 Q1140,60 1280,108 Q1380,80 1440,120 L1440,180Z" fill="#dceade" opacity="0.45"/>
+      <path d="M0,180 L0,145 Q140,105 300,138 Q440,90 600,132 Q740,95 900,138 Q1040,105 1200,142 Q1340,120 1440,152 L1440,180Z" fill="#c8dcc2" opacity="0.35"/>
+      <path d="M0,180 L0,165 Q180,148 360,162 Q540,142 720,160 Q900,145 1080,165 Q1260,155 1440,170 L1440,180Z" fill="#b8d0b0" opacity="0.25"/>
     </svg>
   </div>
 
   <div id="toast" class="toast"></div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxSUTpxyMxOyN7EAd9hCf9OKAk7IHBcujCcJ1F4Yc7jTewwtUjf8dcne4frERhrDWM/exec";
-    let data = null, isOnline = false;
+    var API_URL="https://script.google.com/macros/s/AKfycbxSUTpxyMxOyN7EAd9hCf9OKAk7IHBcujCcJ1F4Yc7jTewwtUjf8dcne4frERhrDWM/exec";
+    var data=null, isOnline=false;
 
-    function showToast(msg) {
-      const t = document.getElementById('toast');
-      t.textContent = msg; t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 2200);
-    }
-    function getTotal(p) { return p.reduce((s, x) => s + x.count, 0); }
+    function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+    function getTotal(p){return p.reduce((s,x)=>s+x.count,0);}
 
-    async function fetchData() {
-      try {
-        const r = await fetch(API_URL + '?action=list');
-        const j = await r.json();
-        if (j.error) throw new Error(j.error);
-        if (j['4/12']) j['4/12'].date = '4/12（日）';
-        if (j['5/2']) j['5/2'].date = '5/2（六）';
-        data = j; isOnline = true;
-      } catch {
-        isOnline = false;
-        if (!data) data = { '4/12': { date:'4/12（日）', people:[] }, '5/2': { date:'5/2（六）', people:[] } };
-      }
-      render();
-      document.getElementById('loading').style.display = 'none';
-      document.getElementById('app').style.display = 'block';
+    async function fetchData(){
+      try{
+        var r=await fetch(API_URL+'?action=list');var j=await r.json();
+        if(j.error)throw new Error(j.error);
+        if(j['4/12'])j['4/12'].date='4/12（日）';if(j['5/2'])j['5/2'].date='5/2（六）';
+        data=j;isOnline=true;
+      }catch{isOnline=false;if(!data)data={'4/12':{date:'4/12（日）',people:[]},'5/2':{date:'5/2（六）',people:[]}};}
+      render();document.getElementById('loading').style.display='none';document.getElementById('app').style.display='block';
     }
 
-    async function addPerson(dk, n, c, nt) {
-      try {
-        const p = new URLSearchParams({ action:'add', dateKey:dk, name:n, count:c, note:nt||'' });
-        const r = await fetch(API_URL+'?'+p); const j = await r.json();
-        if (j.data) { if(j.data['4/12']) j.data['4/12'].date='4/12（日）'; if(j.data['5/2']) j.data['5/2'].date='5/2（六）'; data=j.data; }
-        showToast('✓ 已加入');
-      } catch { showToast('儲存失敗'); }
-      render();
+    async function addPerson(dk,n,c,nt){
+      try{var p=new URLSearchParams({action:'add',dateKey:dk,name:n,count:c,note:nt||''});
+      var r=await fetch(API_URL+'?'+p);var j=await r.json();
+      if(j.data){if(j.data['4/12'])j.data['4/12'].date='4/12（日）';if(j.data['5/2'])j.data['5/2'].date='5/2（六）';data=j.data;}
+      showToast('✓ 已加入');}catch{showToast('儲存失敗');}render();
     }
 
-    var _ek='', _en='';
-    function editPerson(dk, nm, ct, nt) {
-      document.querySelectorAll('.edit-form').forEach(f=>f.remove());
-      _ek=dk; _en=nm;
+    var _ek='',_en='';
+    function editPerson(dk,nm,ct,nt){
+      document.querySelectorAll('.edit-form').forEach(f=>f.remove());_ek=dk;_en=nm;
       var rid='row-'+(dk+'-'+nm).replace(/[^a-zA-Z0-9\u4e00-\u9fff]/g,'_');
-      var row=document.getElementById(rid); if(!row) return;
-      var d=document.createElement('div'); d.className='edit-form';
+      var row=document.getElementById(rid);if(!row)return;
+      var d=document.createElement('div');d.className='edit-form';
       d.style.cssText='display:flex;flex-direction:column;gap:10px;padding:14px;background:var(--snow);border-radius:14px;border:1px solid var(--cloud);margin-top:6px;';
-      var lb=document.createElement('div'); lb.style.cssText='font-size:14px;font-weight:700;color:var(--pine);'; lb.textContent='編輯 '+nm; d.appendChild(lb);
-      var sr=document.createElement('div'); sr.className='form-row';
-      var sl=document.createElement('label'); sl.className='form-label'; sl.textContent='人數（含家屬）';
-      var st=document.createElement('div'); st.className='stepper';
-      var mb=document.createElement('button'); mb.className='step-btn'; mb.textContent='−';
-      var cs=document.createElement('span'); cs.className='step-val'; cs.textContent=ct;
-      var pb=document.createElement('button'); pb.className='step-btn'; pb.textContent='+';
+      var lb=document.createElement('div');lb.style.cssText='font-size:14px;font-weight:700;color:var(--pine);';lb.textContent='編輯 '+nm;d.appendChild(lb);
+      var sr=document.createElement('div');sr.className='form-row';
+      var sl=document.createElement('label');sl.className='form-label';sl.textContent='人數（含家屬）';
+      var st=document.createElement('div');st.className='stepper';
+      var mb=document.createElement('button');mb.className='step-btn';mb.textContent='−';
+      var cs=document.createElement('span');cs.className='step-val';cs.textContent=ct;
+      var pb=document.createElement('button');pb.className='step-btn';pb.textContent='+';
       mb.onclick=function(){var v=parseInt(cs.textContent)-1;if(v<1)v=1;cs.textContent=v;};
       pb.onclick=function(){cs.textContent=parseInt(cs.textContent)+1;};
-      st.appendChild(mb);st.appendChild(cs);st.appendChild(pb);
-      sr.appendChild(sl);sr.appendChild(st);d.appendChild(sr);
+      st.appendChild(mb);st.appendChild(cs);st.appendChild(pb);sr.appendChild(sl);sr.appendChild(st);d.appendChild(sr);
       var ni=document.createElement('input');ni.className='input';ni.placeholder='其他備註（選填）';
-      var hasMeal=nt&&nt.includes('只吃飯');
-      var cleanNote=(nt||'').replace('只吃飯','').replace(/^[,，\s]+|[,，\s]+$/g,'');
-      ni.value=cleanNote;
-      d.appendChild(ni);
-
-      // Meal toggle
+      var hasMeal=nt&&nt.includes('只吃飯');var cleanNote=(nt||'').replace('只吃飯','').replace(/^[,，\s]+|[,，\s]+$/g,'');
+      ni.value=cleanNote;d.appendChild(ni);
       var tr=document.createElement('div');tr.className='toggle-row';
       var tl=document.createElement('label');tl.className='toggle-label';tl.textContent='🍽 只吃飯（不爬山）';
       var ts=document.createElement('label');ts.className='toggle-switch';
       var ti=document.createElement('input');ti.type='checkbox';ti.checked=hasMeal;
       var tsp=document.createElement('span');tsp.className='toggle-slider';
-      ts.appendChild(ti);ts.appendChild(tsp);
-      tr.appendChild(tl);tr.appendChild(ts);d.appendChild(tr);
-
+      ts.appendChild(ti);ts.appendChild(tsp);tr.appendChild(tl);tr.appendChild(ts);d.appendChild(tr);
       var ac=document.createElement('div');ac.className='form-actions';ac.style.cssText='display:flex;gap:8px;';
       var db=document.createElement('button');db.className='cancel-btn';db.textContent='🗑 刪除';
-      db.style.cssText='flex:0 0 auto;padding:11px 16px;border:1.5px solid #f5c6c6;border-radius:12px;background:#fff5f5;color:#c0392b;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:background 0.2s;';
-      db.onmouseover=function(){db.style.background='#fde8e8';};
-      db.onmouseout=function(){db.style.background='#fff5f5';};
+      db.style.cssText='flex:0 0 auto;padding:10px 14px;border:1.5px solid #f5c6c6;border-radius:10px;background:#fff5f5;color:#c0392b;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;';
       db.onclick=function(){if(confirm('確定要刪除 '+nm+' 嗎？')){deletePerson(_ek,_en);d.remove();}};
       var cb=document.createElement('button');cb.className='cancel-btn';cb.textContent='取消';cb.onclick=function(){d.remove();};
       var sb=document.createElement('button');sb.className='confirm-btn';sb.textContent='✓ 儲存';
-      sb.onclick=function(){
-        var newNote=[ti.checked?'只吃飯':'',ni.value.trim()].filter(Boolean).join('，');
-        updatePerson(_ek,_en,parseInt(cs.textContent),newNote);
-      };
-      ac.appendChild(db);ac.appendChild(cb);ac.appendChild(sb);d.appendChild(ac);
-      row.after(d);
+      sb.onclick=function(){var nn=[ti.checked?'只吃飯':'',ni.value.trim()].filter(Boolean).join('，');updatePerson(_ek,_en,parseInt(cs.textContent),nn);};
+      ac.appendChild(db);ac.appendChild(cb);ac.appendChild(sb);d.appendChild(ac);row.after(d);
     }
 
-    async function deletePerson(dk,nm) {
-      try {
-        var p=new URLSearchParams({action:'remove',dateKey:dk,name:nm});
-        var r=await fetch(API_URL+'?'+p);
-        var j=await r.json();
-        if(j.data){if(j.data['4/12'])j.data['4/12'].date='4/12（日）';if(j.data['5/2'])j.data['5/2'].date='5/2（六）';data=j.data;}
-        showToast('已刪除 '+nm);
-      } catch { showToast('刪除失敗'); }
-      render();
+    async function deletePerson(dk,nm){
+      try{var r=await fetch(API_URL+'?'+new URLSearchParams({action:'remove',dateKey:dk,name:nm}));var j=await r.json();
+      if(j.data){if(j.data['4/12'])j.data['4/12'].date='4/12（日）';if(j.data['5/2'])j.data['5/2'].date='5/2（六）';data=j.data;}
+      showToast('已刪除 '+nm);}catch{showToast('刪除失敗');}render();
     }
 
-    async function updatePerson(dk,nm,ct,nt) {
-      try {
-        await fetch(API_URL+'?'+new URLSearchParams({action:'remove',dateKey:dk,name:nm}));
-        var r=await fetch(API_URL+'?'+new URLSearchParams({action:'add',dateKey:dk,name:nm,count:ct,note:nt||''}));
-        var j=await r.json();
-        if(j.data){if(j.data['4/12'])j.data['4/12'].date='4/12（日）';if(j.data['5/2'])j.data['5/2'].date='5/2（六）';data=j.data;}
-        showToast('✓ 已更新');
-      } catch { showToast('更新失敗'); }
-      render();
+    async function updatePerson(dk,nm,ct,nt){
+      try{await fetch(API_URL+'?'+new URLSearchParams({action:'remove',dateKey:dk,name:nm}));
+      var r=await fetch(API_URL+'?'+new URLSearchParams({action:'add',dateKey:dk,name:nm,count:ct,note:nt||''}));var j=await r.json();
+      if(j.data){if(j.data['4/12'])j.data['4/12'].date='4/12（日）';if(j.data['5/2'])j.data['5/2'].date='5/2（六）';data=j.data;}
+      showToast('✓ 已更新');}catch{showToast('更新失敗');}render();
     }
 
-    function openForm(dk) {
+    function openForm(dk){
       document.querySelectorAll('.add-form').forEach(f=>f.classList.remove('active'));
       document.querySelectorAll('.add-btn').forEach(b=>b.style.display='');
-      var sk=dk.replace('/','_'), f=document.getElementById('form-'+sk), b=document.getElementById('addbtn-'+sk);
+      var sk=dk.replace('/','_'),f=document.getElementById('form-'+sk),b=document.getElementById('addbtn-'+sk);
       if(f){f.classList.add('active');b.style.display='none';}
-      f.querySelector('.input-name').value=''; f.querySelector('.input-note').value='';
-      f.querySelector('.step-val').textContent='1'; f.querySelector('.input-meal').checked=false;
+      f.querySelector('.input-name').value='';f.querySelector('.input-note').value='';
+      f.querySelector('.step-val').textContent='1';f.querySelector('.input-meal').checked=false;
       f.querySelector('.input-name').focus();
     }
-    function closeForm(dk) {
-      var sk=dk.replace('/','_');
-      document.getElementById('form-'+sk).classList.remove('active');
-      document.getElementById('addbtn-'+sk).style.display='';
-    }
-    function stepCount(dk,d) {
-      var f=document.getElementById('form-'+dk.replace('/','_')), v=f.querySelector('.step-val');
-      var n=parseInt(v.textContent)+d; if(n<1)n=1; v.textContent=n;
-    }
-    function submitForm(dk) {
+    function closeForm(dk){var sk=dk.replace('/','_');document.getElementById('form-'+sk).classList.remove('active');document.getElementById('addbtn-'+sk).style.display='';}
+    function stepCount(dk,delta){var f=document.getElementById('form-'+dk.replace('/','_')),v=f.querySelector('.step-val');var n=parseInt(v.textContent)+delta;if(n<1)n=1;v.textContent=n;}
+    function submitForm(dk){
       var f=document.getElementById('form-'+dk.replace('/','_'));
-      var nm=f.querySelector('.input-name').value.trim(), ct=parseInt(f.querySelector('.step-val').textContent), nt=f.querySelector('.input-note').value.trim();
-      var meal=f.querySelector('.input-meal').checked;
-      if(!nm){showToast('請輸入姓名');return;}
-      var fullNote = [meal?'只吃飯':'', nt].filter(Boolean).join('，');
-      closeForm(dk); addPerson(dk,nm,ct,fullNote);
+      var nm=f.querySelector('.input-name').value.trim(),ct=parseInt(f.querySelector('.step-val').textContent),nt=f.querySelector('.input-note').value.trim();
+      var meal=f.querySelector('.input-meal').checked;if(!nm){showToast('請輸入姓名');return;}
+      var fn=[meal?'只吃飯':'',nt].filter(Boolean).join('，');closeForm(dk);addPerson(dk,nm,ct,fn);
     }
 
-    function render() {
+    function render(){
       if(!data) return;
-      var t1=getTotal(data['4/12']?.people||[]), t2=getTotal(data['5/2']?.people||[]);
+      var t1=getTotal(data['4/12']?.people||[]),t2=getTotal(data['5/2']?.people||[]);
       var w=t1>t2?'4/12':t2>t1?'5/2':null;
 
-      // Status
       document.getElementById('status').innerHTML=
-        `<div class="status-pill ${isOnline?'online':'offline'}"><span class="status-dot"></span>${isOnline?'已連線 Google Sheet':'離線模式'}</div>`;
+        '<div class="status-pill '+(isOnline?'online':'offline')+'"><span class="status-dot"></span>'+(isOnline?'已連線 Google Sheet':'離線模式')+'</div>';
 
       var h='';
-      // Vote bar
-      h+=`<div class="vote-section"><div class="vote-label">Current Votes</div>`;
-      [[' 4/12',t1,'#d4882e','#e8a94a'],[' 5/2',t2,'#2d8a4e','#5cb870']].forEach(([lb,tt,c1,c2])=>{
+
+      // Vote section
+      h+='<div class="vote-section"><div class="vote-label">Current Votes</div>';
+      [['4/12',t1,'#d4882e','#e8a94a'],['5/2',t2,'#2d8a4e','#5cb870']].forEach(function(item){
+        var lb=item[0],tt=item[1],c1=item[2],c2=item[3];
         var pct=Math.max((tt/Math.max(t1,t2,1))*100,3);
-        var isW=w===lb.trim();
-        var bg=isW?`linear-gradient(90deg,${c1},${c2})`:'var(--cloud)';
+        var isW=w===lb;
+        var bg=isW?'linear-gradient(90deg,'+c1+','+c2+')':'var(--cloud)';
         var clr=isW?c1:'var(--stone)';
-        h+=`<div class="vote-row">
-          <span class="vote-date">${lb.trim()}</span>
-          <div class="vote-track"><div class="vote-fill" style="width:${pct}%;background:${bg}"></div></div>
-          <span class="vote-num" style="color:${clr}">${tt} 人</span>
-        </div>`;
+        h+='<div class="vote-group">';
+        h+='<div class="vote-row"><span class="vote-date">'+lb+'</span><div class="vote-track"><div class="vote-fill" style="width:'+pct+'%;background:'+bg+'"></div></div><span class="vote-num" style="color:'+clr+'">'+tt+' 人</span></div>';
+        var ppl = data[lb]?.people||[];
+        if(ppl.length > 0) h += '<div class="vote-subtitle">'+ppl.length+' 組報名</div>';
+        h+='</div>';
       });
-      if(w) h+=`<div class="vote-result">🏆 目前 ${data[w].date} 人數較多！</div>`;
-      else if(t1>0) h+=`<div class="vote-result">⚖️ 目前兩天人數相同</div>`;
+      if(w) h+='<div class="vote-result">🏆 目前 '+data[w].date+' 人數較多！</div>';
+      else if(t1>0) h+='<div class="vote-result">⚖️ 目前兩天人數相同</div>';
       h+='</div>';
 
       // Cards
       h+='<div class="cards-grid">';
-      ['4/12','5/2'].forEach(k=>{
-        var d=data[k]; if(!d) return;
-        var tot=getTotal(d.people), isW=w===k;
+      ['4/12','5/2'].forEach(function(k){
+        var d=data[k];if(!d) return;
+        var tot=getTotal(d.people),isW=w===k;
         var sk=k.replace('/','_');
         var cls=isW?(k==='4/12'?'lead-amber':'lead-green'):'';
-        h+=`<div class="date-card ${cls}">`;
-        h+=`<div class="card-top">
-          <div class="card-date-text">📅 ${d.date} ${isW?'<span class="lead-tag">★ 領先</span>':''}</div>
-          <div class="card-total">${tot} 人</div>
-        </div>`;
-        h+='<div class="people">';
-        d.people.forEach((p,i)=>{
-          var sid=(k+'-'+p.name).replace(/[^a-zA-Z0-9\u4e00-\u9fff]/g,'_');
-          h+=`<div class="person" id="row-${sid}">
-            <div class="person-left">
-              <span class="person-name">${esc(p.name)}</span>
-              ${p.count>1?`<span class="person-extra">+${p.count-1}</span>`:''}
-              ${p.note&&p.note.includes('只吃飯')?`<span class="person-meal">🍽 只吃飯</span>`:''}
-              ${p.note&&!p.note.includes('只吃飯')&&p.note?`<span class="person-note">${esc(p.note)}</span>`:''}
-              ${p.note&&p.note.includes('只吃飯')&&p.note.replace('只吃飯','').trim()?`<span class="person-note">${esc(p.note.replace('只吃飯','').replace(/^[,，\s]+|[,，\s]+$/g,''))}</span>`:''}
-            </div>
-            <div class="person-right">
-              <span class="person-ct">${p.count} 人</span>
-              <button class="edit-btn" data-dk="${k}" data-nm="${esc(p.name)}" data-ct="${p.count}" data-nt="${esc(p.note||'')}">✏️</button>
-            </div>
-          </div>`;
-        });
+        var hiking=d.people.filter(function(p){return !p.note||!p.note.includes('只吃飯');});
+        var mealOnly=d.people.filter(function(p){return p.note&&p.note.includes('只吃飯');});
+
+        h+='<div class="date-card '+cls+'">';
+        h+='<div class="card-top"><div class="card-date-text">📅 '+d.date+(isW?' <span class="lead-tag">★ 領先</span>':'')+'</div><div class="card-total">'+tot+' 人</div></div>';
+
+        // Hiking group
+        if(hiking.length>0){
+          h+='<div class="section-label">⛰️ 爬山＋吃飯 <span>'+getTotal(hiking)+' 人</span></div>';
+          h+='<div class="people">';
+          hiking.forEach(function(p){
+            var sid=(k+'-'+p.name).replace(/[^a-zA-Z0-9\u4e00-\u9fff]/g,'_');
+            var noteClean=p.note?p.note.replace('只吃飯','').replace(/^[,，\s]+|[,，\s]+$/g,''):'';
+            h+='<div class="person" id="row-'+sid+'"><div class="person-left">';
+            h+='<span class="person-name">'+esc(p.name)+'</span>';
+            if(p.count>1) h+='<span class="person-extra">+' +(p.count-1)+'</span>';
+            if(noteClean) h+='<span class="person-note">'+esc(noteClean)+'</span>';
+            h+='</div><div class="person-right"><span class="person-ct">'+p.count+' 人</span>';
+            h+='<button class="edit-btn" data-dk="'+k+'" data-nm="'+esc(p.name)+'" data-ct="'+p.count+'" data-nt="'+esc(p.note||'')+'">✏️</button>';
+            h+='</div></div>';
+          });
+          h+='</div>';
+        }
+
+        // Meal-only group
+        if(mealOnly.length>0){
+          if(hiking.length>0) h+='<div class="section-divider"></div>';
+          h+='<div class="section-label">🍽 只吃飯 <span>'+getTotal(mealOnly)+' 人</span></div>';
+          h+='<div class="people">';
+          mealOnly.forEach(function(p){
+            var sid=(k+'-'+p.name).replace(/[^a-zA-Z0-9\u4e00-\u9fff]/g,'_');
+            var noteClean=p.note.replace('只吃飯','').replace(/^[,，\s]+|[,，\s]+$/g,'');
+            h+='<div class="person" id="row-'+sid+'"><div class="person-left">';
+            h+='<span class="person-name">'+esc(p.name)+'</span>';
+            if(p.count>1) h+='<span class="person-extra">+'+(p.count-1)+'</span>';
+            h+='<span class="person-meal">🍽 只吃飯</span>';
+            if(noteClean) h+='<span class="person-note">'+esc(noteClean)+'</span>';
+            h+='</div><div class="person-right"><span class="person-ct">'+p.count+' 人</span>';
+            h+='<button class="edit-btn" data-dk="'+k+'" data-nm="'+esc(p.name)+'" data-ct="'+p.count+'" data-nt="'+esc(p.note||'')+'">✏️</button>';
+            h+='</div></div>';
+          });
+          h+='</div>';
+        }
+
+        // Empty state
+        if(d.people.length===0){
+          h+='<div style="text-align:center;padding:20px 0;color:var(--stone);font-size:13px;">尚無人報名</div>';
+        }
+
+        h+='<button class="add-btn" id="addbtn-'+sk+'" onclick="openForm(\''+k+'\')">＋ 我要接龍</button>';
+        h+='<div class="add-form" id="form-'+sk+'">';
+        h+='<input class="input input-name" placeholder="姓名">';
+        h+='<div class="form-row"><label class="form-label">人數（含家屬）</label><div class="stepper"><button class="step-btn" onclick="stepCount(\''+k+'\',-1)">−</button><span class="step-val">1</span><button class="step-btn" onclick="stepCount(\''+k+'\',1)">+</button></div></div>';
+        h+='<div class="toggle-row"><label class="toggle-label">🍽 只吃飯（不爬山）</label><label class="toggle-switch"><input type="checkbox" class="input-meal"><span class="toggle-slider"></span></label></div>';
+        h+='<input class="input input-note" placeholder="其他備註（選填）">';
+        h+='<div class="form-actions"><button class="cancel-btn" onclick="closeForm(\''+k+'\')">取消</button><button class="confirm-btn" onclick="submitForm(\''+k+'\')">✓ 加入</button></div>';
         h+='</div>';
-        h+=`<button class="add-btn" id="addbtn-${sk}" onclick="openForm('${k}')">＋ 我要接龍</button>`;
-        h+=`<div class="add-form" id="form-${sk}">
-          <input class="input input-name" placeholder="姓名">
-          <div class="form-row"><label class="form-label">人數（含家屬）</label>
-            <div class="stepper"><button class="step-btn" onclick="stepCount('${k}',-1)">−</button>
-            <span class="step-val">1</span><button class="step-btn" onclick="stepCount('${k}',1)">+</button></div>
-          </div>
-          <div class="toggle-row">
-            <label class="toggle-label">🍽 只吃飯（不爬山）</label>
-            <label class="toggle-switch"><input type="checkbox" class="input-meal"><span class="toggle-slider"></span></label>
-          </div>
-          <input class="input input-note" placeholder="其他備註（選填）">
-          <div class="form-actions"><button class="cancel-btn" onclick="closeForm('${k}')">取消</button>
-          <button class="confirm-btn" onclick="submitForm('${k}')">✓ 加入</button></div>
-        </div>
-        <button class="export-btn" onclick="exportDate('${k}')">📋 匯出 ${d.date} 名單</button>`;
+        h+='<button class="export-btn" onclick="exportDate(\''+k+'\')">📋 匯出 '+d.date+' 名單</button>';
         h+='</div>';
       });
       h+='</div>';
 
-      h+=`<div class="footer"><p class="footer-rule">📌 哪天人數多就選哪天</p>
-        <button class="refresh-btn" onclick="location.reload()">🔄 重新整理</button>
-      </div>`;
+      h+='<div class="footer"><p class="footer-rule">📌 哪天人數多就選哪天</p><button class="refresh-btn" onclick="location.reload()">🔄 重新整理</button></div>';
 
       document.getElementById('app').innerHTML=h;
-      document.querySelectorAll('.edit-btn').forEach(b=>{
+      document.querySelectorAll('.edit-btn').forEach(function(b){
         b.onclick=function(){editPerson(b.dataset.dk,b.dataset.nm,parseInt(b.dataset.ct),b.dataset.nt);};
       });
     }
 
-    function exportDate(k) {
-      if (!data || !data[k]) return;
-      var d = data[k];
-      var tot = getTotal(d.people);
-      var hiking = d.people.filter(p=>!p.note||!p.note.includes('只吃飯'));
-      var mealOnly = d.people.filter(p=>p.note&&p.note.includes('只吃飯'));
-      var hikingTotal = getTotal(hiking);
-      var mealTotal = getTotal(mealOnly);
-      var now = new Date().toLocaleString('zh-TW',{timeZone:'Asia/Taipei'});
-
-      var txt = '═══════════════════════\n';
-      txt += '  慧班 Reunion · 登山趣\n';
-      txt += '  📅 ' + d.date + ' 確認名單\n';
-      txt += '═══════════════════════\n';
-      txt += '匯出時間：' + now + '\n';
-      txt += '總人數：' + tot + ' 人\n\n';
-
-      if (hiking.length > 0) {
-        txt += '⛰️ 爬山＋吃飯（' + hikingTotal + ' 人）\n';
-        txt += '──────────────────\n';
-        hiking.forEach(function(p, i) {
-          var note = p.note ? p.note.replace('只吃飯','').replace(/^[,，\s]+|[,，\s]+$/g,'') : '';
-          txt += '  ' + (i+1) + '. ' + p.name + '（' + p.count + '人）';
-          if (note) txt += ' — ' + note;
-          txt += '\n';
-        });
-        txt += '\n';
-      }
-
-      if (mealOnly.length > 0) {
-        txt += '🍽 只吃飯（' + mealTotal + ' 人）\n';
-        txt += '──────────────────\n';
-        mealOnly.forEach(function(p, i) {
-          var note = p.note.replace('只吃飯','').replace(/^[,，\s]+|[,，\s]+$/g,'');
-          txt += '  ' + (i+1) + '. ' + p.name + '（' + p.count + '人）';
-          if (note) txt += ' — ' + note;
-          txt += '\n';
-        });
-        txt += '\n';
-      }
-
-      txt += '═══════════════════════\n';
-
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(txt).then(function(){
-          showToast('✓ ' + d.date + ' 名單已複製');
-        }).catch(function(){ downloadTxt(txt, k); });
-      } else {
-        downloadTxt(txt, k);
-      }
+    function exportDate(k){
+      if(!data||!data[k])return;var d=data[k];var tot=getTotal(d.people);
+      var hiking=d.people.filter(function(p){return !p.note||!p.note.includes('只吃飯');});
+      var mealOnly=d.people.filter(function(p){return p.note&&p.note.includes('只吃飯');});
+      var now=new Date().toLocaleString('zh-TW',{timeZone:'Asia/Taipei'});
+      var txt='═══════════════════════\n  慧班 Reunion · 登山趣\n  📅 '+d.date+' 確認名單\n═══════════════════════\n';
+      txt+='匯出時間：'+now+'\n總人數：'+tot+' 人\n\n';
+      if(hiking.length>0){txt+='⛰️ 爬山＋吃飯（'+getTotal(hiking)+' 人）\n──────────────────\n';
+        hiking.forEach(function(p,i){var n=p.note?p.note.replace('只吃飯','').replace(/^[,，\s]+|[,，\s]+$/g,''):'';
+        txt+='  '+(i+1)+'. '+p.name+'（'+p.count+'人）';if(n)txt+=' — '+n;txt+='\n';});txt+='\n';}
+      if(mealOnly.length>0){txt+='🍽 只吃飯（'+getTotal(mealOnly)+' 人）\n──────────────────\n';
+        mealOnly.forEach(function(p,i){var n=p.note.replace('只吃飯','').replace(/^[,，\s]+|[,，\s]+$/g,'');
+        txt+='  '+(i+1)+'. '+p.name+'（'+p.count+'人）';if(n)txt+=' — '+n;txt+='\n';});txt+='\n';}
+      txt+='═══════════════════════\n';
+      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(function(){showToast('✓ '+d.date+' 名單已複製');}).catch(function(){dlTxt(txt,k);});}else{dlTxt(txt,k);}
     }
-
-    function downloadTxt(txt, k) {
-      var blob = new Blob([txt], {type:'text/plain;charset=utf-8'});
-      var url = URL.createObjectURL(blob);
-      var a = document.createElement('a');
-      a.href = url;
-      a.download = '慧班登山趣_' + (k||'').replace('/','_') + '_名單.txt';
-      document.body.appendChild(a); a.click();
-      document.body.removeChild(a); URL.revokeObjectURL(url);
-      showToast('✓ 名單已下載');
-    }
-
+    function dlTxt(txt,k){var b=new Blob([txt],{type:'text/plain;charset=utf-8'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='慧班登山趣_'+(k||'').replace('/','_')+'_名單.txt';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);showToast('✓ 名單已下載');}
     function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
-    fetchData(); setInterval(fetchData,30000);
+    fetchData();setInterval(fetchData,30000);
   </script>
 </body>
 </html>
