@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>同學會爬山活動 ⛰️</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      background: linear-gradient(170deg, #fdf6ee 0%, #e8ddd0 50%, #d4c4a8 100%);
+      font-family: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+      color: #3d3428;
+      position: relative;
+      overflow-x: hidden;
+    }
+    .bg-circle-1 {
+      position: fixed; top: -120px; right: -80px; width: 300px; height: 300px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(230,126,34,0.08) 0%, transparent 70%); pointer-events: none;
+    }
+    .bg-circle-2 {
+      position: fixed; bottom: -100px; left: -60px; width: 250px; height: 250px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(39,174,96,0.07) 0%, transparent 70%); pointer-events: none;
+    }
+    .container { max-width: 480px; margin: 0 auto; padding: 24px 16px 40px; position: relative; z-index: 1; }
+
+    /* Header */
+    .header { text-align: center; margin-bottom: 24px; }
+    .header-icon { font-size: 48px; margin-bottom: 8px; }
+    .title { font-size: 26px; font-weight: 800; letter-spacing: 1px; margin-bottom: 8px; }
+    .subtitle { font-size: 15px; color: #6b5d4e; line-height: 1.6; margin-bottom: 6px; }
+    .subtitle-small { font-size: 13px; color: #9a8b7a; line-height: 1.7; margin-bottom: 12px; }
+    .status-badge {
+      display: inline-block; font-size: 11px; font-weight: 600; padding: 4px 12px; border-radius: 12px;
+      transition: all 0.3s;
+    }
+    .status-online { background: #e8f5e9; color: #2e7d32; }
+    .status-offline { background: #fce4ec; color: #c62828; }
+    .status-loading { background: #fff3e0; color: #e65100; }
+
+    /* Compare Section */
+    .compare-section {
+      background: rgba(255,255,255,0.7); backdrop-filter: blur(8px); border-radius: 16px;
+      padding: 18px 16px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    }
+    .compare-title {
+      font-size: 12px; font-weight: 700; color: #8a7a6a; text-transform: uppercase;
+      letter-spacing: 2px; margin-bottom: 12px; text-align: center;
+    }
+    .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .bar-label { font-size: 13px; font-weight: 700; color: #5a4d3e; width: 36px; text-align: right; }
+    .bar-track { flex: 1; height: 22px; background: #ebe3d8; border-radius: 11px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 11px; transition: width 0.6s ease; }
+    .bar-count { font-size: 14px; font-weight: 800; width: 40px; }
+    .winner-badge {
+      margin-top: 12px; text-align: center; font-size: 13px; font-weight: 600;
+      color: #5a4d3e; background: #fef9f0; border-radius: 8px; padding: 6px 12px;
+    }
+
+    /* Cards */
+    .card {
+      background: rgba(255,255,255,0.8); backdrop-filter: blur(8px); border-radius: 16px;
+      padding: 18px 16px; margin-bottom: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+      border-left: 4px solid #d5c9b8; transition: border-color 0.3s;
+    }
+    .card.winner-412 { border-left-color: #e67e22; }
+    .card.winner-52 { border-left-color: #27ae60; }
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .card-date { font-size: 18px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+    .star-badge {
+      font-size: 11px; font-weight: 700; color: #e67e22; background: #fef3e2;
+      padding: 2px 8px; border-radius: 10px;
+    }
+    .total-badge {
+      font-size: 14px; font-weight: 800; color: #fff;
+      background: linear-gradient(135deg, #8b7355, #a08060); border-radius: 20px; padding: 4px 14px;
+    }
+
+    /* People List */
+    .people-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+    .person-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 10px; background: #faf6f0; border-radius: 10px;
+    }
+    .person-info { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .person-name { font-size: 15px; font-weight: 600; }
+    .count-badge {
+      font-size: 11px; font-weight: 700; color: #8b7355; background: #ebe3d8;
+      border-radius: 8px; padding: 1px 6px;
+    }
+    .note-badge { font-size: 11px; color: #c0392b; font-style: italic; }
+    .person-actions { display: flex; align-items: center; gap: 8px; }
+    .person-count { font-size: 13px; color: #8a7a6a; font-weight: 600; }
+    .remove-btn {
+      border: none; background: none; color: #c9b8a0; cursor: pointer;
+      font-size: 14px; padding: 2px 4px; border-radius: 4px; line-height: 1;
+    }
+    .remove-btn:hover { color: #c0392b; }
+
+    /* Add Button & Form */
+    .add-btn {
+      width: 100%; padding: 10px; border: 2px dashed #d5c9b8; border-radius: 10px;
+      background: transparent; color: #8b7355; font-size: 14px; font-weight: 700;
+      cursor: pointer; font-family: inherit; transition: all 0.2s;
+    }
+    .add-btn:hover { border-color: #8b7355; background: rgba(139,115,85,0.05); }
+    .add-form {
+      display: none; flex-direction: column; gap: 10px; padding: 14px;
+      background: #faf6f0; border-radius: 12px; border: 1px solid #e8ddd0;
+    }
+    .add-form.active { display: flex; }
+    .input {
+      padding: 10px 12px; border: 1px solid #ddd3c4; border-radius: 8px;
+      font-size: 15px; background: #fff; color: #3d3428; outline: none; font-family: inherit;
+    }
+    .input:focus { border-color: #8b7355; }
+    .form-row { display: flex; align-items: center; justify-content: space-between; }
+    .form-label { font-size: 14px; font-weight: 600; color: #6b5d4e; }
+    .stepper { display: flex; align-items: center; gap: 12px; }
+    .step-btn {
+      width: 32px; height: 32px; border-radius: 50%; border: 1px solid #d5c9b8;
+      background: #fff; font-size: 18px; font-weight: 700; color: #6b5d4e;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1;
+    }
+    .step-btn:hover { background: #f0e8dc; }
+    .step-val { font-size: 18px; font-weight: 800; min-width: 20px; text-align: center; }
+    .form-actions { display: flex; gap: 8px; }
+    .cancel-btn {
+      flex: 1; padding: 10px; border: 1px solid #d5c9b8; border-radius: 8px;
+      background: #fff; color: #8a7a6a; font-size: 14px; font-weight: 600;
+      cursor: pointer; font-family: inherit;
+    }
+    .confirm-btn {
+      flex: 1; padding: 10px; border: none; border-radius: 8px;
+      background: linear-gradient(135deg, #8b7355, #a08060); color: #fff;
+      font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit;
+      transition: opacity 0.2s;
+    }
+    .confirm-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* Footer */
+    .footer { text-align: center; margin-top: 12px; }
+    .footer-rule { font-size: 13px; color: #8a7a6a; font-weight: 600; margin-bottom: 12px; }
+    .refresh-btn {
+      border: 1px solid #d5c9b8; background: rgba(255,255,255,0.6); color: #8b7355;
+      font-size: 13px; font-weight: 600; padding: 8px 20px; border-radius: 10px;
+      cursor: pointer; font-family: inherit; transition: all 0.2s;
+    }
+    .refresh-btn:hover { background: rgba(255,255,255,0.9); }
+
+    /* Loading */
+    .loading-wrap {
+      min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; background: #fdf6ee; gap: 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      width: 32px; height: 32px; border: 3px solid #e8ddd0; border-top: 3px solid #8b7355;
+      border-radius: 50%; animation: spin 0.8s linear infinite;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      background: #3d3428; color: #fff; padding: 10px 20px; border-radius: 10px;
+      font-size: 13px; font-weight: 600; z-index: 100; opacity: 0;
+      transition: opacity 0.3s; pointer-events: none;
+    }
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+  <div class="bg-circle-1"></div>
+  <div class="bg-circle-2"></div>
+
+  <div id="loading" class="loading-wrap">
+    <div class="spinner"></div>
+    <div style="font-size:16px;color:#8a7a6a;">載入中...</div>
+  </div>
+
+  <div id="app" class="container" style="display:none;"></div>
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbxSUTpxyMxOyN7EAd9hCf9OKAk7IHBcujCcJ1F4Yc7jTewwtUjf8dcne4frERhrDWM/exec";
+
+    let data = null;
+    let isOnline = false;
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2000);
+    }
+
+    function getTotal(people) {
+      return people.reduce((s, p) => s + p.count, 0);
+    }
+
+    async function fetchData() {
+      try {
+        const res = await fetch(API_URL + '?action=list');
+        const json = await res.json();
+        if (json.error) throw new Error(json.error);
+        if (json['4/12']) json['4/12'].date = '4/12（日）';
+        if (json['5/2']) json['5/2'].date = '5/2（六）';
+        data = json;
+        isOnline = true;
+      } catch (err) {
+        isOnline = false;
+        if (!data) {
+          data = {
+            '4/12': { date: '4/12（日）', people: [] },
+            '5/2': { date: '5/2（六）', people: [] },
+          };
+        }
+      }
+      render();
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+    }
+
+    async function addPerson(dateKey, name, count, note) {
+      try {
+        const params = new URLSearchParams({ action: 'add', dateKey, name, count, note: note || '' });
+        const res = await fetch(API_URL + '?' + params.toString());
+        const json = await res.json();
+        if (json.data) {
+          if (json.data['4/12']) json.data['4/12'].date = '4/12（日）';
+          if (json.data['5/2']) json.data['5/2'].date = '5/2（六）';
+          data = json.data;
+        }
+        showToast('✓ 已加入');
+      } catch {
+        showToast('儲存失敗，請稍後再試');
+      }
+      render();
+    }
+
+    async function removePerson(dateKey, name) {
+      if (!confirm(`確定要移除 ${name} 嗎？`)) return;
+      try {
+        const params = new URLSearchParams({ action: 'remove', dateKey, name });
+        const res = await fetch(API_URL + '?' + params.toString());
+        const json = await res.json();
+        if (json.data) {
+          if (json.data['4/12']) json.data['4/12'].date = '4/12（日）';
+          if (json.data['5/2']) json.data['5/2'].date = '5/2（六）';
+          data = json.data;
+        }
+        showToast('已移除');
+      } catch {
+        showToast('刪除失敗');
+      }
+      render();
+    }
+
+    function openForm(dateKey) {
+      document.querySelectorAll('.add-form').forEach(f => f.classList.remove('active'));
+      document.querySelectorAll('.add-btn').forEach(b => b.style.display = '');
+      const form = document.getElementById('form-' + dateKey.replace('/', '-'));
+      const btn = document.getElementById('addbtn-' + dateKey.replace('/', '-'));
+      if (form) { form.classList.add('active'); btn.style.display = 'none'; }
+      // Reset
+      form.querySelector('.input-name').value = '';
+      form.querySelector('.input-note').value = '';
+      form.querySelector('.step-val').textContent = '1';
+      form.querySelector('.input-name').focus();
+    }
+
+    function closeForm(dateKey) {
+      const form = document.getElementById('form-' + dateKey.replace('/', '-'));
+      const btn = document.getElementById('addbtn-' + dateKey.replace('/', '-'));
+      form.classList.remove('active');
+      btn.style.display = '';
+    }
+
+    function stepCount(dateKey, delta) {
+      const form = document.getElementById('form-' + dateKey.replace('/', '-'));
+      const valEl = form.querySelector('.step-val');
+      let v = parseInt(valEl.textContent) + delta;
+      if (v < 1) v = 1;
+      valEl.textContent = v;
+    }
+
+    function submitForm(dateKey) {
+      const form = document.getElementById('form-' + dateKey.replace('/', '-'));
+      const name = form.querySelector('.input-name').value.trim();
+      const count = parseInt(form.querySelector('.step-val').textContent);
+      const note = form.querySelector('.input-note').value.trim();
+      if (!name) { showToast('請輸入姓名'); return; }
+      closeForm(dateKey);
+      addPerson(dateKey, name, count, note);
+    }
+
+    function render() {
+      if (!data) return;
+      const t412 = getTotal(data['4/12']?.people || []);
+      const t52 = getTotal(data['5/2']?.people || []);
+      const winner = t412 > t52 ? '4/12' : t52 > t412 ? '5/2' : null;
+
+      let html = '';
+
+      // Header
+      html += `
+        <div class="header">
+          <div class="header-icon">⛰️</div>
+          <h1 class="title">同學會爬山活動</h1>
+          <p class="subtitle">跟老師敲定了兩個時間，請大家接龍！</p>
+          <p class="subtitle-small">
+            爬完山再找餐廳辦簡單的同學會 🍽️<br>
+            歡迎帶家屬和小朋友一起來 👨‍👩‍👧‍👦
+          </p>
+          <div class="status-badge ${isOnline ? 'status-online' : 'status-offline'}">
+            ${isOnline ? '🟢 已連線 Google Sheet' : '🔴 離線模式'}
+          </div>
+        </div>
+      `;
+
+      // Compare
+      html += `<div class="compare-section"><div class="compare-title">目前票數</div>`;
+      [['4/12', t412, '#e67e22', '#f39c12'], ['5/2', t52, '#27ae60', '#2ecc71']].forEach(([label, total, c1, c2]) => {
+        const pct = Math.max((total / Math.max(t412, t52, 1)) * 100, 8);
+        const isW = winner === label;
+        const bg = isW ? `linear-gradient(90deg, ${c1}, ${c2})` : '#b0a090';
+        const color = isW ? c1 : '#8a7a6a';
+        html += `
+          <div class="bar-row">
+            <span class="bar-label">${label}</span>
+            <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${bg}"></div></div>
+            <span class="bar-count" style="color:${color}">${total} 人</span>
+          </div>`;
+      });
+      if (winner) {
+        html += `<div class="winner-badge">🏆 目前 ${data[winner].date} 人數較多！</div>`;
+      } else if (t412 > 0) {
+        html += `<div class="winner-badge" style="background:#fef3e2">⚖️ 目前兩天人數相同</div>`;
+      }
+      html += '</div>';
+
+      // Cards
+      ['4/12', '5/2'].forEach(key => {
+        const d = data[key];
+        if (!d) return;
+        const total = getTotal(d.people);
+        const isW = winner === key;
+        const safeKey = key.replace('/', '-');
+        const cardClass = isW ? (key === '4/12' ? 'winner-412' : 'winner-52') : '';
+
+        html += `<div class="card ${cardClass}">`;
+        html += `<div class="card-header">
+          <div class="card-date">📅 ${d.date} ${isW ? '<span class="star-badge">★ 領先</span>' : ''}</div>
+          <div class="total-badge">${total} 人</div>
+        </div>`;
+
+        html += '<div class="people-list">';
+        d.people.forEach(p => {
+          html += `<div class="person-row">
+            <div class="person-info">
+              <span class="person-name">${esc(p.name)}</span>
+              ${p.count > 1 ? `<span class="count-badge">+${p.count - 1}</span>` : ''}
+              ${p.note ? `<span class="note-badge">${esc(p.note)}</span>` : ''}
+            </div>
+            <div class="person-actions">
+              <span class="person-count">${p.count} 人</span>
+              <button class="remove-btn" onclick="removePerson('${key}','${esc(p.name)}')" title="移除">✕</button>
+            </div>
+          </div>`;
+        });
+        html += '</div>';
+
+        // Add form
+        html += `<button class="add-btn" id="addbtn-${safeKey}" onclick="openForm('${key}')">＋ 我要接龍</button>`;
+        html += `<div class="add-form" id="form-${safeKey}">
+          <input class="input input-name" placeholder="姓名">
+          <div class="form-row">
+            <label class="form-label">人數（含家屬）</label>
+            <div class="stepper">
+              <button class="step-btn" onclick="stepCount('${key}',-1)">−</button>
+              <span class="step-val">1</span>
+              <button class="step-btn" onclick="stepCount('${key}',1)">+</button>
+            </div>
+          </div>
+          <input class="input input-note" placeholder="備註（選填）">
+          <div class="form-actions">
+            <button class="cancel-btn" onclick="closeForm('${key}')">取消</button>
+            <button class="confirm-btn" onclick="submitForm('${key}')">✓ 加入</button>
+          </div>
+        </div>`;
+
+        html += '</div>';
+      });
+
+      // Footer
+      html += `<div class="footer">
+        <p class="footer-rule">📌 哪天人數多就選哪天</p>
+        <button class="refresh-btn" onclick="location.reload()">🔄 重新整理</button>
+      </div>`;
+
+      document.getElementById('app').innerHTML = html;
+    }
+
+    function esc(s) {
+      const d = document.createElement('div');
+      d.textContent = s;
+      return d.innerHTML;
+    }
+
+    // Init
+    fetchData();
+    // Auto refresh every 30 seconds
+    setInterval(fetchData, 30000);
+  </script>
+</body>
+</html>
