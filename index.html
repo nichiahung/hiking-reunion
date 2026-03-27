@@ -813,12 +813,92 @@
       h+='</div>';
 
       h+=`<div class="footer"><p class="footer-rule">📌 哪天人數多就選哪天</p>
-        <button class="refresh-btn" onclick="location.reload()">🔄 重新整理</button></div>`;
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+          <button class="refresh-btn" onclick="location.reload()">🔄 重新整理</button>
+          <button class="refresh-btn" onclick="exportList()" style="background:var(--forest);color:var(--peak);border-color:var(--forest);">📋 匯出名單</button>
+        </div>
+      </div>`;
 
       document.getElementById('app').innerHTML=h;
       document.querySelectorAll('.edit-btn').forEach(b=>{
         b.onclick=function(){editPerson(b.dataset.dk,b.dataset.nm,parseInt(b.dataset.ct),b.dataset.nt);};
       });
+    }
+
+    function exportList() {
+      if (!data) return;
+      var t1 = getTotal(data['4/12']?.people||[]);
+      var t2 = getTotal(data['5/2']?.people||[]);
+      var w = t1>t2?'4/12':t2>t1?'5/2':null;
+      var now = new Date().toLocaleString('zh-TW',{timeZone:'Asia/Taipei'});
+
+      var txt = '═══════════════════════\n';
+      txt += '  慧班 Reunion · 登山趣\n';
+      txt += '  確認名單\n';
+      txt += '═══════════════════════\n';
+      txt += '匯出時間：' + now + '\n\n';
+
+      ['4/12','5/2'].forEach(k=>{
+        var d=data[k]; if(!d) return;
+        var tot=getTotal(d.people);
+        var hiking=d.people.filter(p=>!p.note||!p.note.includes('只吃飯'));
+        var mealOnly=d.people.filter(p=>p.note&&p.note.includes('只吃飯'));
+        var hikingTotal=getTotal(hiking);
+        var mealTotal=getTotal(mealOnly);
+
+        txt += '──────────────────\n';
+        txt += '📅 ' + d.date + (w===k?' 🏆 人數較多！':'') + '\n';
+        txt += '   總人數：' + tot + ' 人\n';
+        txt += '──────────────────\n\n';
+
+        if(hiking.length>0) {
+          txt += '⛰️ 爬山＋吃飯（' + hikingTotal + ' 人）\n';
+          hiking.forEach((p,i)=>{
+            var note=p.note?p.note.replace('只吃飯','').replace(/^[,，\s]+|[,，\s]+$/g,''):'';
+            txt += '  ' + (i+1) + '. ' + p.name + '（' + p.count + '人）';
+            if(note) txt += ' — ' + note;
+            txt += '\n';
+          });
+          txt += '\n';
+        }
+
+        if(mealOnly.length>0) {
+          txt += '🍽 只吃飯（' + mealTotal + ' 人）\n';
+          mealOnly.forEach((p,i)=>{
+            var note=p.note.replace('只吃飯','').replace(/^[,，\s]+|[,，\s]+$/g,'');
+            txt += '  ' + (i+1) + '. ' + p.name + '（' + p.count + '人）';
+            if(note) txt += ' — ' + note;
+            txt += '\n';
+          });
+          txt += '\n';
+        }
+      });
+
+      txt += '═══════════════════════\n';
+
+      // Try clipboard first, fallback to download
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(txt).then(function(){
+          showToast('✓ 名單已複製到剪貼簿');
+        }).catch(function(){
+          downloadTxt(txt);
+        });
+      } else {
+        downloadTxt(txt);
+      }
+    }
+
+    function downloadTxt(txt) {
+      var blob = new Blob([txt], {type:'text/plain;charset=utf-8'});
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = '慧班登山趣_名單.txt';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('✓ 名單已下載');
     }
 
     function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
