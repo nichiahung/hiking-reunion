@@ -4,8 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>慧班 Reunion · 登山趣 ⛰️</title>
-  <script src="https://static.line-scdn.net/liff/edge/versions/2.22.3/sdk.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;800&family=Noto+Sans+TC:wght@400;600;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="image" href="https://upload.wikimedia.org/wikipedia/zh/6/68/Taipei_Fuhsing_Private_School_Logo.png">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;600;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --forest: #1b3a26;
@@ -58,7 +60,7 @@
     @media(min-width:768px){.header-logo{width:92px;height:92px;}}
 
     .title-en {
-      font-family:'Playfair Display',serif; font-size:12px; font-weight:600;
+      font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600;
       letter-spacing:5px; text-transform:uppercase; color:var(--mist);
       margin-bottom:6px; animation:fadeUp 0.6s ease-out 0.12s both;
     }
@@ -67,9 +69,9 @@
       color:var(--forest); letter-spacing:3px; margin-bottom:2px;
       animation:fadeUp 0.6s ease-out 0.22s both;
     }
-    .title-dot { font-family:'Playfair Display',serif; color:var(--sage); margin:0 5px; }
+    .title-dot { font-family:'DM Sans',sans-serif; color:var(--sage); margin:0 5px; }
     .title-sub {
-      font-family:'Playfair Display',serif; font-size:16px; font-weight:600;
+      font-family:'DM Sans',sans-serif; font-size:16px; font-weight:600;
       color:var(--pine); letter-spacing:2px; margin-bottom:18px;
       animation:fadeUp 0.6s ease-out 0.32s both;
     }
@@ -110,7 +112,7 @@
     }
     @media(min-width:768px){.vote-section{padding:28px 32px;}}
     .vote-label {
-      font-family:'Playfair Display',serif; font-size:10.5px; font-weight:600;
+      font-family:'DM Sans',sans-serif; font-size:10.5px; font-weight:600;
       letter-spacing:3.5px; text-transform:uppercase; color:var(--mist);
       text-align:center; margin-bottom:18px;
     }
@@ -405,14 +407,25 @@
 
     async function initLiff() {
       if (!LIFF_ID || LIFF_ID.includes('YOUR_LIFF')) return;
+      // Only load LIFF SDK inside LINE
+      var isInLine = /Line/i.test(navigator.userAgent);
+      if (!isInLine) return;
       try {
+        // Dynamically load SDK
+        await new Promise(function(resolve, reject) {
+          var s = document.createElement('script');
+          s.src = 'https://static.line-scdn.net/liff/edge/versions/2.22.3/sdk.js';
+          s.onload = resolve;
+          s.onerror = reject;
+          document.head.appendChild(s);
+        });
         await liff.init({ liffId: LIFF_ID });
         liffReady = true;
         if (liff.isLoggedIn()) {
           liffProfile = await liff.getProfile();
         }
       } catch (e) {
-        console.log('LIFF init failed, running in browser mode');
+        console.log('LIFF init failed');
       }
     }
 
@@ -495,7 +508,11 @@
 
     async function fetchData(){
       try{
-        var r=await fetch(API_URL+'?action=list');var j=await r.json();
+        var controller = new AbortController();
+        var timeout = setTimeout(function(){ controller.abort(); }, 5000);
+        var r=await fetch(API_URL+'?action=list', { signal: controller.signal });
+        clearTimeout(timeout);
+        var j=await r.json();
         if(j.error)throw new Error(j.error);
         if(j['4/12'])j['4/12'].date='4/12（日）';if(j['5/2'])j['5/2'].date='5/2（六）';
         data=j;isOnline=true;
@@ -702,7 +719,9 @@
     }
     function dlTxt(txt,k){var b=new Blob([txt],{type:'text/plain;charset=utf-8'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='慧班登山趣_'+(k||'').replace('/','_')+'_名單.txt';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);showToast('✓ 名單已下載');}
     function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
-    initLiff().then(function(){ fetchData(); });
+    // Run LIFF and data fetch in parallel
+    initLiff();
+    fetchData();
     setInterval(fetchData,30000);
   </script>
 </body>
