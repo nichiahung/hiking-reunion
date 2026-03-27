@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>慧班同學會 ⛰️</title>
+  <title>慧班 Reunion · 登山趣 ⛰️</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -25,7 +25,7 @@
     /* Top mountain header */
     .mountain-header {
       position: relative; width: 100%; overflow: hidden;
-      background: linear-gradient(180deg, #e8f0e8 0%, #f5f7fa 100%);
+      background: #fff;
     }
     .mountain-header svg {
       display: block; width: 100%; height: auto;
@@ -44,7 +44,18 @@
     }
 
     /* Header */
-    .header { text-align: center; padding: 32px 16px 24px; }
+    .header {
+      text-align: center; padding: 32px 16px 24px;
+      background: #fff; margin: -1px -16px 20px; padding-bottom: 28px;
+      border-radius: 0 0 24px 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    }
+    @media (min-width: 768px) {
+      .header { margin: -1px -32px 24px; }
+    }
+    @media (min-width: 1024px) {
+      .header { margin: -1px -40px 24px; }
+    }
     .header-logo {
       width: 72px; height: 72px; object-fit: contain; margin-bottom: 12px;
       filter: drop-shadow(0 2px 8px rgba(0,0,0,0.08));
@@ -230,12 +241,12 @@
     <svg viewBox="0 0 1440 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="mtn1" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stop-color="#8bb58a" stop-opacity="0.3"/>
-          <stop offset="100%" stop-color="#a8cca6" stop-opacity="0.15"/>
+          <stop offset="0%" stop-color="#fff" stop-opacity="1"/>
+          <stop offset="100%" stop-color="#a8cca6" stop-opacity="0.2"/>
         </linearGradient>
         <linearGradient id="mtn2" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stop-color="#6a9e6a" stop-opacity="0.2"/>
-          <stop offset="100%" stop-color="#9ec49c" stop-opacity="0.1"/>
+          <stop offset="0%" stop-color="#fff" stop-opacity="1"/>
+          <stop offset="100%" stop-color="#9ec49c" stop-opacity="0.15"/>
         </linearGradient>
       </defs>
       <path d="M0,120 L0,80 Q120,20 240,60 Q360,10 480,50 Q560,0 680,40 Q800,10 920,55 Q1040,15 1160,50 Q1280,25 1440,70 L1440,120 Z" fill="url(#mtn1)"/>
@@ -449,7 +460,7 @@
       html += `
         <div class="header">
           <img class="header-logo" src="https://upload.wikimedia.org/wikipedia/zh/6/68/Taipei_Fuhsing_Private_School_Logo.png" alt="復興實驗中學校徽">
-          <h1 class="title">慧班同學會</h1>
+          <h1 class="title">慧班 Reunion · 登山趣</h1>
           <p class="subtitle">跟老師敲定了兩個時間，請大家接龍！</p>
           <p class="subtitle-small">
             爬完山再找餐廳辦簡單的同學會 🍽️<br>
