@@ -184,13 +184,14 @@
       font-family: 'DM Sans', sans-serif;
     }
     .vote-track {
-      flex: 1; height: 28px; background: var(--cloud);
+      flex: 1; height: 28px; background: #eef2ee;
       border-radius: 14px; overflow: hidden; position: relative;
     }
     .vote-fill {
       height: 100%; border-radius: 14px;
       transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
+      min-width: 28px;
     }
     .vote-fill::after {
       content: ''; position: absolute; inset: 0;
@@ -631,12 +632,28 @@
       st.appendChild(mb);st.appendChild(cs);st.appendChild(pb);
       sr.appendChild(sl);sr.appendChild(st);d.appendChild(sr);
       var ni=document.createElement('input');ni.className='input';ni.placeholder='備註（選填）';ni.value=nt||'';d.appendChild(ni);
-      var ac=document.createElement('div');ac.className='form-actions';
+      var ac=document.createElement('div');ac.className='form-actions';ac.style.cssText='display:flex;gap:8px;';
+      var db=document.createElement('button');db.className='cancel-btn';db.textContent='🗑 刪除';
+      db.style.cssText='flex:0 0 auto;padding:11px 16px;border:1.5px solid #f5c6c6;border-radius:12px;background:#fff5f5;color:#c0392b;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:background 0.2s;';
+      db.onmouseover=function(){db.style.background='#fde8e8';};
+      db.onmouseout=function(){db.style.background='#fff5f5';};
+      db.onclick=function(){if(confirm('確定要刪除 '+nm+' 嗎？')){deletePerson(_ek,_en);d.remove();}};
       var cb=document.createElement('button');cb.className='cancel-btn';cb.textContent='取消';cb.onclick=function(){d.remove();};
       var sb=document.createElement('button');sb.className='confirm-btn';sb.textContent='✓ 儲存';
       sb.onclick=function(){updatePerson(_ek,_en,parseInt(cs.textContent),ni.value.trim());};
-      ac.appendChild(cb);ac.appendChild(sb);d.appendChild(ac);
+      ac.appendChild(db);ac.appendChild(cb);ac.appendChild(sb);d.appendChild(ac);
       row.after(d);
+    }
+
+    async function deletePerson(dk,nm) {
+      try {
+        var p=new URLSearchParams({action:'remove',dateKey:dk,name:nm});
+        var r=await fetch(API_URL+'?'+p);
+        var j=await r.json();
+        if(j.data){if(j.data['4/12'])j.data['4/12'].date='4/12（日）';if(j.data['5/2'])j.data['5/2'].date='5/2（六）';data=j.data;}
+        showToast('已刪除 '+nm);
+      } catch { showToast('刪除失敗'); }
+      render();
     }
 
     async function updatePerson(dk,nm,ct,nt) {
@@ -686,7 +703,7 @@
       // Vote bar
       h+=`<div class="vote-section"><div class="vote-label">Current Votes</div>`;
       [[' 4/12',t1,'#d4882e','#e8a94a'],[' 5/2',t2,'#2d8a4e','#5cb870']].forEach(([lb,tt,c1,c2])=>{
-        var pct=Math.max((tt/Math.max(t1,t2,1))*100,6);
+        var pct=Math.max((tt/Math.max(t1,t2,1))*100,3);
         var isW=w===lb.trim();
         var bg=isW?`linear-gradient(90deg,${c1},${c2})`:'var(--cloud)';
         var clr=isW?c1:'var(--stone)';
