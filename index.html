@@ -240,63 +240,95 @@
       render();
     }
 
+    var _editDateKey = '';
+    var _editName = '';
+
     function editPerson(dateKey, name, count, note) {
-      // Close any open edit forms first
-      document.querySelectorAll('.edit-form').forEach(f => f.remove());
-      
-      const safeId = (dateKey + '-' + name).replace(/[^a-zA-Z0-9\u4e00-\u9fff]/g, '_');
-      const row = document.getElementById('row-' + safeId);
+      document.querySelectorAll('.edit-form').forEach(function(f) { f.remove(); });
+
+      _editDateKey = dateKey;
+      _editName = name;
+
+      var rowId = 'row-' + (dateKey + '-' + name).replace(/[^a-zA-Z0-9\u4e00-\u9fff]/g, '_');
+      var row = document.getElementById(rowId);
       if (!row) return;
 
-      const editHtml = `<div class="edit-form" id="editform-${safeId}" style="
-        display:flex; flex-direction:column; gap:8px; padding:12px;
-        background:#faf6f0; border-radius:10px; border:1px solid #e8ddd0; margin-top:6px;
-      ">
-        <div style="font-size:14px;font-weight:700;color:#6b5d4e;">編輯 ${esc(name)}</div>
-        <div class="form-row">
-          <label class="form-label">人數（含家屬）</label>
-          <div class="stepper">
-            <button class="step-btn" onclick="editStepCount('${safeId}',-1)">−</button>
-            <span class="step-val" id="editcount-${safeId}">${count}</span>
-            <button class="step-btn" onclick="editStepCount('${safeId}',1)">+</button>
-          </div>
-        </div>
-        <input class="input" id="editnote-${safeId}" placeholder="備註（選填）" value="${esc(note || '')}">
-        <div class="form-actions">
-          <button class="cancel-btn" onclick="document.getElementById('editform-${safeId}').remove()">取消</button>
-          <button class="confirm-btn" onclick="updatePerson('${key}','${esc(name)}','${safeId}')">✓ 儲存</button>
-        </div>
-      </div>`.replace(/\n\s*/g, '');
+      var div = document.createElement('div');
+      div.className = 'edit-form';
+      div.style.cssText = 'display:flex;flex-direction:column;gap:8px;padding:12px;background:#faf6f0;border-radius:10px;border:1px solid #e8ddd0;margin-top:6px;';
 
-      row.insertAdjacentHTML('afterend', editHtml);
+      var label = document.createElement('div');
+      label.style.cssText = 'font-size:14px;font-weight:700;color:#6b5d4e;';
+      label.textContent = '編輯 ' + name;
+      div.appendChild(label);
+
+      var stepRow = document.createElement('div');
+      stepRow.className = 'form-row';
+      var stepLabel = document.createElement('label');
+      stepLabel.className = 'form-label';
+      stepLabel.textContent = '人數（含家屬）';
+      var stepper = document.createElement('div');
+      stepper.className = 'stepper';
+      var minusBtn = document.createElement('button');
+      minusBtn.className = 'step-btn';
+      minusBtn.textContent = '−';
+      var countSpan = document.createElement('span');
+      countSpan.className = 'step-val';
+      countSpan.textContent = count;
+      var plusBtn = document.createElement('button');
+      plusBtn.className = 'step-btn';
+      plusBtn.textContent = '+';
+      minusBtn.onclick = function() { var v = parseInt(countSpan.textContent) - 1; if (v < 1) v = 1; countSpan.textContent = v; };
+      plusBtn.onclick = function() { countSpan.textContent = parseInt(countSpan.textContent) + 1; };
+      stepper.appendChild(minusBtn);
+      stepper.appendChild(countSpan);
+      stepper.appendChild(plusBtn);
+      stepRow.appendChild(stepLabel);
+      stepRow.appendChild(stepper);
+      div.appendChild(stepRow);
+
+      var noteInput = document.createElement('input');
+      noteInput.className = 'input';
+      noteInput.placeholder = '備註（選填）';
+      noteInput.value = note || '';
+      div.appendChild(noteInput);
+
+      var actions = document.createElement('div');
+      actions.className = 'form-actions';
+      var cancelBtn = document.createElement('button');
+      cancelBtn.className = 'cancel-btn';
+      cancelBtn.textContent = '取消';
+      cancelBtn.onclick = function() { div.remove(); };
+      var saveBtn = document.createElement('button');
+      saveBtn.className = 'confirm-btn';
+      saveBtn.textContent = '✓ 儲存';
+      saveBtn.onclick = function() {
+        var newCount = parseInt(countSpan.textContent);
+        var newNote = noteInput.value.trim();
+        updatePerson(_editDateKey, _editName, newCount, newNote);
+      };
+      actions.appendChild(cancelBtn);
+      actions.appendChild(saveBtn);
+      div.appendChild(actions);
+
+      row.after(div);
     }
 
-    function editStepCount(safeId, delta) {
-      const el = document.getElementById('editcount-' + safeId);
-      let v = parseInt(el.textContent) + delta;
-      if (v < 1) v = 1;
-      el.textContent = v;
-    }
-
-    async function updatePerson(dateKey, name, safeId) {
-      const count = parseInt(document.getElementById('editcount-' + safeId).textContent);
-      const note = document.getElementById('editnote-' + safeId).value.trim();
-      
-      // Remove old entry first, then add updated one
+    async function updatePerson(dateKey, name, count, note) {
       try {
-        const removeParams = new URLSearchParams({ action: 'remove', dateKey, name });
+        var removeParams = new URLSearchParams({ action: 'remove', dateKey: dateKey, name: name });
         await fetch(API_URL + '?' + removeParams.toString());
-        
-        const addParams = new URLSearchParams({ action: 'add', dateKey, name, count, note: note || '' });
-        const res = await fetch(API_URL + '?' + addParams.toString());
-        const json = await res.json();
+
+        var addParams = new URLSearchParams({ action: 'add', dateKey: dateKey, name: name, count: count, note: note || '' });
+        var res = await fetch(API_URL + '?' + addParams.toString());
+        var json = await res.json();
         if (json.data) {
           if (json.data['4/12']) json.data['4/12'].date = '4/12（日）';
           if (json.data['5/2']) json.data['5/2'].date = '5/2（六）';
           data = json.data;
         }
         showToast('✓ 已更新');
-      } catch {
+      } catch (e) {
         showToast('更新失敗，請稍後再試');
       }
       render();
@@ -411,7 +443,7 @@
             </div>
             <div class="person-actions">
               <span class="person-count">${p.count} 人</span>
-              <button class="edit-btn" onclick="editPerson('${key}','${esc(p.name)}',${p.count},'${esc(p.note || '')}')" title="編輯">✏️</button>
+              <button class="edit-btn" data-datekey="${key}" data-name="${esc(p.name)}" data-count="${p.count}" data-note="${esc(p.note || '')}" title="編輯">✏️</button>
             </div>
           </div>`;
         });
@@ -446,6 +478,17 @@
       </div>`;
 
       document.getElementById('app').innerHTML = html;
+
+      // Bind edit buttons via event delegation
+      document.querySelectorAll('.edit-btn').forEach(function(btn) {
+        btn.onclick = function() {
+          var dk = btn.getAttribute('data-datekey');
+          var nm = btn.getAttribute('data-name');
+          var ct = parseInt(btn.getAttribute('data-count'));
+          var nt = btn.getAttribute('data-note');
+          editPerson(dk, nm, ct, nt);
+        };
+      });
     }
 
     function esc(s) {
