@@ -92,11 +92,12 @@
     .note-badge { font-size: 11px; color: #c0392b; font-style: italic; }
     .person-actions { display: flex; align-items: center; gap: 8px; }
     .person-count { font-size: 13px; color: #8a7a6a; font-weight: 600; }
-    .remove-btn {
-      border: none; background: none; color: #c9b8a0; cursor: pointer;
-      font-size: 14px; padding: 2px 4px; border-radius: 4px; line-height: 1;
+    .edit-btn {
+      border: none; background: none; cursor: pointer;
+      font-size: 16px; padding: 2px 4px; border-radius: 4px; line-height: 1;
+      opacity: 0.6; transition: opacity 0.2s;
     }
-    .remove-btn:hover { color: #c0392b; }
+    .edit-btn:hover { opacity: 1; }
 
     /* Add Button & Form */
     .add-btn {
@@ -239,20 +240,64 @@
       render();
     }
 
-    async function removePerson(dateKey, name) {
-      if (!confirm(`確定要移除 ${name} 嗎？`)) return;
+    function editPerson(dateKey, name, count, note) {
+      // Close any open edit forms first
+      document.querySelectorAll('.edit-form').forEach(f => f.remove());
+      
+      const safeId = (dateKey + '-' + name).replace(/[^a-zA-Z0-9\u4e00-\u9fff]/g, '_');
+      const row = document.getElementById('row-' + safeId);
+      if (!row) return;
+
+      const editHtml = `<div class="edit-form" id="editform-${safeId}" style="
+        display:flex; flex-direction:column; gap:8px; padding:12px;
+        background:#faf6f0; border-radius:10px; border:1px solid #e8ddd0; margin-top:6px;
+      ">
+        <div style="font-size:14px;font-weight:700;color:#6b5d4e;">編輯 ${esc(name)}</div>
+        <div class="form-row">
+          <label class="form-label">人數（含家屬）</label>
+          <div class="stepper">
+            <button class="step-btn" onclick="editStepCount('${safeId}',-1)">−</button>
+            <span class="step-val" id="editcount-${safeId}">${count}</span>
+            <button class="step-btn" onclick="editStepCount('${safeId}',1)">+</button>
+          </div>
+        </div>
+        <input class="input" id="editnote-${safeId}" placeholder="備註（選填）" value="${esc(note || '')}">
+        <div class="form-actions">
+          <button class="cancel-btn" onclick="document.getElementById('editform-${safeId}').remove()">取消</button>
+          <button class="confirm-btn" onclick="updatePerson('${key}','${esc(name)}','${safeId}')">✓ 儲存</button>
+        </div>
+      </div>`.replace(/\n\s*/g, '');
+
+      row.insertAdjacentHTML('afterend', editHtml);
+    }
+
+    function editStepCount(safeId, delta) {
+      const el = document.getElementById('editcount-' + safeId);
+      let v = parseInt(el.textContent) + delta;
+      if (v < 1) v = 1;
+      el.textContent = v;
+    }
+
+    async function updatePerson(dateKey, name, safeId) {
+      const count = parseInt(document.getElementById('editcount-' + safeId).textContent);
+      const note = document.getElementById('editnote-' + safeId).value.trim();
+      
+      // Remove old entry first, then add updated one
       try {
-        const params = new URLSearchParams({ action: 'remove', dateKey, name });
-        const res = await fetch(API_URL + '?' + params.toString());
+        const removeParams = new URLSearchParams({ action: 'remove', dateKey, name });
+        await fetch(API_URL + '?' + removeParams.toString());
+        
+        const addParams = new URLSearchParams({ action: 'add', dateKey, name, count, note: note || '' });
+        const res = await fetch(API_URL + '?' + addParams.toString());
         const json = await res.json();
         if (json.data) {
           if (json.data['4/12']) json.data['4/12'].date = '4/12（日）';
           if (json.data['5/2']) json.data['5/2'].date = '5/2（六）';
           data = json.data;
         }
-        showToast('已移除');
+        showToast('✓ 已更新');
       } catch {
-        showToast('刪除失敗');
+        showToast('更新失敗，請稍後再試');
       }
       render();
     }
@@ -356,8 +401,9 @@
         </div>`;
 
         html += '<div class="people-list">';
-        d.people.forEach(p => {
-          html += `<div class="person-row">
+        d.people.forEach((p, idx) => {
+          const safeId = (key + '-' + p.name).replace(/[^a-zA-Z0-9\u4e00-\u9fff]/g, '_');
+          html += `<div class="person-row" id="row-${safeId}">
             <div class="person-info">
               <span class="person-name">${esc(p.name)}</span>
               ${p.count > 1 ? `<span class="count-badge">+${p.count - 1}</span>` : ''}
@@ -365,7 +411,7 @@
             </div>
             <div class="person-actions">
               <span class="person-count">${p.count} 人</span>
-              <button class="remove-btn" onclick="removePerson('${key}','${esc(p.name)}')" title="移除">✕</button>
+              <button class="edit-btn" onclick="editPerson('${key}','${esc(p.name)}',${p.count},'${esc(p.note || '')}')" title="編輯">✏️</button>
             </div>
           </div>`;
         });
