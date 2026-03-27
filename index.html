@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>慧班 Reunion · 登山趣 ⛰️</title>
+  <script src="https://static.line-scdn.net/liff/edge/versions/2.22.3/sdk.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;800&family=Noto+Sans+TC:wght@400;600;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -365,6 +366,100 @@
     var API_URL="https://script.google.com/macros/s/AKfycbxSUTpxyMxOyN7EAd9hCf9OKAk7IHBcujCcJ1F4Yc7jTewwtUjf8dcne4frERhrDWM/exec";
     var data=null, isOnline=false;
 
+    // ⬇️⬇️⬇️ 把你的 LIFF ID 貼在這裡 ⬇️⬇️⬇️
+    var LIFF_ID = "2009625448-S6TA7geC";
+    // ⬆️⬆️⬆️ 格式像 1234567890-abcdefgh ⬆️⬆️⬆️
+
+    var liffReady = false;
+    var liffProfile = null;
+
+    async function initLiff() {
+      if (!LIFF_ID || LIFF_ID.includes('YOUR_LIFF')) return;
+      try {
+        await liff.init({ liffId: LIFF_ID });
+        liffReady = true;
+        if (liff.isLoggedIn()) {
+          liffProfile = await liff.getProfile();
+        }
+      } catch (e) {
+        console.log('LIFF init failed, running in browser mode');
+      }
+    }
+
+    async function shareToLine(name, dateLabel, count, type) {
+      if (!liffReady || !liff.isLoggedIn()) return;
+      try {
+        if (!liff.isApiAvailable('shareTargetPicker')) return;
+        var typeText = type === 'meal' ? '🍽 只吃飯' : '⛰️ 爬山＋吃飯';
+        await liff.shareTargetPicker([{
+          type: 'flex',
+          altText: '✅ ' + name + ' 報名 ' + dateLabel + ' ' + count + '人 ' + typeText,
+          contents: {
+            type: 'bubble',
+            size: 'kilo',
+            header: {
+              type: 'box', layout: 'vertical',
+              backgroundColor: '#1b3a26',
+              paddingAll: '14px',
+              contents: [{
+                type: 'text', text: '慧班 Reunion · 登山趣',
+                color: '#ffffff', size: 'sm', weight: 'bold', align: 'center'
+              }]
+            },
+            body: {
+              type: 'box', layout: 'vertical', spacing: 'md',
+              paddingAll: '16px',
+              contents: [
+                { type: 'text', text: '✅ 新報名！', size: 'md', weight: 'bold', color: '#1b3a26' },
+                { type: 'separator', margin: 'md' },
+                {
+                  type: 'box', layout: 'horizontal', margin: 'md', spacing: 'sm',
+                  contents: [
+                    { type: 'text', text: '姓名', size: 'sm', color: '#8a9085', flex: 2 },
+                    { type: 'text', text: name, size: 'sm', weight: 'bold', color: '#1b3a26', flex: 5 }
+                  ]
+                },
+                {
+                  type: 'box', layout: 'horizontal', spacing: 'sm',
+                  contents: [
+                    { type: 'text', text: '日期', size: 'sm', color: '#8a9085', flex: 2 },
+                    { type: 'text', text: '📅 ' + dateLabel, size: 'sm', weight: 'bold', color: '#1b3a26', flex: 5 }
+                  ]
+                },
+                {
+                  type: 'box', layout: 'horizontal', spacing: 'sm',
+                  contents: [
+                    { type: 'text', text: '人數', size: 'sm', color: '#8a9085', flex: 2 },
+                    { type: 'text', text: count + ' 人', size: 'sm', weight: 'bold', color: '#1b3a26', flex: 5 }
+                  ]
+                },
+                {
+                  type: 'box', layout: 'horizontal', spacing: 'sm',
+                  contents: [
+                    { type: 'text', text: '類型', size: 'sm', color: '#8a9085', flex: 2 },
+                    { type: 'text', text: typeText, size: 'sm', weight: 'bold', color: type === 'meal' ? '#e67e22' : '#2d8a4e', flex: 5 }
+                  ]
+                }
+              ]
+            },
+            footer: {
+              type: 'box', layout: 'vertical',
+              paddingAll: '12px',
+              contents: [{
+                type: 'button', style: 'primary', color: '#2d5a3f',
+                action: {
+                  type: 'uri', label: '我也要報名',
+                  uri: 'https://liff.line.me/' + LIFF_ID
+                }
+              }]
+            }
+          }
+        }]);
+      } catch (e) {
+        console.log('Share failed:', e);
+      }
+    }
+
     function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
     function getTotal(p){return p.reduce((s,x)=>s+x.count,0);}
 
@@ -379,10 +474,15 @@
     }
 
     async function addPerson(dk,n,c,nt){
+      var isMeal = nt && nt.includes('只吃飯');
       try{var p=new URLSearchParams({action:'add',dateKey:dk,name:n,count:c,note:nt||''});
       var r=await fetch(API_URL+'?'+p);var j=await r.json();
       if(j.data){if(j.data['4/12'])j.data['4/12'].date='4/12（日）';if(j.data['5/2'])j.data['5/2'].date='5/2（六）';data=j.data;}
-      showToast('✓ 已加入');}catch{showToast('儲存失敗');}render();
+      showToast('✓ 已加入');
+      // Share to LINE
+      var dateLabel = data[dk]?.date || dk;
+      shareToLine(n, dateLabel, c, isMeal ? 'meal' : 'hike');
+      }catch{showToast('儲存失敗');}render();
     }
 
     var _ek='',_en='';
@@ -439,7 +539,7 @@
       document.querySelectorAll('.add-btn').forEach(b=>b.style.display='');
       var sk=dk.replace('/','_'),f=document.getElementById('form-'+sk),b=document.getElementById('addbtn-'+sk);
       if(f){f.classList.add('active');b.style.display='none';}
-      f.querySelector('.input-name').value='';f.querySelector('.input-note').value='';
+      f.querySelector('.input-name').value=liffProfile?liffProfile.displayName:'';f.querySelector('.input-note').value='';
       f.querySelector('.step-val').textContent='1';f.querySelector('.input-meal').checked=false;
       f.querySelector('.input-name').focus();
     }
@@ -575,7 +675,8 @@
     }
     function dlTxt(txt,k){var b=new Blob([txt],{type:'text/plain;charset=utf-8'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='慧班登山趣_'+(k||'').replace('/','_')+'_名單.txt';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);showToast('✓ 名單已下載');}
     function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
-    fetchData();setInterval(fetchData,30000);
+    initLiff().then(function(){ fetchData(); });
+    setInterval(fetchData,30000);
   </script>
 </body>
 </html>
