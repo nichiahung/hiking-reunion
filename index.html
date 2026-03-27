@@ -288,10 +288,11 @@
     .bottom-scene svg{width:100%;height:100%;}
 
     /* Loading */
-    .loading-wrap{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--peak);gap:14px;}
-    @keyframes spin{to{transform:rotate(360deg)}}
-    .spinner{width:34px;height:34px;border:3px solid var(--cloud);border-top-color:var(--pine);border-radius:50%;animation:spin 0.8s linear infinite;}
+    .loading-wrap{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--peak);gap:16px;}
     .loading-text{font-size:13px;color:var(--stone);font-family:'DM Sans',sans-serif;letter-spacing:1.5px;}
+    .progress-wrap{width:200px;height:4px;background:var(--cloud);border-radius:2px;overflow:hidden;}
+    .progress-bar{height:100%;background:linear-gradient(90deg,var(--pine),var(--sage));border-radius:2px;transition:width 0.3s ease;width:0%;}
+    .loading-pct{font-size:11px;color:var(--mist);font-family:'DM Sans',sans-serif;}
 
     /* Toast */
     .toast {
@@ -377,8 +378,10 @@
   </div>
 
   <div id="loading" class="loading-wrap" style="position:fixed;inset:0;z-index:999;">
-    <div class="spinner"></div>
-    <div class="loading-text">Loading...</div>
+    <img src="https://upload.wikimedia.org/wikipedia/zh/6/68/Taipei_Fuhsing_Private_School_Logo.png" alt="" style="width:56px;height:56px;object-fit:contain;opacity:0.7;">
+    <div class="loading-text">慧班 Reunion · 登山趣</div>
+    <div class="progress-wrap"><div class="progress-bar" id="progress-bar"></div></div>
+    <div class="loading-pct" id="progress-pct">0%</div>
   </div>
 
   <div id="app" class="main" style="display:none;"></div>
@@ -503,21 +506,39 @@
       }
     }
 
+    var _progress = 0;
+    function setProgress(pct) {
+      _progress = pct;
+      var bar = document.getElementById('progress-bar');
+      var txt = document.getElementById('progress-pct');
+      if (bar) bar.style.width = pct + '%';
+      if (txt) txt.textContent = Math.round(pct) + '%';
+    }
+
     function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
     function getTotal(p){return p.reduce((s,x)=>s+x.count,0);}
 
     async function fetchData(){
+      setProgress(30);
       try{
         var controller = new AbortController();
         var timeout = setTimeout(function(){ controller.abort(); }, 5000);
+        setProgress(50);
         var r=await fetch(API_URL+'?action=list', { signal: controller.signal });
         clearTimeout(timeout);
+        setProgress(70);
         var j=await r.json();
         if(j.error)throw new Error(j.error);
         if(j['4/12'])j['4/12'].date='4/12（日）';if(j['5/2'])j['5/2'].date='5/2（六）';
         data=j;isOnline=true;
+        setProgress(90);
       }catch{isOnline=false;if(!data)data={'4/12':{date:'4/12（日）',people:[]},'5/2':{date:'5/2（六）',people:[]}};}
-      render();document.getElementById('loading').style.display='none';document.getElementById('app').style.display='block';
+      setProgress(100);
+      render();
+      setTimeout(function(){
+        document.getElementById('loading').style.display='none';
+        document.getElementById('app').style.display='block';
+      }, 300);
     }
 
     async function addPerson(dk,n,c,nt){
@@ -719,7 +740,7 @@
     }
     function dlTxt(txt,k){var b=new Blob([txt],{type:'text/plain;charset=utf-8'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='慧班登山趣_'+(k||'').replace('/','_')+'_名單.txt';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);showToast('✓ 名單已下載');}
     function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
-    // Run LIFF and data fetch in parallel
+    setProgress(10);
     initLiff();
     fetchData();
     setInterval(fetchData,30000);
