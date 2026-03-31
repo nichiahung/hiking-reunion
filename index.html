@@ -450,11 +450,61 @@
 
   <!-- Tab bar -->
   <div class="tab-bar" id="tab-bar" style="display:none;">
-    <button class="tab-btn active" onclick="switchTab('signup')">📋 接龍報名</button>
-    <button class="tab-btn" onclick="switchTab('itinerary')">🗺 行程表</button>
+    <button class="tab-btn active" onclick="switchTab('signup')">📋 接龍</button>
+    <button class="tab-btn" onclick="switchTab('bus')">🚌 包車</button>
+    <button class="tab-btn" onclick="switchTab('itinerary')">🗺 行程</button>
   </div>
 
   <div id="app" class="main" style="display:none;"></div>
+
+  <!-- Bus tab -->
+  <div id="bus-tab" class="main" style="display:none;">
+    <div class="date-card lead-amber">
+      <div class="card-top"><div class="card-date-text">🚌 包車報名</div></div>
+      <div style="font-size:12px;color:var(--stone);margin-bottom:12px;line-height:1.6;">
+        📍 上車地點：<b style="color:var(--forest);">復興實驗國小</b><br>
+        每車最多 <b style="color:var(--forest);">8 位</b>，請選擇要搭哪一趟：
+      </div>
+
+      <!-- Bus 1: 9:00 -->
+      <div class="car-card" id="bus-card-1" style="margin-bottom:8px;">
+        <div class="car-header">
+          <div class="car-name">🚌 第一趟 · 9:00 發車</div>
+          <span class="car-seats has-space" id="bus1-seats">0/8</span>
+        </div>
+        <div class="car-from">📍 復興實驗國小 → 大屯1號停車場</div>
+        <div class="car-passengers" id="bus1-passengers">
+          <span class="car-empty-seat">尚無人報名</span>
+        </div>
+        <div style="display:flex;gap:4px;">
+          <button class="board-btn" style="flex:1;" onclick="busSignup(1)">🙋 我搭這趟</button>
+          <button class="unboard-btn" style="flex:0 0 auto;padding:6px 10px;font-size:11px;" onclick="busCancel(1)">取消</button>
+        </div>
+      </div>
+
+      <!-- Bus 2: 12:30 -->
+      <div class="car-card" id="bus-card-2">
+        <div class="car-header">
+          <div class="car-name">🚌 第二趟 · 12:30 發車</div>
+          <span class="car-seats has-space" id="bus2-seats">0/8</span>
+        </div>
+        <div class="car-from">📍 復興實驗國小 → 松竹園餐廳（🍽 只吃飯）</div>
+        <div class="car-passengers" id="bus2-passengers">
+          <span class="car-empty-seat">尚無人報名</span>
+        </div>
+        <div style="display:flex;gap:4px;">
+          <button class="board-btn" style="flex:1;" onclick="busSignup(2)">🙋 我搭這趟</button>
+          <button class="unboard-btn" style="flex:0 0 auto;padding:6px 10px;font-size:11px;" onclick="busCancel(2)">取消</button>
+        </div>
+      </div>
+
+      <div style="margin-top:10px;font-size:11px;color:var(--stone);text-align:center;line-height:1.6;">
+        ⚠️ 第一趟 9:00 → 爬山＋吃飯<br>
+        ⚠️ 第二趟 12:30 → 只吃飯（不爬山）
+      </div>
+    </div>
+    <div class="footer"><button class="refresh-btn" onclick="switchTab('signup')">← 回到接龍報名</button></div>
+  </div>
 
   <div id="itinerary-tab" class="main" style="display:none;">
     <div class="itinerary-card">
@@ -533,7 +583,7 @@
       }
       try {
         if (!liff.isApiAvailable('shareTargetPicker')) {showToast('分享功能未啟用');return;}
-        var ppl=data['4/12']&&data['4/12'].people||[];
+        var ppl=data['4/12']?.people||[];
         var dr=ppl.find(function(p){return p.name===driverName&&p.transport==='driver';});
         if(!dr){showToast('找不到車輛資訊');return;}
         var passengers=ppl.filter(function(p){return p.ride_with===driverName;});
@@ -596,14 +646,14 @@
       if (txt) txt.textContent = Math.round(pct) + '%';
     }
 
-    function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2200);}
-    function getTotal(p){return p.reduce(function(s,x){return s+x.count;},0);}
+    function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+    function getTotal(p){return p.reduce((s,x)=>s+x.count,0);}
     function showApiLoading(){document.getElementById('api-loading').classList.add('show');}
     function hideApiLoading(){document.getElementById('api-loading').classList.remove('show');}
 
     async function fetchData(){
       setProgress(30);
-
+      
       // Load cached data first for instant display
       try {
         var cached = localStorage.getItem('hiking-cache');
@@ -686,7 +736,7 @@
     function showBoardPrompt(dk,driverName){
       var name=prompt('請輸入你的姓名（需與報名時相同）');
       if(!name)return; name=name.trim();
-      var ppl=data[dk]&&data[dk].people||[];
+      var ppl=data[dk]?.people||[];
       var found=ppl.find(function(p){return p.name===name;});
       if(!found){showToast('找不到「'+name+'」的報名資料');return;}
       if(found.transport==='driver'){showToast('你是開車的人哦');return;}
@@ -706,7 +756,7 @@
     function showUnboardPrompt(dk){
       var name=prompt('請輸入你的姓名');
       if(!name)return; name=name.trim();
-      var ppl=data[dk]&&data[dk].people||[];
+      var ppl=data[dk]?.people||[];
       var found=ppl.find(function(p){return p.name===name;});
       if(!found||!found.ride_with){showToast('找不到搭車記錄');return;}
       unboardCar(dk,name);
@@ -715,7 +765,7 @@
     async function registerTransport(dk,type){
       var name=prompt('請輸入你的姓名（需與報名時相同）');
       if(!name)return; name=name.trim();
-      var ppl=data[dk]&&data[dk].people||[];
+      var ppl=data[dk]?.people||[];
       var found=ppl.find(function(p){return p.name===name;});
       if(!found){showToast('找不到「'+name+'」的報名資料');return;}
 
@@ -756,12 +806,12 @@
 
     var _ek='',_en='';
     function editPerson(dk,nm,ct,nt){
-      document.querySelectorAll('.edit-form').forEach(function(f){f.remove();});_ek=dk;_en=nm;
+      document.querySelectorAll('.edit-form').forEach(f=>f.remove());_ek=dk;_en=nm;
       var rid='row-'+(dk+'-'+nm).replace(/[^a-zA-Z0-9\u4e00-\u9fff]/g,'_');
       var row=document.getElementById(rid);if(!row)return;
 
       // Find person's current transport data
-      var ppl=data[dk]&&data[dk].people||[];
+      var ppl=data[dk]?.people||[];
       var person=ppl.find(function(p){return p.name===nm;})||{};
       var curTransport=person.transport||'';
       var curSeats=person.seats||4;
@@ -866,7 +916,7 @@
       showApiLoading();
       try{
         // If changing from driver, unboard passengers first
-        var ppl=data[dk]&&data[dk].people||[];
+        var ppl=data[dk]?.people||[];
         var old=ppl.find(function(p){return p.name===nm;});
         if(old&&old.transport==='driver'&&transport!=='driver'){
           var passengers=ppl.filter(function(p){return p.ride_with===nm;});
@@ -883,14 +933,12 @@
     }
 
     function openForm(dk){
-      document.querySelectorAll('.add-form').forEach(function(f){f.classList.remove('active');});
-      document.querySelectorAll('.add-btn').forEach(function(b){b.style.display='';});
+      document.querySelectorAll('.add-form').forEach(f=>f.classList.remove('active'));
+      document.querySelectorAll('.add-btn').forEach(b=>b.style.display='');
       var sk=dk.replace('/','_'),f=document.getElementById('form-'+sk),b=document.getElementById('addbtn-'+sk);
       if(f){f.classList.add('active');b.style.display='none';}
-      f.querySelector('.input-name').value=liffProfile?liffProfile.displayName:'';
-      f.querySelector('.input-note').value='';
-      f.querySelector('.step-val').textContent='1';
-      f.querySelector('.input-meal').checked=false;
+      f.querySelector('.input-name').value=liffProfile?liffProfile.displayName:'';f.querySelector('.input-note').value='';
+      f.querySelector('.step-val').textContent='1';f.querySelector('.input-meal').checked=false;
       f.querySelector('.input-name').focus();
     }
     function closeForm(dk){var sk=dk.replace('/','_');document.getElementById('form-'+sk).classList.remove('active');document.getElementById('addbtn-'+sk).style.display='';}
@@ -1101,15 +1149,81 @@
     function switchTab(tab){
       var btns=document.querySelectorAll('.tab-btn');
       btns.forEach(function(b){b.classList.remove('active');});
+      document.getElementById('app').style.display='none';
+      document.getElementById('bus-tab').style.display='none';
+      document.getElementById('itinerary-tab').style.display='none';
       if(tab==='itinerary'){
-        document.getElementById('app').style.display='none';
         document.getElementById('itinerary-tab').style.display='block';
+        btns[2].classList.add('active');
+      } else if(tab==='bus'){
+        document.getElementById('bus-tab').style.display='block';
         btns[1].classList.add('active');
+        renderBus();
       } else {
         document.getElementById('app').style.display='block';
-        document.getElementById('itinerary-tab').style.display='none';
         btns[0].classList.add('active');
       }
+    }
+
+    // Bus data - uses Google Sheet with special dateKey format
+    function getBusPassengers(busNum){
+      if(!data) return [];
+      var key='bus'+busNum;
+      var d=data[key];
+      if(!d) return [];
+      return d.people||[];
+    }
+
+    function renderBus(){
+      [1,2].forEach(function(n){
+        var list=getBusPassengers(n);
+        var el=document.getElementById('bus'+n+'-passengers');
+        var seats=document.getElementById('bus'+n+'-seats');
+        var isFull=list.length>=8;
+        seats.textContent=list.length+'/8';
+        seats.className='car-seats '+(isFull?'full':'has-space');
+        if(list.length===0){
+          el.innerHTML='<span class="car-empty-seat">尚無人報名</span>';
+        } else {
+          var h='';
+          list.forEach(function(p){h+='<span class="car-passenger">'+esc(p.name)+(p.count>1?' +' +(p.count-1):'')+'</span>';});
+          for(var s=0;s<8-list.length;s++){h+='<span class="car-empty-seat">空位</span>';}
+          el.innerHTML=h;
+        }
+      });
+    }
+
+    async function busSignup(n){
+      var name=prompt('請輸入你的姓名');
+      if(!name)return;name=name.trim();if(!name)return;
+      var list=getBusPassengers(n);
+      if(list.find(function(p){return p.name===name;})){showToast(name+' 已經在這趟車上了');return;}
+      var other=getBusPassengers(n===1?2:1);
+      if(other.find(function(p){return p.name===name;})){showToast(name+' 已在第'+(n===1?'二':'一')+'趟，請先取消');return;}
+      if(list.length>=8){showToast('這趟已滿座');return;}
+      showApiLoading();
+      try{
+        var p=new URLSearchParams({action:'add',dateKey:'bus'+n,name:name,count:1,note:'包車第'+n+'趟'});
+        var r=await fetch(API_URL+'?'+p);var j=await r.json();
+        if(j.data){if(j.data['4/12'])j.data['4/12'].date='4/12（日）';data=j.data;}
+        showToast('✓ '+name+' 已報名第'+n+'趟');
+      }catch{showToast('操作失敗');}
+      hideApiLoading();renderBus();
+    }
+
+    async function busCancel(n){
+      var name=prompt('請輸入你的姓名（取消搭車）');
+      if(!name)return;name=name.trim();if(!name)return;
+      var list=getBusPassengers(n);
+      if(!list.find(function(p){return p.name===name;})){showToast('找不到 '+name+' 的報名');return;}
+      showApiLoading();
+      try{
+        var p=new URLSearchParams({action:'remove',dateKey:'bus'+n,name:name});
+        var r=await fetch(API_URL+'?'+p);var j=await r.json();
+        if(j.data){if(j.data['4/12'])j.data['4/12'].date='4/12（日）';data=j.data;}
+        showToast(name+' 已取消');
+      }catch{showToast('操作失敗');}
+      hideApiLoading();renderBus();
     }
     setProgress(10);
     initLiff();
