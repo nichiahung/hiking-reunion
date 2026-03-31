@@ -520,19 +520,49 @@
 
     async function fetchData(){
       setProgress(30);
-      try{
-        var controller = new AbortController();
-        var timeout = setTimeout(function(){ controller.abort(); }, 5000);
-        setProgress(50);
-        var r=await fetch(API_URL+'?action=list', { signal: controller.signal });
-        clearTimeout(timeout);
-        setProgress(70);
-        var j=await r.json();
-        if(j.error)throw new Error(j.error);
-        if(j['4/12'])j['4/12'].date='4/12（日）';if(j['5/2'])j['5/2'].date='5/2（六）';
-        data=j;isOnline=true;
-        setProgress(90);
-      }catch{isOnline=false;if(!data)data={'4/12':{date:'4/12（日）',people:[]},'5/2':{date:'5/2（六）',people:[]}};}
+      
+      // Load cached data first for instant display
+      try {
+        var cached = localStorage.getItem('hiking-cache');
+        if (cached && !data) {
+          data = JSON.parse(cached);
+          setProgress(50);
+          render();
+          document.getElementById('loading').style.display='none';
+          document.getElementById('app').style.display='block';
+        }
+      } catch(e) {}
+
+      // Then fetch fresh data (with retry)
+      var success = false;
+      for (var attempt = 0; attempt < 2 && !success; attempt++) {
+        try {
+          var controller = new AbortController();
+          var timeout = setTimeout(function(){ controller.abort(); }, 8000);
+          setProgress(attempt === 0 ? 60 : 80);
+          var r = await fetch(API_URL+'?action=list', { signal: controller.signal });
+          clearTimeout(timeout);
+          setProgress(90);
+          var j = await r.json();
+          if (j.error) throw new Error(j.error);
+          if (j['4/12']) j['4/12'].date='4/12（日）';
+          if (j['5/2']) j['5/2'].date='5/2（六）';
+          data = j; isOnline = true; success = true;
+          // Cache for next time
+          try { localStorage.setItem('hiking-cache', JSON.stringify(data)); } catch(e) {}
+        } catch(e) {
+          if (attempt === 0) {
+            // Wait 1 second before retry
+            await new Promise(function(r){ setTimeout(r, 1000); });
+          }
+        }
+      }
+
+      if (!success) {
+        isOnline = false;
+        if (!data) data = {'4/12':{date:'4/12（日）',people:[]},'5/2':{date:'5/2（六）',people:[]}};
+      }
+
       setProgress(100);
       render();
       setTimeout(function(){
