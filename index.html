@@ -89,9 +89,12 @@
       animation:fadeUp 0.5s ease-out 0.48s both;
     }
     .status-pill.online{background:#e6f4ea;color:#1e7e34;}
-    .status-pill.offline{background:#fce8e8;color:#b71c1c;}
+    .status-pill.offline{background:#fff3e0;color:#e65100;}
+    .offline .status-dot{display:none;}
+    .hiking-emoji{display:inline-block;animation:hike 0.6s ease-in-out infinite alternate;font-size:14px;}
+    @keyframes hike{0%{transform:translateX(-2px) rotate(-5deg)}100%{transform:translateX(2px) rotate(5deg)}}
     .status-dot{width:6px;height:6px;border-radius:50%;animation:pulse 2s ease-in-out infinite;}
-    .online .status-dot{background:#1e7e34;} .offline .status-dot{background:#b71c1c;}
+    .online .status-dot{background:#1e7e34;}
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.35}}
 
     /* === DIVIDER === */
@@ -653,7 +656,7 @@
       var w=t1>t2?'4/12':t2>t1?'5/2':null;
 
       document.getElementById('status').innerHTML=
-        '<div class="status-pill '+(isOnline?'online':'offline')+'"><span class="status-dot"></span>'+(isOnline?'已連線 Google Sheet':'離線模式')+'</div>';
+        '<div class="status-pill '+(isOnline?'online':'offline')+'"><span class="status-dot"></span>'+(isOnline?'已連線 Google Sheet':'<span class="hiking-emoji">🥾</span> 正在連線資料庫...')+'</div>';
 
       var h='';
 
