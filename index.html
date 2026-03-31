@@ -369,6 +369,20 @@
     .itinerary-table .note-cell{color:var(--stone);font-size:11px;}
     .itinerary-highlight{background:var(--snow);}
 
+    /* Bus checklist */
+    .bus-group{margin-bottom:14px;}
+    .bus-group-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+    .bus-group-title{font-size:13px;font-weight:700;}
+    .bus-group-count{font-size:11px;font-weight:600;padding:2px 10px;border-radius:10px;}
+    .bus-row{display:flex;align-items:center;justify-content:space-between;padding:7px 8px;background:var(--snow);border-radius:8px;margin-bottom:3px;transition:background 0.15s;}
+    .bus-row.checked{background:#e6f4ea;}
+    .bus-row-left{display:flex;align-items:center;gap:6px;}
+    .bus-row-name{font-size:13px;font-weight:600;color:var(--forest);}
+    .bus-row-count{font-size:10px;font-weight:500;color:var(--sage);background:var(--cloud);padding:1px 5px;border-radius:3px;}
+    .bus-check{width:28px;height:28px;border-radius:8px;border:1.5px solid var(--cloud);background:var(--peak);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;font-size:14px;flex-shrink:0;}
+    .bus-check.on{background:var(--pine);border-color:var(--pine);color:var(--peak);}
+    .bus-check:hover{border-color:var(--sage);}
+
   </style>
 </head>
 <body>
@@ -432,46 +446,8 @@
   <div id="bus-tab" class="main" style="display:none;">
     <div class="date-card lead-amber">
       <div class="card-top"><div class="card-date-text">🚌 包車報名</div></div>
-      <div style="font-size:12px;color:var(--stone);margin-bottom:4px;">📍 上車地點：<b style="color:var(--forest);">復興實驗國小</b></div>
-      <div style="font-size:11px;color:var(--mist);margin-bottom:14px;">每車最多 8 位，點下方按鈕報名</div>
-
-      <div class="car-grid">
-        <!-- Bus 1: 9:00 -->
-        <div class="car-card" id="bus-card-1">
-          <div style="text-align:center;margin-bottom:8px;">
-            <div style="font-size:13px;font-weight:700;color:var(--forest);margin-bottom:2px;">⛰️ 第一趟</div>
-            <div style="font-size:18px;font-weight:700;color:var(--pine);font-family:'DM Sans',sans-serif;">9:00</div>
-            <div style="font-size:10px;color:var(--stone);">爬山＋吃飯</div>
-          </div>
-          <div style="font-size:10px;color:var(--stone);margin-bottom:6px;text-align:center;">復興國小 → 大屯停車場</div>
-          <div style="text-align:center;margin-bottom:8px;">
-            <span class="car-seats has-space" id="bus1-seats" style="font-size:12px;padding:3px 12px;">0/8</span>
-          </div>
-          <div class="car-passengers" id="bus1-passengers" style="justify-content:center;margin-bottom:8px;">
-            <span class="car-empty-seat">尚無人</span>
-          </div>
-          <button class="board-btn" onclick="busSignup(1)" style="width:100%;padding:8px;font-size:12px;">🙋 我搭這趟</button>
-          <button onclick="busCancel(1)" style="width:100%;padding:4px;border:none;background:none;color:var(--stone);font-size:10px;cursor:pointer;font-family:inherit;margin-top:4px;text-decoration:underline;">取消報名</button>
-        </div>
-
-        <!-- Bus 2: 12:30 -->
-        <div class="car-card" id="bus-card-2">
-          <div style="text-align:center;margin-bottom:8px;">
-            <div style="font-size:13px;font-weight:700;color:var(--amber);margin-bottom:2px;">🍽 第二趟</div>
-            <div style="font-size:18px;font-weight:700;color:var(--pine);font-family:'DM Sans',sans-serif;">12:30</div>
-            <div style="font-size:10px;color:var(--stone);">只吃飯（不爬山）</div>
-          </div>
-          <div style="font-size:10px;color:var(--stone);margin-bottom:6px;text-align:center;">復興國小 → 松竹園餐廳</div>
-          <div style="text-align:center;margin-bottom:8px;">
-            <span class="car-seats has-space" id="bus2-seats" style="font-size:12px;padding:3px 12px;">0/8</span>
-          </div>
-          <div class="car-passengers" id="bus2-passengers" style="justify-content:center;margin-bottom:8px;">
-            <span class="car-empty-seat">尚無人</span>
-          </div>
-          <button class="board-btn" onclick="busSignup(2)" style="width:100%;padding:8px;font-size:12px;">🙋 我搭這趟</button>
-          <button onclick="busCancel(2)" style="width:100%;padding:4px;border:none;background:none;color:var(--stone);font-size:10px;cursor:pointer;font-family:inherit;margin-top:4px;text-decoration:underline;">取消報名</button>
-        </div>
-      </div>
+      <div style="font-size:12px;color:var(--stone);margin-bottom:4px;">📍 上車地點：<b style="color:var(--forest);">復興實驗國小</b>　｜　每車最多 8 位</div>
+      <div id="bus-content"></div>
     </div>
     <div class="footer"><button class="refresh-btn" onclick="switchTab('signup')">← 回到接龍報名</button></div>
   </div>
@@ -1047,71 +1023,102 @@
     // Bus data - uses Google Sheet with special dateKey format
     function getBusPassengers(busNum){
       if(!data) return [];
-      var key='bus'+busNum;
-      var d=data[key];
-      if(!d) return [];
-      return d.people||[];
+      var d=data['bus'+busNum];
+      return d?d.people||[]:[];
     }
 
     function renderBus(){
-      [1,2].forEach(function(n){
-        var list=getBusPassengers(n);
-        var el=document.getElementById('bus'+n+'-passengers');
-        var seats=document.getElementById('bus'+n+'-seats');
-        var totalPeople=list.reduce(function(s,p){return s+p.count;},0);
-        var isFull=totalPeople>=8;
-        seats.textContent=totalPeople+'/8';
-        seats.className='car-seats '+(isFull?'full':'has-space');
-        if(list.length===0){
-          el.innerHTML='<span class="car-empty-seat">尚無人報名</span>';
-        } else {
-          var h='';
-          list.forEach(function(p){h+='<span class="car-passenger">'+esc(p.name)+(p.count>1?' <span style="font-size:9px;background:#e6f4ea;color:#2d8a4e;padding:0 3px;border-radius:3px;">+' +(p.count-1)+'</span>':'')+'</span>';});
-          var remain=8-totalPeople;
-          if(remain>0) h+='<span class="car-empty-seat">剩 '+remain+' 位</span>';
-          el.innerHTML=h;
-        }
+      if(!data) return;
+      var el=document.getElementById('bus-content');
+      if(!el) return;
+      var ppl=data['4/12']?.people||[];
+      var hiking=ppl.filter(function(p){return !p.note||!p.note.includes('只吃飯');});
+      var mealOnly=ppl.filter(function(p){return p.note&&p.note.includes('只吃飯');});
+      var bus1=getBusPassengers(1);
+      var bus2=getBusPassengers(2);
+      var bus1Names=bus1.map(function(p){return p.name;});
+      var bus2Names=bus2.map(function(p){return p.name;});
+      var bus1Total=bus1.reduce(function(s,p){return s+p.count;},0);
+      var bus2Total=bus2.reduce(function(s,p){return s+p.count;},0);
+
+      var h='';
+
+      // Bus 1: 9:00 爬山組
+      h+='<div class="bus-group">';
+      h+='<div class="bus-group-header">';
+      h+='<span class="bus-group-title" style="color:var(--forest);">⛰️ 第一趟 9:00 發車</span>';
+      h+='<span class="bus-group-count" style="background:'+(bus1Total>=8?'#fef3e2;color:var(--amber)':'#e6f4ea;color:#2d8a4e')+';">'+bus1Total+'/8 位</span>';
+      h+='</div>';
+      h+='<div style="font-size:10px;color:var(--stone);margin-bottom:6px;">復興國小 → 大屯1號停車場（爬山＋吃飯）</div>';
+      if(hiking.length>0){
+        hiking.forEach(function(p){
+          var isOn=bus1Names.includes(p.name);
+          h+='<div class="bus-row'+(isOn?' checked':'')+'">';
+          h+='<div class="bus-row-left">';
+          h+='<span class="bus-row-name">'+esc(p.name)+'</span>';
+          if(p.count>1) h+='<span class="bus-row-count">'+p.count+'人</span>';
+          h+='</div>';
+          h+='<div class="bus-check'+(isOn?' on':'')+'" data-bus="1" data-name="'+esc(p.name)+'" data-count="'+p.count+'">'+(isOn?'✓':'')+'</div>';
+          h+='</div>';
+        });
+      } else {
+        h+='<div style="text-align:center;padding:10px;color:var(--stone);font-size:12px;">尚無爬山組報名</div>';
+      }
+      h+='</div>';
+
+      // Bus 2: 12:30 只吃飯組
+      h+='<div class="bus-group">';
+      h+='<div class="bus-group-header">';
+      h+='<span class="bus-group-title" style="color:var(--amber);">🍽 第二趟 12:30 發車</span>';
+      h+='<span class="bus-group-count" style="background:'+(bus2Total>=8?'#fef3e2;color:var(--amber)':'#e6f4ea;color:#2d8a4e')+';">'+bus2Total+'/8 位</span>';
+      h+='</div>';
+      h+='<div style="font-size:10px;color:var(--stone);margin-bottom:6px;">復興國小 → 松竹園餐廳（只吃飯）</div>';
+      if(mealOnly.length>0){
+        mealOnly.forEach(function(p){
+          var isOn=bus2Names.includes(p.name);
+          h+='<div class="bus-row'+(isOn?' checked':'')+'">';
+          h+='<div class="bus-row-left">';
+          h+='<span class="bus-row-name">'+esc(p.name)+'</span>';
+          if(p.count>1) h+='<span class="bus-row-count">'+p.count+'人</span>';
+          h+='</div>';
+          h+='<div class="bus-check'+(isOn?' on':'')+'" data-bus="2" data-name="'+esc(p.name)+'" data-count="'+p.count+'">'+(isOn?'✓':'')+'</div>';
+          h+='</div>';
+        });
+      } else {
+        h+='<div style="text-align:center;padding:10px;color:var(--stone);font-size:12px;">尚無只吃飯組報名</div>';
+      }
+      h+='</div>';
+
+      el.innerHTML=h;
+
+      // Bind check buttons
+      el.querySelectorAll('.bus-check').forEach(function(btn){
+        btn.onclick=function(){toggleBus(parseInt(btn.dataset.bus),btn.dataset.name,parseInt(btn.dataset.count));};
       });
     }
 
-    async function busSignup(n){
-      var name=prompt('請輸入你的姓名');
-      if(!name)return;name=name.trim();if(!name)return;
-      var list=getBusPassengers(n);
-      if(list.find(function(p){return p.name===name;})){showToast(name+' 已經在這趟車上了');return;}
-      var other=getBusPassengers(n===1?2:1);
-      if(other.find(function(p){return p.name===name;})){showToast(name+' 已在第'+(n===1?'二':'一')+'趟，請先取消');return;}
-
-      // Look up person's count from 4/12 signup data
-      var mainPpl=data['4/12']?.people||[];
-      var found=mainPpl.find(function(p){return p.name===name;});
-      var count=found?found.count:1;
-
-      // Check if bus has enough space
-      var totalPeople=list.reduce(function(s,p){return s+p.count;},0);
-      if(totalPeople+count>8){showToast('空位不夠（剩 '+(8-totalPeople)+' 位，你有 '+count+' 人）');return;}
+    async function toggleBus(busNum,name,count){
+      var list=getBusPassengers(busNum);
+      var isOn=list.find(function(p){return p.name===name;});
 
       showApiLoading();
       try{
-        var p=new URLSearchParams({action:'add',dateKey:'bus'+n,name:name,count:count,note:'包車第'+n+'趟'});
-        var r=await fetch(API_URL+'?'+p);var j=await r.json();
-        if(j.data){if(j.data['4/12'])j.data['4/12'].date='4/12（日）';data=j.data;}
-        showToast('✓ '+name+(count>1?' ('+count+'人)':'')+' 已報名第'+n+'趟');
-      }catch{showToast('操作失敗');}
-      hideApiLoading();renderBus();
-    }
-
-    async function busCancel(n){
-      var name=prompt('請輸入你的姓名（取消搭車）');
-      if(!name)return;name=name.trim();if(!name)return;
-      var list=getBusPassengers(n);
-      if(!list.find(function(p){return p.name===name;})){showToast('找不到 '+name+' 的報名');return;}
-      showApiLoading();
-      try{
-        var p=new URLSearchParams({action:'remove',dateKey:'bus'+n,name:name});
-        var r=await fetch(API_URL+'?'+p);var j=await r.json();
-        if(j.data){if(j.data['4/12'])j.data['4/12'].date='4/12（日）';data=j.data;}
-        showToast(name+' 已取消');
+        if(isOn){
+          // Remove from bus
+          var p=new URLSearchParams({action:'remove',dateKey:'bus'+busNum,name:name});
+          var r=await fetch(API_URL+'?'+p);var j=await r.json();
+          if(j.data){if(j.data['4/12'])j.data['4/12'].date='4/12（日）';data=j.data;}
+          showToast(name+' 已取消包車');
+        } else {
+          // Check capacity
+          var totalPeople=list.reduce(function(s,p){return s+p.count;},0);
+          if(totalPeople+count>8){showToast('空位不夠（剩 '+(8-totalPeople)+' 位，需 '+count+' 位）');hideApiLoading();return;}
+          // Add to bus
+          var p=new URLSearchParams({action:'add',dateKey:'bus'+busNum,name:name,count:count,note:'包車第'+busNum+'趟'});
+          var r=await fetch(API_URL+'?'+p);var j=await r.json();
+          if(j.data){if(j.data['4/12'])j.data['4/12'].date='4/12（日）';data=j.data;}
+          showToast('✓ '+name+(count>1?' ('+count+'人)':'')+' 搭第'+busNum+'趟');
+        }
       }catch{showToast('操作失敗');}
       hideApiLoading();renderBus();
     }
