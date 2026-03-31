@@ -638,8 +638,17 @@
       var found=ppl.find(function(p){return p.name===name;});
       if(!found){showToast('找不到「'+name+'」的報名資料');return;}
       if(found.transport==='driver'){showToast('你是開車的人哦');return;}
-      if(found.ride_with){showToast('你已經在 '+found.ride_with+' 的車上了，請先下車');return;}
-      boardCar(dk,name,driverName);
+      if(found.ride_with){showToast('你已經在 '+found.ride_with+' 的車上了');return;}
+      // Auto-register as rider if not already, then board
+      if(found.transport!=='rider'){
+        fetch(API_URL+'?'+new URLSearchParams({action:'remove',dateKey:dk,name:name})).then(function(){
+          return fetch(API_URL+'?'+new URLSearchParams({action:'add',dateKey:dk,name:name,count:found.count,note:found.note||'',transport:'rider',seats:0,from:''}));
+        }).then(function(){
+          boardCar(dk,name,driverName);
+        });
+      } else {
+        boardCar(dk,name,driverName);
+      }
     }
 
     function showUnboardPrompt(dk){
@@ -649,6 +658,43 @@
       var found=ppl.find(function(p){return p.name===name;});
       if(!found||!found.ride_with){showToast('找不到搭車記錄');return;}
       unboardCar(dk,name);
+    }
+
+    async function registerTransport(dk,type){
+      var name=prompt('請輸入你的姓名（需與報名時相同）');
+      if(!name)return; name=name.trim();
+      var ppl=data[dk]?.people||[];
+      var found=ppl.find(function(p){return p.name===name;});
+      if(!found){showToast('找不到「'+name+'」的報名資料');return;}
+
+      // If this person was a driver and now switching to rider, unboard all passengers first
+      if(found.transport==='driver' && type==='rider'){
+        var passengers=ppl.filter(function(p){return p.ride_with===name;});
+        for(var i=0;i<passengers.length;i++){
+          await fetch(API_URL+'?'+new URLSearchParams({action:'unboard',dateKey:dk,rider:passengers[i].name}));
+        }
+        if(passengers.length>0) showToast('已將 '+passengers.length+' 位乘客移回待安排');
+      }
+
+      var seats=0,from='';
+      if(type==='driver'){
+        var seatsInput=prompt('可乘載幾人？（含你自己，例如填 4）','4');
+        if(!seatsInput)return;
+        seats=parseInt(seatsInput)||4;
+        from=prompt('出發地點？（例：信義區）','')||'';
+      }else{
+        from=prompt('你的出發地點？（方便配順路的車）','')||'';
+      }
+
+      // Remove old entry and re-add with transport info
+      try{
+        await fetch(API_URL+'?'+new URLSearchParams({action:'remove',dateKey:dk,name:name}));
+        var p=new URLSearchParams({action:'add',dateKey:dk,name:name,count:found.count,note:found.note||'',transport:type,seats:seats,from:from.trim()});
+        var r=await fetch(API_URL+'?'+p);var j=await r.json();
+        if(j.data){if(j.data['4/12'])j.data['4/12'].date='4/12（日）';if(j.data['5/2'])j.data['5/2'].date='5/2（六）';data=j.data;}
+        showToast(type==='driver'?'✓ 已登記開車':'✓ 已登記搭車');
+      }catch{showToast('操作失敗');}
+      render();
     }
 
     var _ek='',_en='';
@@ -785,6 +831,7 @@
             if(p.count>1) h+='<span class="person-extra">+' +(p.count-1)+'</span>';
             if(p.transport==='driver') h+='<span class="person-extra" style="background:#e6f4ea;color:#2d8a4e;">🚙 開車</span>';
             else if(p.transport==='rider') h+='<span class="person-extra" style="background:#fff3e0;color:#e65100;">🙋 搭車</span>';
+            else if(p.transport==='undecided') h+='<span class="person-extra" style="background:#f0f0f0;color:#888;">🤔 未定</span>';
             if(noteClean) h+='<span class="person-note">'+esc(noteClean)+'</span>';
             h+='</div><div class="person-right"><span class="person-ct">'+p.count+' 人</span>';
             h+='<button class="edit-btn" data-dk="'+k+'" data-nm="'+esc(p.name)+'" data-ct="'+p.count+'" data-nt="'+esc(p.note||'')+'">✏️</button>';
@@ -826,6 +873,7 @@
         // Transport section
         h+='<div class="transport-section"><div class="transport-label">🚗 交通方式</div>';
         h+='<div class="transport-options">';
+        h+='<label class="transport-opt active" data-form="'+sk+'"><input type="radio" name="transport" value="undecided" style="display:none" checked><div class="t-icon">🤔</div><div class="t-text">還沒決定</div></label>';
         h+='<label class="transport-opt" data-form="'+sk+'"><input type="radio" name="transport" value="driver" style="display:none"><div class="t-icon">🚙</div><div class="t-text">我可以開車</div></label>';
         h+='<label class="transport-opt" data-form="'+sk+'"><input type="radio" name="transport" value="rider" style="display:none"><div class="t-icon">🙋</div><div class="t-text">我需要搭車</div></label>';
         h+='</div>';
@@ -838,20 +886,26 @@
         h+='</div>';
         h+='<button class="export-btn" onclick="exportDate(\''+k+'\')">📋 匯出 '+d.date+' 名單</button>';
 
-        // Carpool board
+        // Carpool board - always show
         var drivers=d.people.filter(function(p){return p.transport==='driver';});
         var riders=d.people.filter(function(p){return p.transport==='rider';});
         var unassigned=riders.filter(function(p){return !p.ride_with;});
-        if(drivers.length>0||riders.length>0){
-          h+='<div class="carpool-section">';
-          var totalSeats=0,takenSeats=0;
-          drivers.forEach(function(dr){totalSeats+=(dr.seats||4);var taken=d.people.filter(function(p){return p.ride_with===dr.name;}).length;takenSeats+=taken;});
-          h+='<div class="carpool-title">🚗 搭車安排 <span>剩餘 '+(totalSeats-takenSeats)+' 座位</span></div>';
 
+        h+='<div class="carpool-section">';
+        var totalSeats=0,takenSeats=0;
+        drivers.forEach(function(dr){totalSeats+=(dr.seats||4);var taken=d.people.filter(function(p){return p.ride_with===dr.name;}).length;takenSeats+=taken;});
+        h+='<div class="carpool-title">🚗 搭車安排 <span>'+(drivers.length>0?'剩餘 '+(totalSeats-takenSeats)+' 座位':'尚無車輛')+'</span></div>';
+
+        // Only driver register button
+        h+='<div style="margin-bottom:10px;">';
+        h+='<button class="register-transport-btn" data-dk="'+k+'" data-type="driver" style="width:100%;padding:9px 6px;border:1.5px solid var(--cloud);border-radius:10px;background:var(--peak);cursor:pointer;font-family:inherit;text-align:center;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:6px;"><span style="font-size:16px;">🚙</span><span style="font-size:12px;font-weight:600;color:var(--pine);">我可以開車</span></button>';
+        h+='</div>';
+
+        if(drivers.length>0){
           drivers.forEach(function(dr){
             var passengers=d.people.filter(function(p){return p.ride_with===dr.name;});
             var maxSeats=dr.seats||4;
-            var isFull=passengers.length>=maxSeats;
+            var isFull=(passengers.length+1)>=maxSeats;
             h+='<div class="car-card">';
             h+='<div class="car-header"><div class="car-name">🚙 '+esc(dr.name)+'的車</div>';
             h+='<span class="car-seats '+(isFull?'full':'has-space')+'">'+(passengers.length+1)+'/'+maxSeats+(isFull?' 滿座':'')+'</span></div>';
@@ -864,23 +918,11 @@
             if(!isFull) h+='<button class="board-btn" data-dk="'+k+'" data-driver="'+esc(dr.name)+'">🙋 我要上這台車</button>';
             h+='</div>';
           });
-
-          if(unassigned.length>0){
-            h+='<div class="unassigned"><div class="unassigned-title">🙋 尚未安排（'+unassigned.length+' 人）</div>';
-            unassigned.forEach(function(p){
-              h+='<span class="unassigned-person">'+esc(p.name)+(p.from?'（'+esc(p.from)+'）':'')+'</span>';
-            });
-            h+='</div>';
-          }
-
-          var boarded=riders.filter(function(p){return p.ride_with;});
-          if(boarded.length>0){
-            h+='<button class="unboard-btn" data-dk="'+k+'" style="margin-top:6px;">🚪 我要下車（換別台）</button>';
-          }
-
-          h+='</div>';
+        } else {
+          h+='<div style="text-align:center;padding:14px 0;color:var(--stone);font-size:12px;">目前還沒有人登記開車<br>點上方「🚙 我可以開車」登記吧！</div>';
         }
 
+        h+='</div>';
         h+='</div>';
       });
       h+='</div>';
@@ -895,8 +937,8 @@
       document.querySelectorAll('.board-btn').forEach(function(b){
         b.onclick=function(){showBoardPrompt(b.dataset.dk,b.dataset.driver);};
       });
-      document.querySelectorAll('.unboard-btn').forEach(function(b){
-        b.onclick=function(){showUnboardPrompt(b.dataset.dk);};
+      document.querySelectorAll('.register-transport-btn').forEach(function(b){
+        b.onclick=function(){registerTransport(b.dataset.dk,b.dataset.type);};
       });
       // Transport option toggles
       document.querySelectorAll('.transport-opt').forEach(function(opt){
