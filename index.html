@@ -1005,10 +1005,11 @@
     function dlTxt(txt,k){var b=new Blob([txt],{type:'text/plain;charset=utf-8'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='慧班登山趣_'+(k||'').replace('/','_')+'_名單.txt';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);showToast('✓ 名單已下載');}
     function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
 
-    var _currentTab = 'signup';
+    var _currentTab = localStorage.getItem('hiking-tab') || 'signup';
 
     function switchTab(tab){
       _currentTab = tab;
+      try { localStorage.setItem('hiking-tab', tab); } catch(e) {}
       var btns=document.querySelectorAll('.tab-btn');
       btns.forEach(function(b){b.classList.remove('active');});
       document.getElementById('app').style.display='none';
