@@ -357,17 +357,137 @@
     .tab-btn.active{background:var(--peak);color:var(--pine);box-shadow:0 1px 4px var(--shadow);}
 
     /* Itinerary */
-    .itinerary-card{background:var(--peak);border-radius:20px;padding:18px;box-shadow:0 2px 20px var(--shadow);border-left:5px solid var(--sage);}
-    .itinerary-title{font-size:16px;font-weight:700;color:var(--forest);margin-bottom:14px;text-align:center;}
-    .itinerary-table{width:100%;border-collapse:collapse;}
-    .itinerary-table th{text-align:left;font-size:11px;font-weight:600;color:var(--peak);background:var(--pine);padding:8px 10px;}
-    .itinerary-table th:first-child{border-radius:8px 0 0 8px;width:60px;}
-    .itinerary-table th:last-child{border-radius:0 8px 8px 0;}
-    .itinerary-table td{padding:8px 10px;font-size:12px;color:var(--forest);border-bottom:1px solid var(--cloud);}
-    .itinerary-table tr:last-child td{border-bottom:none;}
-    .itinerary-table .time-cell{font-weight:700;color:var(--pine);font-family:'DM Sans',sans-serif;white-space:nowrap;vertical-align:top;}
-    .itinerary-table .note-cell{color:var(--stone);font-size:11px;}
-    .itinerary-highlight{background:var(--snow);}
+    .itinerary-shell{position:relative;background:#d8ecdf;border-radius:30px;box-shadow:0 24px 64px rgba(27,58,38,0.10);overflow:hidden;border:1px solid rgba(168,204,176,0.55);}
+    .itinerary-map-stage{position:relative;min-height:min(80vh,880px);}
+    .itinerary-map-wrap{position:absolute;inset:0;}
+    .itinerary-map{width:100%;height:100%;background:#eef4ef;}
+    .itinerary-map-loading{display:flex;align-items:center;justify-content:center;color:var(--stone);font-size:13px;padding:24px;text-align:center;height:100%;}
+    .itinerary-panel{position:absolute;top:20px;right:8px;bottom:20px;width:min(33.5%,450px);background:rgba(253,251,247,0.96);backdrop-filter:blur(8px);border:1px solid rgba(190,192,188,0.7);border-radius:30px;box-shadow:0 18px 40px rgba(17,24,18,0.12);padding:0;display:flex;flex-direction:column;overflow:hidden;transition:transform 0.28s ease,opacity 0.22s ease;}
+    .itinerary-shell.panel-collapsed .itinerary-panel{transform:translateX(calc(100% + 28px));opacity:0;pointer-events:none;}
+    .itinerary-panel-collapse{border:none;background:#f4efe7;color:#505650;border-radius:14px;padding:10px 14px;font-size:11px;font-weight:700;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,0.7);}
+    .itinerary-panel-collapse:hover{background:#fff;}
+    .itinerary-panel-reopen{position:absolute;top:24px;right:24px;z-index:3;display:none;align-items:center;gap:8px;border:none;background:rgba(255,255,255,0.95);backdrop-filter:blur(8px);color:#1f2520;border-radius:18px;padding:12px 16px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 18px 32px rgba(17,24,18,0.10);}
+    .itinerary-shell.panel-collapsed .itinerary-panel-reopen{display:inline-flex;}
+    .itinerary-panel-reopen:hover{background:#fff;}
+    .itinerary-mobile-topbar,.itinerary-mobile-chip{display:none;}
+    .itinerary-panel-scroll{overflow-y:auto;scrollbar-width:none;}
+    .itinerary-panel-scroll.show-scrollbar{scrollbar-width:thin;scrollbar-color:#d3d9d1 transparent;}
+    .itinerary-panel-scroll::-webkit-scrollbar{width:8px;}
+    .itinerary-panel-scroll::-webkit-scrollbar-thumb{background:transparent;border-radius:999px;transition:background 0.2s ease;}
+    .itinerary-panel-scroll.show-scrollbar::-webkit-scrollbar-thumb{background:#d3d9d1;}
+    .itinerary-panel-inner{padding:0 22px;}
+    .itinerary-layer{display:none;}
+    .itinerary-layer.active{display:block;}
+    .itinerary-overview .itinerary-panel-inner{padding-top:34px;}
+    .itinerary-overview-controls{display:flex;justify-content:flex-end;align-items:center;margin-bottom:12px;padding-top:4px;}
+    .itinerary-panel-kicker{font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#8e958f;margin-bottom:10px;}
+    .itinerary-overview-title{font-size:29px;font-weight:900;color:#1a1b1a;letter-spacing:-0.02em;line-height:1.16;max-width:308px;}
+    .itinerary-overview-sub{font-size:12px;color:#4e544e;line-height:1.62;margin-top:12px;max-width:308px;}
+    .itinerary-overview-hint{display:none;}
+    .itinerary-hero{position:relative;margin-bottom:0;margin-top:-1px;}
+    .itinerary-hero-media{height:160px;border-radius:0;overflow:hidden;background:#e9eee8;box-shadow:none;}
+    .itinerary-hero-media img{width:100%;height:100%;object-fit:cover;display:block;}
+    .itinerary-hero-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:44px;background:linear-gradient(135deg,#dfe8df 0%,#eef2ee 100%);}
+    .itinerary-hero-dots{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:flex;gap:10px;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,0.28);backdrop-filter:blur(8px);}
+    .itinerary-hero-dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,0.66);}
+    .itinerary-hero-dot.active{background:#fff;box-shadow:0 0 0 2px rgba(0,0,0,0.08);}
+    .itinerary-head{padding:20px 0 10px;}
+    .itinerary-head-title{font-size:18px;font-weight:800;color:#1a1b1a;letter-spacing:-0.01em;line-height:1.25;}
+    .itinerary-detail-close{position:absolute;top:20px;right:20px;width:50px;height:50px;border:none;border-radius:16px;background:rgba(255,255,255,0.88);box-shadow:0 8px 20px rgba(17,24,18,0.08);font-size:24px;line-height:1;color:#434843;cursor:pointer;}
+    .itinerary-detail-close:hover{background:#fff;}
+    .itinerary-detail-back{display:inline-flex;align-items:center;gap:8px;border:none;background:#f4efe7;color:#505650;font-size:12px;font-weight:700;cursor:pointer;padding:10px 14px;border-radius:14px;margin:4px 0 10px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.7);}
+    .itinerary-detail-back:hover{background:#fff;color:#111;}
+    .itinerary-overview-list{margin-top:16px;padding-bottom:14px;}
+    .itinerary-overview-section{font-size:13px;font-weight:800;color:#4a4f49;margin:0 2px 8px;}
+    .itinerary-overview-card{display:flex;align-items:center;gap:14px;padding:15px 16px;background:#f8f5f0;border:1px solid rgba(228,223,214,0.72);border-radius:24px;cursor:pointer;transition:transform 0.18s,box-shadow 0.18s,background 0.18s;margin-bottom:10px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.68);}
+    .itinerary-overview-card:hover{transform:translateY(-1px);box-shadow:0 12px 22px rgba(17,24,18,0.06);background:#fbf9f5;}
+    .itinerary-overview-card-main{display:flex;align-items:center;gap:14px;flex:1;min-width:0;}
+    .itinerary-overview-maplink{display:none;}
+    .itinerary-overview-photo{width:80px;height:80px;border-radius:18px;background:#f0f2f0;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:17px;overflow:hidden;box-shadow:0 8px 14px rgba(17,24,18,0.08);border:3px solid #fff;}
+    .itinerary-overview-photo img{width:100%;height:100%;object-fit:cover;}
+    .itinerary-overview-body{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;}
+    .itinerary-overview-time{font-size:10.5px;color:#5f655f;margin-bottom:5px;font-family:'DM Sans',sans-serif;letter-spacing:0.01em;line-height:1;}
+    .itinerary-overview-name{font-size:13.5px;font-weight:900;color:#1b1f1c;margin-bottom:6px;line-height:1.16;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .itinerary-overview-meta{font-size:10.5px;color:#6f756f;margin-bottom:6px;display:flex;align-items:center;gap:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.15;}
+    .itinerary-overview-desc{font-size:10.5px;color:#555c55;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .itinerary-place-time{font-size:14px;color:#545a54;margin-bottom:10px;font-family:'DM Sans',sans-serif;letter-spacing:0.01em;}
+    .itinerary-place-name{font-size:24px;font-weight:900;color:#1b1f1c;line-height:1.28;margin-bottom:10px;letter-spacing:-0.02em;}
+    .itinerary-place-meta{font-size:13px;color:#5f655f;line-height:1.6;}
+    .itinerary-note-card{margin-top:16px;padding:18px 20px;border-radius:20px;background:#f7f4ef;border:1px solid rgba(228,223,214,0.7);}
+    .itinerary-note-label{font-size:11px;font-weight:700;letter-spacing:0.04em;color:#8a9088;margin-bottom:8px;}
+    .itinerary-note-body{font-size:14px;color:#2e322e;line-height:1.72;}
+    .itinerary-actions{display:flex;gap:8px;align-items:center;margin-top:18px;margin-bottom:8px;}
+    .itinerary-route-btn{display:inline-flex;align-items:center;gap:8px;background:#111;color:#fff;border:none;border-radius:14px;padding:12px 18px;font-size:12px;font-weight:800;text-decoration:none;white-space:nowrap;box-shadow:none;}
+    .itinerary-route-btn:hover{background:#000;}
+    .itinerary-copy-btn{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.86);color:#303531;border:1px solid rgba(0,0,0,0.12);border-radius:14px;padding:12px 15px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;}
+    .itinerary-copy-btn:hover{background:#fff;}
+    .itinerary-detail-body{padding:0 22px;}
+    .itinerary-overview-footer{padding:2px 0 22px;}
+    .itinerary-notice{margin-top:16px;padding:14px 16px;border-radius:18px;background:#f7f4ef;border:1px solid rgba(228,223,214,0.7);font-size:11px;color:#5a615b;line-height:1.72;}
+    .itinerary-contact-list{padding:0 26px;margin-top:18px;}
+    .itinerary-contact-row{display:flex;align-items:center;gap:12px;padding:10px 0;font-size:13px;color:#404640;}
+    .itinerary-contact-row + .itinerary-contact-row{border-top:1px solid rgba(0,0,0,0.03);}
+    .itinerary-contact-icon{font-size:18px;line-height:1;color:#7b817b;min-width:24px;text-align:center;}
+    .itinerary-contact-link{color:inherit;text-decoration:none;}
+    .itinerary-contact-link:hover{text-decoration:underline;}
+    .itinerary-pager{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 26px 20px;border-top:1px solid rgba(0,0,0,0.06);margin-top:auto;background:rgba(255,255,255,0.45);}
+    .itinerary-pager-btn{width:56px;height:56px;border-radius:16px;border:1px solid rgba(0,0,0,0.10);background:rgba(255,255,255,0.78);font-size:28px;line-height:1;color:#5d655f;cursor:pointer;font-family:inherit;}
+    .itinerary-pager-btn:hover{background:#fff;}
+    .itinerary-pager-btn:disabled{opacity:0.45;cursor:default;}
+    .itinerary-pager-status{font-size:16px;font-weight:700;color:#414541;flex:1;text-align:center;white-space:nowrap;}
+    .itinerary-map-stop-marker{position:relative;width:54px;height:54px;cursor:pointer;transform:translateY(0);transition:transform 0.18s ease;}
+    .itinerary-map-stop-marker.active{transform:translateY(-1px);}
+    .itinerary-map-stop-thumb{width:54px;height:54px;border-radius:16px;overflow:hidden;background:#eef2ee;border:3px solid #fff;box-shadow:0 10px 20px rgba(17,24,18,0.16);display:flex;align-items:center;justify-content:center;color:#2b332d;font-size:18px;font-weight:700;}
+    .itinerary-map-stop-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+    .itinerary-map-stop-marker.active .itinerary-map-stop-thumb{box-shadow:0 14px 28px rgba(17,24,18,0.22);}
+    .itinerary-map-stop-badge{position:absolute;top:-8px;right:-8px;min-width:24px;height:24px;padding:0 6px;border-radius:999px;background:#111;color:#fff;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;line-height:1;}
+    .gm-style .gm-style-iw-c{border-radius:10px!important;padding:0!important;box-shadow:0 2px 12px rgba(0,0,0,0.15)!important;}
+    .gm-style .gm-style-iw-d{overflow:hidden!important;}
+    .gm-style .gm-ui-hover-effect{display:none!important;}
+    .itinerary-iw{width:220px;font-family:'DM Sans','Noto Sans TC',sans-serif;}
+    .itinerary-iw-img{width:100%;height:120px;object-fit:cover;display:block;background:#f0f0f0;}
+    .itinerary-iw-img-ph{width:100%;height:120px;background:#f0f6f0;display:flex;align-items:center;justify-content:center;font-size:2rem;}
+    .itinerary-iw-body{padding:12px;}
+    .itinerary-iw-time{font-size:11px;color:var(--stone);margin-bottom:2px;}
+    .itinerary-iw-name{font-size:14px;font-weight:700;color:var(--forest);margin-bottom:4px;}
+    .itinerary-iw-desc{font-size:12px;color:#555;line-height:1.5;}
+    .itinerary-iw-btn{display:block;margin-top:10px;background:var(--pine);color:var(--peak);text-align:center;padding:8px;border-radius:6px;font-size:12px;font-weight:700;text-decoration:none;}
+    .itinerary-iw-btn:hover{background:var(--forest);}
+    @media(max-width:700px){
+      .itinerary-shell{border-radius:28px;background:#21353a;}
+      .itinerary-map-stage{min-height:64vh;}
+      .itinerary-map-wrap{position:absolute;inset:0;height:auto;min-height:0;}
+      .itinerary-map{filter:none;}
+      .itinerary-panel{position:absolute;inset:0;width:auto;margin:0;background:transparent;border:none;box-shadow:none;border-radius:0;overflow:visible;pointer-events:none;backdrop-filter:none;}
+      .itinerary-shell.panel-collapsed .itinerary-panel{display:block;transform:none;opacity:1;pointer-events:none;}
+      .itinerary-panel-reopen{top:16px;right:16px;padding:10px 14px;font-size:12px;background:rgba(255,255,255,0.94);pointer-events:auto;}
+      .itinerary-panel-scroll{height:100%;overflow:hidden;}
+      .itinerary-panel-inner{padding:0;height:100%;}
+      .itinerary-overview.active{display:block;position:absolute;inset:0;z-index:2;pointer-events:auto;}
+      .itinerary-detail.active{display:block!important;position:absolute;inset:0;z-index:4;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#fdfbf7;pointer-events:auto;padding:0;}
+      .itinerary-overview .itinerary-panel-inner{padding-top:0;}
+      .itinerary-overview-controls,.itinerary-overview-title,.itinerary-overview-sub,.itinerary-overview-hint,.itinerary-actions,.itinerary-overview-section,.itinerary-overview-footer{display:none;}
+      .itinerary-mobile-topbar{display:flex;align-items:center;gap:12px;height:62px;padding:0 18px;background:rgba(255,255,255,0.98);border-bottom:1px solid rgba(0,0,0,0.08);pointer-events:auto;}
+      .itinerary-mobile-topbar-icon{width:28px;height:28px;display:flex;align-items:center;justify-content:center;color:#1f2320;flex-shrink:0;}
+      .itinerary-mobile-topbar-icon svg{width:28px;height:28px;display:block;}
+      .itinerary-mobile-topbar-title{font-size:16px;font-weight:700;letter-spacing:-0.02em;color:#262925;line-height:1.2;flex:1;min-width:0;}
+      .itinerary-mobile-chip{display:inline-flex;align-items:center;position:static;z-index:2;padding:7px 12px;border-radius:999px;background:rgba(17,17,17,0.96);color:#fff;font-size:11px;font-weight:700;pointer-events:auto;box-shadow:none;white-space:nowrap;flex-shrink:0;}
+      .itinerary-overview-list{position:absolute;left:0;right:0;bottom:16px;margin:0;padding:0 18px 2px;display:flex;gap:12px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scroll-padding-left:18px;pointer-events:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;touch-action:pan-x;}
+      .itinerary-overview-list::-webkit-scrollbar{display:none;}
+      .itinerary-overview-card{position:relative;min-width:calc(100vw - 188px);max-width:calc(100vw - 188px);align-items:flex-start;padding:12px 13px;background:rgba(255,255,255,0.98);border:none;border-radius:24px;box-shadow:0 18px 36px rgba(0,0,0,0.22);scroll-snap-align:start;margin-bottom:0;}
+      .itinerary-overview-card:hover{transform:none;background:rgba(255,255,255,0.98);box-shadow:0 18px 36px rgba(0,0,0,0.22);}
+      .itinerary-overview-card.active-stop{box-shadow:0 18px 36px rgba(0,0,0,0.24),0 0 0 2px rgba(255,255,255,0.55);}
+      .itinerary-overview-card-main{gap:12px;align-items:flex-start;}
+      .itinerary-overview-maplink{display:inline-flex;position:absolute;top:10px;right:10px;width:28px;height:28px;align-items:center;justify-content:center;border-radius:999px;background:#f5f1e9;border:1px solid rgba(0,0,0,0.08);color:#2f5e45;text-decoration:none;font-size:14px;box-shadow:0 4px 10px rgba(17,24,18,0.08);}
+      .itinerary-overview-maplink:hover{background:#ffffff;}
+      .itinerary-overview-photo{width:62px;height:62px;border-radius:13px;box-shadow:none;border:0;margin-top:2px;}
+      .itinerary-overview-body{justify-content:flex-start;padding-top:1px;padding-right:34px;}
+      .itinerary-overview-time{font-size:9.5px;color:#5f655f;margin-bottom:3px;}
+      .itinerary-overview-name{font-size:13px;line-height:1.08;margin-bottom:5px;}
+      .itinerary-overview-meta{font-size:10px;color:#3f443f;margin-bottom:0;gap:6px;}
+      .itinerary-overview-desc{display:-webkit-box;font-size:9.5px;color:#555c55;line-height:1.34;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+      .itinerary-detail,.itinerary-pager{display:none!important;}
+    }
 
     /* Bus checklist */
     .bus-group{margin-bottom:14px;}
@@ -453,25 +573,131 @@
   </div>
 
   <div id="itinerary-tab" class="main" style="display:none;">
-    <div class="itinerary-card">
-      <div class="itinerary-title">🥾 陽明山親子健行行程</div>
-      <table class="itinerary-table">
-        <thead><tr><th>時間</th><th>行程內容</th><th>地點 / 備註</th></tr></thead>
-        <tbody>
-          <tr><td class="time-cell">10:00</td><td>老同學相見歡</td><td class="note-cell">大屯1號停車場</td></tr>
-          <tr><td class="time-cell"></td><td>敘舊、話家常</td><td class="note-cell">請先吃飽早餐上山</td></tr>
-          <tr><td class="time-cell"></td><td>享用戶外小點</td><td class="note-cell">帶飯糰水果墊墊胃</td></tr>
-          <tr class="itinerary-highlight"><td class="time-cell">10:30</td><td>準時出發健行</td><td class="note-cell">自然公園＋二子坪</td></tr>
-          <tr class="itinerary-highlight"><td class="time-cell">12:45</td><td>整隊開車下山</td><td class="note-cell">往餐廳（車程25分）</td></tr>
-          <tr><td class="time-cell">13:15</td><td>抵達報到、洗手</td><td class="note-cell">松竹園</td></tr>
-          <tr class="itinerary-highlight"><td class="time-cell">13:30</td><td>米其林午餐 🍽</td><td class="note-cell">必比登推薦餐廳</td></tr>
-          <tr><td class="time-cell"></td><td>（人均約$400）</td><td class="note-cell">招牌白斬雞、熱炒</td></tr>
-          <tr><td class="time-cell">14:45</td><td>野人花園（自由）</td><td class="note-cell">續攤下午茶</td></tr>
-          <tr><td class="time-cell"></td><td>（可去可不去）</td><td class="note-cell">意猶未盡者再參加</td></tr>
-          <tr><td class="time-cell"></td><td>（門票$250/位）</td><td class="note-cell">可折抵一杯飲料</td></tr>
-          <tr class="itinerary-highlight"><td class="time-cell">16:00</td><td>快樂賦歸 🎉</td><td class="note-cell">安全開車回家</td></tr>
-        </tbody>
-      </table>
+    <div class="itinerary-shell">
+      <div class="itinerary-map-stage">
+        <div class="itinerary-map-wrap">
+          <div id="itinerary-map" class="itinerary-map">
+            <div class="itinerary-map-loading">地圖載入中，請稍等 Google Maps 初始化…</div>
+          </div>
+        </div>
+        <button id="itinerary-panel-reopen" class="itinerary-panel-reopen" type="button">☰ 展開行程</button>
+        <aside class="itinerary-panel">
+          <div class="itinerary-panel-scroll">
+            <div id="itinerary-overview" class="itinerary-layer active">
+              <div class="itinerary-panel-inner">
+                <div class="itinerary-mobile-topbar">
+                  <span class="itinerary-mobile-topbar-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 21s6-5.33 6-11a6 6 0 1 0-12 0c0 5.67 6 11 6 11z"></path>
+                      <circle cx="12" cy="10" r="2.4"></circle>
+                    </svg>
+                  </span>
+                  <div class="itinerary-mobile-topbar-title">慧班同學會 · 大屯山一日行程</div>
+                  <div class="itinerary-mobile-chip">大屯山健行 × 米其林午餐</div>
+                </div>
+                <div class="itinerary-overview-controls">
+                  <button id="itinerary-panel-collapse" class="itinerary-panel-collapse" type="button">收合</button>
+                </div>
+                <div class="itinerary-overview-title">慧班同學會 · 大屯山一日行程</div>
+                <div class="itinerary-overview-sub">老同學相見歡！從大屯山健行出發，接著下山享用米其林必比登午餐，最後野人花園悠閒收尾。</div>
+                <div class="itinerary-overview-hint">先看整體路線與停靠順序，點任一站點再切進第二層詳情。</div>
+                <div class="itinerary-actions">
+                  <a id="itinerary-route-btn" class="itinerary-route-btn" href="#" target="_blank" rel="noreferrer">✈ Open route</a>
+                  <button id="itinerary-copy-btn" class="itinerary-copy-btn" type="button">Copy ▾</button>
+                </div>
+                <div class="itinerary-overview-list">
+                  <div class="itinerary-overview-section">Morning</div>
+                  <div class="itinerary-overview-card" data-itinerary-stop="0">
+                    <div class="itinerary-overview-card-main">
+                      <div class="itinerary-overview-photo" id="itinerary-photo-0">🅿️</div>
+                      <div class="itinerary-overview-body">
+                        <div class="itinerary-overview-time">10:00 AM</div>
+                        <div class="itinerary-overview-name">大屯1號停車場（集合點）</div>
+                        <div class="itinerary-overview-meta">4.3 ★ (19) ・ Transportation Service</div>
+                        <div class="itinerary-overview-desc">10:00 相見歡！先吃飽早餐上山，帶飯糰水果戶外享用，話家常敘舊。</div>
+                      </div>
+                    </div>
+                    <a class="itinerary-overview-maplink" href="https://www.google.com/maps/dir/?api=1&destination=%E5%A4%A7%E5%B1%AF1%E8%99%9F%E5%81%9C%E8%BB%8A%E5%A0%B4&destination_place_id=ChIJvZoU0COxQjQRhUeZ7S1IYqA" target="_blank" rel="noreferrer" aria-label="在 Google Maps 打開大屯1號停車場">↗</a>
+                  </div>
+                  <div class="itinerary-overview-card" data-itinerary-stop="1">
+                    <div class="itinerary-overview-card-main">
+                      <div class="itinerary-overview-photo" id="itinerary-photo-1">🌿</div>
+                      <div class="itinerary-overview-body">
+                        <div class="itinerary-overview-time">10:30 AM</div>
+                        <div class="itinerary-overview-name">二子坪步道</div>
+                        <div class="itinerary-overview-meta">Route</div>
+                        <div class="itinerary-overview-desc">10:30 準時出發健行，自然公園＋二子坪，平緩好走，沿路風景舒服。</div>
+                      </div>
+                    </div>
+                    <a class="itinerary-overview-maplink" href="https://www.google.com/maps/dir/?api=1&destination=%E4%BA%8C%E5%AD%90%E5%9D%AA%E6%AD%A5%E9%81%93&destination_place_id=ChIJfS5VkuuxQjQRCqiNB_k-ohs" target="_blank" rel="noreferrer" aria-label="在 Google Maps 打開二子坪步道">↗</a>
+                  </div>
+                  <div class="itinerary-overview-section">Afternoon</div>
+                  <div class="itinerary-overview-card" data-itinerary-stop="2">
+                    <div class="itinerary-overview-card-main">
+                      <div class="itinerary-overview-photo" id="itinerary-photo-2">🍗</div>
+                      <div class="itinerary-overview-body">
+                        <div class="itinerary-overview-time">1:15 PM</div>
+                        <div class="itinerary-overview-name">松竹園</div>
+                        <div class="itinerary-overview-meta">4.3 ★ (6138) ・ 台式料理</div>
+                        <div class="itinerary-overview-desc">米其林必比登推薦，白斬雞與熱炒是主角，人均約 $400，建議先訂位。</div>
+                      </div>
+                    </div>
+                    <a class="itinerary-overview-maplink" href="https://www.google.com/maps/dir/?api=1&destination=%E6%9D%BE%E7%AB%B9%E5%9C%92&destination_place_id=ChIJx9woppGtQjQRicnTas_LX-w" target="_blank" rel="noreferrer" aria-label="在 Google Maps 打開松竹園">↗</a>
+                  </div>
+                  <div class="itinerary-overview-card" data-itinerary-stop="3">
+                    <div class="itinerary-overview-card-main">
+                      <div class="itinerary-overview-photo" id="itinerary-photo-3">🌱</div>
+                      <div class="itinerary-overview-body">
+                        <div class="itinerary-overview-time">2:45 PM</div>
+                        <div class="itinerary-overview-name">野人花園 Savage Garden</div>
+                        <div class="itinerary-overview-meta">3.9 ★ (1158) ・ Café</div>
+                        <div class="itinerary-overview-desc">自由參加的續攤選項，門票 $250 可折抵一杯飲料，慢慢收尾最剛好。</div>
+                      </div>
+                    </div>
+                    <a class="itinerary-overview-maplink" href="https://www.google.com/maps/dir/?api=1&destination=%E9%87%8E%E4%BA%BA%E8%8A%B1%E5%9C%92&destination_place_id=ChIJz8md_HKtQjQROvZB1Vt1R24" target="_blank" rel="noreferrer" aria-label="在 Google Maps 打開野人花園">↗</a>
+                  </div>
+                </div>
+                <div class="itinerary-overview-footer">
+                  <div class="itinerary-notice">
+                    🔴 野人花園週二、三公休<br>
+                    🔴 松竹園建議事先訂位<br>
+                    🔴 停車場假日易客滿，請早到<br>
+                    🎉 16:00 快樂賦歸！
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="itinerary-detail" class="itinerary-layer">
+              <button id="itinerary-detail-close" class="itinerary-detail-close" type="button">×</button>
+              <div class="itinerary-hero">
+                <div id="itinerary-hero-media" class="itinerary-hero-media">
+                  <div class="itinerary-hero-placeholder">🅿️</div>
+                </div>
+                <div id="itinerary-hero-dots" class="itinerary-hero-dots"></div>
+              </div>
+              <div class="itinerary-detail-body">
+                <button id="itinerary-detail-back" class="itinerary-detail-back" type="button">← 回總覽</button>
+                <div class="itinerary-head">
+                  <div id="itinerary-place-time" class="itinerary-place-time">10:00 AM</div>
+                  <div id="itinerary-place-name" class="itinerary-place-name">大屯1號停車場（集合點）</div>
+                  <div id="itinerary-place-meta" class="itinerary-place-meta">4.3 ★ (19) ・ Transportation Service</div>
+                </div>
+                <div class="itinerary-note-card">
+                  <div class="itinerary-note-label">Note</div>
+                  <div id="itinerary-note-body" class="itinerary-note-body">10:00 相見歡！先吃飽早餐上山，帶飯糰水果戶外享用，邊走邊敘舊。</div>
+                </div>
+              </div>
+              <div id="itinerary-contact-list" class="itinerary-contact-list"></div>
+            </div>
+          </div>
+          <div id="itinerary-pager" class="itinerary-pager" style="display:none;">
+            <button id="itinerary-prev-btn" class="itinerary-pager-btn" type="button">‹</button>
+            <div id="itinerary-pager-status" class="itinerary-pager-status">1 of 4</div>
+            <button id="itinerary-next-btn" class="itinerary-pager-btn" type="button">›</button>
+          </div>
+        </aside>
+      </div>
     </div>
     <div class="footer"><button class="refresh-btn" onclick="switchTab('signup')">← 回到接龍報名</button></div>
   </div>
@@ -1015,6 +1241,482 @@
     function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
 
     var _currentTab = localStorage.getItem('hiking-tab') || 'signup';
+    var itineraryLayerMode = 'overview';
+    var itineraryPanelCollapsed = false;
+    try { itineraryPanelCollapsed = localStorage.getItem('itinerary-panel-collapsed') === '1'; } catch(e) {}
+    var itineraryStops = [
+      {
+        name:'大屯1號停車場（集合點）',
+        shortName:'大屯1號停車場',
+        time:'10:00 AM',
+        desc:'相見歡！先吃飽早餐上山，帶飯糰水果戶外享用，話家常敘舊 ☕🍙',
+        note:'10:00 相見歡！先吃飽早餐上山，帶飯糰水果戶外享用，話家常敘舊 ☕🍙',
+        metaFallback:'4.3 ★ (19) ・ Transportation Service',
+        lat:25.1858127, lng:121.5217169, placeId:'ChIJvZoU0COxQjQRhUeZ7S1IYqA', icon:'🅿️'
+      },
+      {
+        name:'二子坪步道',
+        shortName:'二子坪步道',
+        time:'10:30 AM',
+        desc:'平緩好走，邊走邊話家常，沿路風景舒服，適合整團慢慢走 🌿',
+        note:'10:30 準時出發健行，自然公園＋二子坪，平緩好走，沿路風景舒服。',
+        metaFallback:'Route',
+        lat:25.1836764, lng:121.5186821, placeId:'ChIJfS5VkuuxQjQRCqiNB_k-ohs', icon:'🌿'
+      },
+      {
+        name:'松竹園',
+        shortName:'松竹園',
+        time:'1:15 PM',
+        desc:'米其林必比登推薦，白斬雞與熱炒是主角，人均約 $400，建議先訂位 🍗',
+        note:'13:15 抵達報到，13:30 開吃。米其林必比登推薦，白斬雞與熱炒是主角，人均約 $400。',
+        metaFallback:'4.3 ★ (6138) ・ 台式料理',
+        lat:25.1398123, lng:121.5676159, placeId:'ChIJx9woppGtQjQRicnTas_LX-w', icon:'🍗'
+      },
+      {
+        name:'野人花園 Savage Garden',
+        shortName:'野人花園',
+        time:'2:45 PM',
+        desc:'自由參加的續攤選項，門票 $250 可折抵一杯飲料，慢慢收尾最剛好 ☕',
+        note:'14:45 自由參加續攤，門票 $250 可折抵一杯飲料，可去可不去，意猶未盡再來。',
+        metaFallback:'3.9 ★ (1158) ・ Café',
+        lat:25.1448064, lng:121.566262, placeId:'ChIJz8md_HKtQjQROvZB1Vt1R24', icon:'🌱'
+      }
+    ];
+    var itineraryMap = null;
+    var itineraryInfoWindow = null;
+    var itineraryMarkers = [];
+    var itineraryPlacesService = null;
+    var itineraryDirectionsRenderer = null;
+    var itineraryMapReady = false;
+    var itineraryMapsLoading = false;
+    var itineraryActiveIdx = 0;
+    var itineraryScrollTimer = null;
+    var itineraryOverviewScrollTimer = null;
+
+    function isMobileItinerary(){
+      return window.matchMedia('(max-width: 700px)').matches;
+    }
+
+    function getItineraryRouteHref(stop){
+      if(stop){
+        return 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(stop.shortName || stop.name) + '&destination_place_id=' + stop.placeId;
+      }
+      var coords = itineraryStops.map(function(s){ return s.lat + ',' + s.lng; });
+      return 'https://www.google.com/maps/dir/' + coords.join('/');
+    }
+
+    function setItineraryLayer(mode){
+      if(isMobileItinerary()) mode = 'overview';
+      itineraryLayerMode = mode;
+      var overview = document.getElementById('itinerary-overview');
+      var detail = document.getElementById('itinerary-detail');
+      var pager = document.getElementById('itinerary-pager');
+      var routeBtn = document.getElementById('itinerary-route-btn');
+      var panelScroll = document.querySelector('.itinerary-panel-scroll');
+      if(overview){
+        overview.classList.toggle('active', mode === 'overview');
+        overview.style.display = mode === 'overview' ? 'block' : 'none';
+      }
+      if(detail){
+        detail.classList.toggle('active', mode === 'detail');
+        detail.style.display = mode === 'detail' ? 'block' : 'none';
+      }
+      if(pager) pager.style.display = mode === 'detail' ? 'flex' : 'none';
+      if(routeBtn && mode === 'overview') routeBtn.href = getItineraryRouteHref();
+      if(panelScroll) panelScroll.scrollTop = 0;
+      setItineraryOverviewActiveCard(itineraryActiveIdx);
+    }
+
+    function setItineraryOverviewActiveCard(i){
+      document.querySelectorAll('[data-itinerary-stop]').forEach(function(card){
+        card.classList.toggle('active-stop', parseInt(card.dataset.itineraryStop, 10) === i);
+      });
+    }
+
+    function syncMobileOverviewCard(){
+      if(!window.matchMedia('(max-width: 700px)').matches || itineraryLayerMode !== 'overview') return;
+      var list = document.querySelector('.itinerary-overview-list');
+      if(!list) return;
+      var cards = list.querySelectorAll('[data-itinerary-stop]');
+      if(!cards.length) return;
+
+      var listRect = list.getBoundingClientRect();
+      var targetX = listRect.left + Math.min(listRect.width * 0.42, 180);
+      var nextIdx = itineraryActiveIdx;
+      var closest = Infinity;
+
+      cards.forEach(function(card){
+        var rect = card.getBoundingClientRect();
+        var center = rect.left + rect.width / 2;
+        var distance = Math.abs(center - targetX);
+        if(distance < closest){
+          closest = distance;
+          nextIdx = parseInt(card.dataset.itineraryStop, 10);
+        }
+      });
+
+      if(nextIdx !== itineraryActiveIdx){
+        itineraryActiveIdx = nextIdx;
+        renderItineraryPanel(nextIdx);
+        if(itineraryMapReady) focusItineraryStop(nextIdx);
+      } else {
+        setItineraryOverviewActiveCard(nextIdx);
+      }
+    }
+
+    function setItineraryPanelCollapsed(collapsed){
+      itineraryPanelCollapsed = !!collapsed;
+      try { localStorage.setItem('itinerary-panel-collapsed', itineraryPanelCollapsed ? '1' : '0'); } catch(e) {}
+      var shell = document.querySelector('.itinerary-shell');
+      if(shell) shell.classList.toggle('panel-collapsed', itineraryPanelCollapsed);
+      if(!itineraryPanelCollapsed) setItineraryLayer(itineraryLayerMode);
+      if(itineraryMapReady) refreshItineraryMapView();
+    }
+
+    function bindItineraryActions(){
+      var routeBtn = document.getElementById('itinerary-route-btn');
+      var copyBtn = document.getElementById('itinerary-copy-btn');
+      var prevBtn = document.getElementById('itinerary-prev-btn');
+      var nextBtn = document.getElementById('itinerary-next-btn');
+      var closeBtn = document.getElementById('itinerary-detail-close');
+      var backBtn = document.getElementById('itinerary-detail-back');
+      var collapseBtn = document.getElementById('itinerary-panel-collapse');
+      var reopenBtn = document.getElementById('itinerary-panel-reopen');
+      var panelScroll = document.querySelector('.itinerary-panel-scroll');
+      var overviewCards = document.querySelectorAll('[data-itinerary-stop]');
+      var overviewList = document.querySelector('.itinerary-overview-list');
+
+      if(routeBtn) routeBtn.href = getItineraryRouteHref();
+      if(copyBtn){
+        copyBtn.onclick = function(){
+          var href = routeBtn ? routeBtn.href : getItineraryRouteHref();
+          if(navigator.clipboard && navigator.clipboard.writeText){
+            navigator.clipboard.writeText(href).then(function(){
+              showToast('✓ 路線連結已複製');
+            }).catch(function(){
+              showToast('複製失敗');
+            });
+          } else {
+            showToast('目前裝置不支援複製');
+          }
+        };
+      }
+      overviewCards.forEach(function(card){
+        card.onclick = function(){
+          var idx = parseInt(card.dataset.itineraryStop, 10);
+          if(isMobileItinerary()){
+            itineraryActiveIdx = idx;
+            renderItineraryPanel(idx);
+            setItineraryLayer('overview');
+            if(itineraryMapReady) focusItineraryStop(idx);
+            return;
+          }
+          openItineraryDetail(idx);
+        };
+      });
+      if(prevBtn){
+        prevBtn.onclick = function(){
+          openItineraryDetail((itineraryActiveIdx - 1 + itineraryStops.length) % itineraryStops.length);
+        };
+      }
+      if(nextBtn){
+        nextBtn.onclick = function(){
+          openItineraryDetail((itineraryActiveIdx + 1) % itineraryStops.length);
+        };
+      }
+      if(closeBtn){
+        closeBtn.onclick = function(){
+          setItineraryPanelCollapsed(true);
+        };
+      }
+      if(backBtn){
+        backBtn.onclick = function(){
+          setItineraryLayer('overview');
+        };
+      }
+      if(collapseBtn){
+        collapseBtn.onclick = function(){
+          setItineraryPanelCollapsed(true);
+        };
+      }
+      if(reopenBtn){
+        reopenBtn.onclick = function(){
+          setItineraryPanelCollapsed(false);
+        };
+      }
+      if(panelScroll){
+        panelScroll.addEventListener('scroll', function(){
+          panelScroll.classList.add('show-scrollbar');
+          clearTimeout(itineraryScrollTimer);
+          itineraryScrollTimer = setTimeout(function(){
+            panelScroll.classList.remove('show-scrollbar');
+          }, 900);
+        }, { passive: true });
+      }
+      if(overviewList){
+        overviewList.addEventListener('scroll', function(){
+          clearTimeout(itineraryOverviewScrollTimer);
+          itineraryOverviewScrollTimer = setTimeout(syncMobileOverviewCard, 60);
+        }, { passive: true });
+      }
+    }
+    bindItineraryActions();
+
+    function renderItineraryPanel(i){
+      var stop = itineraryStops[i];
+      if(!stop) return;
+      var routeBtn = document.getElementById('itinerary-route-btn');
+      var heroMedia = document.getElementById('itinerary-hero-media');
+      var heroDots = document.getElementById('itinerary-hero-dots');
+      var timeEl = document.getElementById('itinerary-place-time');
+      var nameEl = document.getElementById('itinerary-place-name');
+      var metaEl = document.getElementById('itinerary-place-meta');
+      var noteEl = document.getElementById('itinerary-note-body');
+      var contactList = document.getElementById('itinerary-contact-list');
+      var pagerStatus = document.getElementById('itinerary-pager-status');
+      var navUrl = getItineraryRouteHref(stop);
+
+      if(routeBtn) routeBtn.href = navUrl;
+      if(heroMedia){
+        heroMedia.innerHTML = stop.photoUrl
+          ? '<img src="' + stop.photoUrl + '" alt="' + esc(stop.name) + '"/>'
+          : '<div class="itinerary-hero-placeholder">' + stop.icon + '</div>';
+      }
+      if(heroDots){
+        heroDots.innerHTML = itineraryStops.map(function(_, idx){
+          return '<span class="itinerary-hero-dot' + (idx === i ? ' active' : '') + '"></span>';
+        }).join('');
+      }
+      if(timeEl) timeEl.textContent = stop.time;
+      if(nameEl) nameEl.textContent = stop.name;
+      if(metaEl) metaEl.textContent = stop.metaText || stop.metaFallback || '';
+      if(noteEl) noteEl.textContent = stop.note || stop.desc;
+      if(pagerStatus) pagerStatus.textContent = (i + 1) + ' of ' + itineraryStops.length;
+      if(contactList){
+        var rows = [];
+        if(stop.phone){
+          rows.push('<div class="itinerary-contact-row"><span class="itinerary-contact-icon">☎</span><a class="itinerary-contact-link" href="tel:' + stop.phone.replace(/\s+/g, '') + '">' + esc(stop.phone) + '</a></div>');
+        }
+        if(stop.website){
+          rows.push('<div class="itinerary-contact-row"><span class="itinerary-contact-icon">◎</span><a class="itinerary-contact-link" href="' + stop.website + '" target="_blank" rel="noreferrer">' + esc(stop.website.replace(/^https?:\/\//, '')) + '</a></div>');
+        }
+        rows.push('<div class="itinerary-contact-row"><span class="itinerary-contact-icon">📍</span><a class="itinerary-contact-link" href="' + navUrl + '" target="_blank" rel="noreferrer">在 Google Maps 打開</a></div>');
+        contactList.innerHTML = rows.join('');
+      }
+    }
+
+    function openItineraryDetail(i){
+      itineraryActiveIdx = i;
+      renderItineraryPanel(i);
+      if(isMobileItinerary()){
+        setItineraryLayer('overview');
+        if(itineraryPanelCollapsed) setItineraryPanelCollapsed(false);
+        if(itineraryMapReady) focusItineraryStop(i);
+        return;
+      }
+      setItineraryLayer('detail');
+      if(itineraryPanelCollapsed) setItineraryPanelCollapsed(false);
+      if(!itineraryMapReady || !itineraryMap) return;
+      focusItineraryStop(i);
+    }
+
+    function ensureItineraryMap(){
+      if(itineraryMapReady){
+        refreshItineraryMapView();
+        return;
+      }
+      if(window.google && window.google.maps){
+        initItineraryMap();
+        return;
+      }
+      if(itineraryMapsLoading) return;
+      itineraryMapsLoading = true;
+      window.initItineraryMap = initItineraryMap;
+      var script = document.createElement('script');
+      script.async = true;
+      script.defer = true;
+      script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyBQl1kdoRmEZDOrSZU8AG2gVuIQad_GLV8&libraries=places,marker&callback=initItineraryMap';
+      script.onerror = function(){
+        itineraryMapsLoading = false;
+        var el = document.getElementById('itinerary-map');
+        if(el) el.innerHTML = '<div class="itinerary-map-loading">地圖載入失敗，請稍後再試。</div>';
+      };
+      document.body.appendChild(script);
+    }
+
+    function createItineraryMarkerContent(stop, i, isActive){
+      var marker = document.createElement('div');
+      marker.className = 'itinerary-map-stop-marker' + (isActive ? ' active' : '');
+
+      var thumb = document.createElement('div');
+      thumb.className = 'itinerary-map-stop-thumb';
+      if(stop.photoUrl){
+        var img = document.createElement('img');
+        img.src = stop.photoUrl;
+        img.alt = stop.name;
+        thumb.appendChild(img);
+      } else {
+        thumb.textContent = stop.icon;
+      }
+
+      var badge = document.createElement('div');
+      badge.className = 'itinerary-map-stop-badge';
+      badge.textContent = String(i + 1);
+
+      marker.appendChild(thumb);
+      marker.appendChild(badge);
+      return marker;
+    }
+
+    function updateItineraryMarkerVisuals(){
+      itineraryMarkers.forEach(function(marker, idx){
+        var stop = itineraryStops[idx];
+        var isActive = idx === itineraryActiveIdx;
+        if(marker && marker.content !== undefined){
+          marker.content = createItineraryMarkerContent(stop, idx, isActive);
+          marker.zIndex = isActive ? 320 : 120 + idx;
+        } else if(marker && marker.setIcon){
+          marker.setIcon({
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: isActive ? 18 : 16,
+            fillColor: '#111111',
+            fillOpacity: 1,
+            strokeColor: '#ffffff',
+            strokeWeight: 2
+          });
+          marker.setZIndex(isActive ? 320 : 120 + idx);
+        }
+      });
+    }
+
+    function initItineraryMap(){
+      itineraryMapsLoading = false;
+      var mapEl = document.getElementById('itinerary-map');
+      if(!mapEl || itineraryMapReady) return;
+
+      itineraryMap = new google.maps.Map(mapEl, {
+        center: { lat: 25.162, lng: 121.538 },
+        zoom: 12,
+        mapId: 'DEMO_MAP_ID',
+        disableDefaultUI: true,
+        zoomControl: true,
+        mapTypeControl: false,
+        streetViewControl: false,
+        fullscreenControl: false,
+        rotateControl: false,
+        scaleControl: false,
+        styles: [
+          { featureType:'poi', elementType:'labels', stylers:[{visibility:'off'}] },
+          { featureType:'transit', stylers:[{visibility:'off'}] }
+        ]
+      });
+
+      itineraryPlacesService = new google.maps.places.PlacesService(itineraryMap);
+      itineraryDirectionsRenderer = new google.maps.DirectionsRenderer({
+        suppressMarkers: true,
+        polylineOptions: { strokeColor:'#1f4fa8', strokeWeight:4, strokeOpacity:0.8 }
+      });
+      itineraryDirectionsRenderer.setMap(itineraryMap);
+
+      new google.maps.DirectionsService().route({
+        origin: { lat: itineraryStops[0].lat, lng: itineraryStops[0].lng },
+        destination: { lat: itineraryStops[itineraryStops.length - 1].lat, lng: itineraryStops[itineraryStops.length - 1].lng },
+        waypoints: itineraryStops.slice(1, -1).map(function(s){
+          return { location: { lat: s.lat, lng: s.lng }, stopover: true };
+        }),
+        travelMode: google.maps.TravelMode.DRIVING
+      }, function(res, status){
+        if(status === 'OK') itineraryDirectionsRenderer.setDirections(res);
+      });
+
+      itineraryStops.forEach(function(stop, i){
+        var marker;
+        if(google.maps.marker && google.maps.marker.AdvancedMarkerElement){
+          marker = new google.maps.marker.AdvancedMarkerElement({
+            position: { lat: stop.lat, lng: stop.lng },
+            map: itineraryMap,
+            content: createItineraryMarkerContent(stop, i, i === itineraryActiveIdx),
+            zIndex: i === itineraryActiveIdx ? 320 : 120 + i
+          });
+        } else {
+          marker = new google.maps.Marker({
+            position: { lat: stop.lat, lng: stop.lng },
+            map: itineraryMap,
+            label: { text: String(i + 1), color:'#fff', fontWeight:'bold', fontSize:'12px' },
+            icon: {
+              path: google.maps.SymbolPath.CIRCLE,
+              scale: 16,
+              fillColor: '#111111',
+              fillOpacity: 1,
+              strokeColor:'#fff',
+              strokeWeight: 2
+            },
+            zIndex: 120 + i
+          });
+        }
+        marker.addListener('click', function(){
+          if(isMobileItinerary()){
+            itineraryActiveIdx = i;
+            renderItineraryPanel(i);
+            setItineraryLayer('overview');
+            focusItineraryStop(i);
+            return;
+          }
+          openItineraryDetail(i);
+        });
+        itineraryMarkers.push(marker);
+
+        itineraryPlacesService.getDetails({
+          placeId: stop.placeId,
+          fields:['photos','rating','user_ratings_total','formatted_phone_number','website']
+        }, function(place, status){
+          if(status === 'OK' && place){
+            if(place.photos && place.photos.length){
+              stop.photoUrl = place.photos[0].getUrl({ maxWidth:600, maxHeight:360 });
+              var overviewPhoto = document.getElementById('itinerary-photo-' + i);
+              if(overviewPhoto){
+                overviewPhoto.innerHTML = '<img src="' + stop.photoUrl + '" alt="' + esc(stop.name) + '" loading="lazy"/>';
+              }
+              updateItineraryMarkerVisuals();
+            }
+            if(place.rating){
+              stop.metaText = place.rating + ' ★' + (place.user_ratings_total ? ' (' + place.user_ratings_total + ')' : '') + (stop.metaFallback && stop.metaFallback.indexOf('・') !== -1 ? ' ・ ' + stop.metaFallback.split('・')[1].trim() : '');
+            }
+            if(place.formatted_phone_number) stop.phone = place.formatted_phone_number;
+            if(place.website) stop.website = place.website;
+            if(i === itineraryActiveIdx){
+              renderItineraryPanel(i);
+              if(itineraryMapReady) focusItineraryStop(i);
+            }
+          }
+        });
+      });
+
+      itineraryMapReady = true;
+      renderItineraryPanel(itineraryActiveIdx);
+      setItineraryLayer(itineraryLayerMode);
+      focusItineraryStop(itineraryActiveIdx);
+      setItineraryPanelCollapsed(itineraryPanelCollapsed);
+    }
+
+    function focusItineraryStop(i){
+      itineraryActiveIdx = i;
+      if(!itineraryMapReady || !itineraryMap) return;
+
+      var stop = itineraryStops[i];
+      updateItineraryMarkerVisuals();
+      itineraryMap.panTo({ lat: stop.lat, lng: stop.lng });
+      itineraryMap.setZoom(itineraryLayerMode === 'detail' ? 14.8 : 14.2);
+    }
+
+    function refreshItineraryMapView(){
+      if(!itineraryMapReady || !itineraryMap) return;
+      setTimeout(function(){
+        google.maps.event.trigger(itineraryMap, 'resize');
+        var stop = itineraryStops[itineraryActiveIdx] || itineraryStops[0];
+        itineraryMap.panTo({ lat: stop.lat, lng: stop.lng });
+      }, 120);
+    }
 
     function switchTab(tab){
       _currentTab = tab;
@@ -1027,6 +1729,9 @@
       if(tab==='itinerary'){
         document.getElementById('itinerary-tab').style.display='block';
         btns[2].classList.add('active');
+        setItineraryLayer(itineraryLayerMode);
+        setItineraryPanelCollapsed(itineraryPanelCollapsed);
+        ensureItineraryMap();
       } else if(tab==='bus'){
         document.getElementById('bus-tab').style.display='block';
         btns[1].classList.add('active');
