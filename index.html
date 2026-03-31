@@ -533,7 +533,7 @@
       }
       try {
         if (!liff.isApiAvailable('shareTargetPicker')) {showToast('分享功能未啟用');return;}
-        var ppl=data['4/12']?.people||[];
+        var ppl=data['4/12']&&data['4/12'].people||[];
         var dr=ppl.find(function(p){return p.name===driverName&&p.transport==='driver';});
         if(!dr){showToast('找不到車輛資訊');return;}
         var passengers=ppl.filter(function(p){return p.ride_with===driverName;});
@@ -596,14 +596,14 @@
       if (txt) txt.textContent = Math.round(pct) + '%';
     }
 
-    function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
-    function getTotal(p){return p.reduce((s,x)=>s+x.count,0);}
+    function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2200);}
+    function getTotal(p){return p.reduce(function(s,x){return s+x.count;},0);}
     function showApiLoading(){document.getElementById('api-loading').classList.add('show');}
     function hideApiLoading(){document.getElementById('api-loading').classList.remove('show');}
 
     async function fetchData(){
       setProgress(30);
-      
+
       // Load cached data first for instant display
       try {
         var cached = localStorage.getItem('hiking-cache');
@@ -686,7 +686,7 @@
     function showBoardPrompt(dk,driverName){
       var name=prompt('請輸入你的姓名（需與報名時相同）');
       if(!name)return; name=name.trim();
-      var ppl=data[dk]?.people||[];
+      var ppl=data[dk]&&data[dk].people||[];
       var found=ppl.find(function(p){return p.name===name;});
       if(!found){showToast('找不到「'+name+'」的報名資料');return;}
       if(found.transport==='driver'){showToast('你是開車的人哦');return;}
@@ -706,7 +706,7 @@
     function showUnboardPrompt(dk){
       var name=prompt('請輸入你的姓名');
       if(!name)return; name=name.trim();
-      var ppl=data[dk]?.people||[];
+      var ppl=data[dk]&&data[dk].people||[];
       var found=ppl.find(function(p){return p.name===name;});
       if(!found||!found.ride_with){showToast('找不到搭車記錄');return;}
       unboardCar(dk,name);
@@ -715,7 +715,7 @@
     async function registerTransport(dk,type){
       var name=prompt('請輸入你的姓名（需與報名時相同）');
       if(!name)return; name=name.trim();
-      var ppl=data[dk]?.people||[];
+      var ppl=data[dk]&&data[dk].people||[];
       var found=ppl.find(function(p){return p.name===name;});
       if(!found){showToast('找不到「'+name+'」的報名資料');return;}
 
@@ -756,12 +756,12 @@
 
     var _ek='',_en='';
     function editPerson(dk,nm,ct,nt){
-      document.querySelectorAll('.edit-form').forEach(f=>f.remove());_ek=dk;_en=nm;
+      document.querySelectorAll('.edit-form').forEach(function(f){f.remove();});_ek=dk;_en=nm;
       var rid='row-'+(dk+'-'+nm).replace(/[^a-zA-Z0-9\u4e00-\u9fff]/g,'_');
       var row=document.getElementById(rid);if(!row)return;
 
       // Find person's current transport data
-      var ppl=data[dk]?.people||[];
+      var ppl=data[dk]&&data[dk].people||[];
       var person=ppl.find(function(p){return p.name===nm;})||{};
       var curTransport=person.transport||'';
       var curSeats=person.seats||4;
@@ -866,7 +866,7 @@
       showApiLoading();
       try{
         // If changing from driver, unboard passengers first
-        var ppl=data[dk]?.people||[];
+        var ppl=data[dk]&&data[dk].people||[];
         var old=ppl.find(function(p){return p.name===nm;});
         if(old&&old.transport==='driver'&&transport!=='driver'){
           var passengers=ppl.filter(function(p){return p.ride_with===nm;});
@@ -883,12 +883,14 @@
     }
 
     function openForm(dk){
-      document.querySelectorAll('.add-form').forEach(f=>f.classList.remove('active'));
-      document.querySelectorAll('.add-btn').forEach(b=>b.style.display='');
+      document.querySelectorAll('.add-form').forEach(function(f){f.classList.remove('active');});
+      document.querySelectorAll('.add-btn').forEach(function(b){b.style.display='';});
       var sk=dk.replace('/','_'),f=document.getElementById('form-'+sk),b=document.getElementById('addbtn-'+sk);
       if(f){f.classList.add('active');b.style.display='none';}
-      f.querySelector('.input-name').value=liffProfile?liffProfile.displayName:'';f.querySelector('.input-note').value='';
-      f.querySelector('.step-val').textContent='1';f.querySelector('.input-meal').checked=false;
+      f.querySelector('.input-name').value=liffProfile?liffProfile.displayName:'';
+      f.querySelector('.input-note').value='';
+      f.querySelector('.step-val').textContent='1';
+      f.querySelector('.input-meal').checked=false;
       f.querySelector('.input-name').focus();
     }
     function closeForm(dk){var sk=dk.replace('/','_');document.getElementById('form-'+sk).classList.remove('active');document.getElementById('addbtn-'+sk).style.display='';}
