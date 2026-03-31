@@ -793,7 +793,8 @@
       mb.onclick=function(){var v=parseInt(cs.textContent)-1;if(v<1)v=1;cs.textContent=v;};
       pb.onclick=function(){cs.textContent=parseInt(cs.textContent)+1;};
       st.appendChild(mb);st.appendChild(cs);st.appendChild(pb);sr.appendChild(sl);sr.appendChild(st);d.appendChild(sr);
-      var ni=document.createElement('input');ni.className='input';ni.placeholder='其他備註（選填）';
+      var nlab=document.createElement('label');nlab.className='form-label';nlab.textContent='備註';nlab.style.cssText='font-size:13px;font-weight:600;color:var(--pine);margin-bottom:-4px;';d.appendChild(nlab);
+      var ni=document.createElement('input');ni.className='input';ni.placeholder='選填';
       var hasMeal=nt&&nt.includes('只吃飯');var cleanNote=(nt||'').replace('只吃飯','').replace(/^[,，\s]+|[,，\s]+$/g,'');
       ni.value=cleanNote;d.appendChild(ni);
       var tr=document.createElement('div');tr.className='toggle-row';
@@ -805,24 +806,24 @@
 
       // Transport selector
       var tsec=document.createElement('div');tsec.style.cssText='border-top:1px solid var(--cloud);padding-top:10px;margin-top:4px;';
-      var tlab=document.createElement('div');tlab.style.cssText='font-size:12px;font-weight:600;color:var(--stone);margin-bottom:8px;';tlab.textContent='🚗 交通方式';tsec.appendChild(tlab);
-      var topts=document.createElement('div');topts.style.cssText='display:flex;gap:6px;margin-bottom:8px;';
+      var tlab=document.createElement('div');tlab.style.cssText='font-size:12px;font-weight:600;color:var(--stone);margin-bottom:6px;';tlab.textContent='🚗 交通方式';tsec.appendChild(tlab);
+      var topts=document.createElement('div');topts.style.cssText='display:flex;gap:4px;margin-bottom:8px;';
 
       var _editTransport=curTransport;
 
       function makeOpt(val,icon,text){
         var btn=document.createElement('div');
-        btn.style.cssText='flex:1;padding:8px 4px;border:1.5px solid var(--cloud);border-radius:8px;text-align:center;cursor:pointer;transition:all 0.15s;';
+        btn.style.cssText='flex:1;padding:6px 2px;border:1.5px solid var(--cloud);border-radius:8px;text-align:center;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:4px;';
         if(val===curTransport){btn.style.borderColor='var(--pine)';btn.style.background='#e6f4ea';}
-        var ic=document.createElement('div');ic.style.fontSize='16px';ic.textContent=icon;
-        var tx=document.createElement('div');tx.style.cssText='font-size:10px;font-weight:600;color:'+(val===curTransport?'var(--pine)':'var(--stone)');tx.textContent=text;
+        var ic=document.createElement('span');ic.style.fontSize='14px';ic.textContent=icon;
+        var tx=document.createElement('span');tx.style.cssText='font-size:11px;font-weight:600;color:'+(val===curTransport?'var(--pine)':'var(--stone)');tx.textContent=text;
         btn.appendChild(ic);btn.appendChild(tx);
         btn.onclick=function(){
           _editTransport=val;
-          topts.querySelectorAll('div').forEach(function(b){if(b.parentElement===topts){b.style.borderColor='var(--cloud)';b.style.background='var(--peak)';b.querySelectorAll('div')[1].style.color='var(--stone)';}});
+          topts.querySelectorAll('div').forEach(function(b){if(b.parentElement===topts){b.style.borderColor='var(--cloud)';b.style.background='var(--peak)';b.querySelectorAll('span')[1].style.color='var(--stone)';}});
           btn.style.borderColor='var(--pine)';btn.style.background='#e6f4ea';tx.style.color='var(--pine)';
           editExtra.style.display=(val==='driver'||val==='rider')?'':'none';
-          editSeatsRow.style.display=val==='driver'?'':'none';
+          editSeatsRow.style.display=val==='driver'?'flex':'none';
         };
         return btn;
       }
@@ -831,12 +832,12 @@
       topts.appendChild(makeOpt('rider','🙋','搭別人'));
       tsec.appendChild(topts);
 
-      var editExtra=document.createElement('div');editExtra.style.cssText='background:var(--snow);border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:8px;';
+      var editExtra=document.createElement('div');editExtra.style.cssText='display:flex;flex-direction:column;gap:6px;';
       editExtra.style.display=(curTransport==='driver'||curTransport==='rider')?'':'none';
 
       var editSeatsRow=document.createElement('div');editSeatsRow.className='form-row';
-      editSeatsRow.style.display=curTransport==='driver'?'':'none';
-      var esl=document.createElement('label');esl.className='form-label';esl.textContent='可乘載人數';
+      editSeatsRow.style.display=curTransport==='driver'?'flex':'none';
+      var esl=document.createElement('label');esl.className='form-label';esl.textContent='可載人數';esl.style.fontSize='12px';
       var est=document.createElement('div');est.className='stepper';
       var emb=document.createElement('button');emb.className='step-btn';emb.textContent='−';
       var ecs=document.createElement('span');ecs.className='step-val';ecs.textContent=curSeats;
@@ -847,7 +848,7 @@
       editSeatsRow.appendChild(esl);editSeatsRow.appendChild(est);
       editExtra.appendChild(editSeatsRow);
 
-      var efi=document.createElement('input');efi.className='input';efi.placeholder='出發地點（例：信義區）';efi.value=curFrom;
+      var efi=document.createElement('input');efi.className='input';efi.placeholder='出發地點（例：信義區）';efi.value=curFrom;efi.style.cssText='padding:8px 10px;font-size:13px;';
       editExtra.appendChild(efi);
       tsec.appendChild(editExtra);
       d.appendChild(tsec);
