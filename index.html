@@ -247,8 +247,10 @@
     .carpool-section{margin-top:12px;padding-top:12px;border-top:1px solid var(--cloud);}
     .carpool-title{font-size:12px;font-weight:600;color:var(--stone);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;}
     .carpool-title span{color:var(--sage);font-size:11px;}
-    .car-card{background:var(--snow);border-radius:12px;padding:12px;margin-bottom:6px;border:1px solid var(--cloud);}
-    .car-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
+    .car-card{background:var(--snow);border-radius:12px;padding:10px;border:1px solid var(--cloud);}
+    .car-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;}
+    @media(max-width:400px){.car-grid{grid-template-columns:1fr;}}
+    .car-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;flex-wrap:wrap;gap:4px;}
     .car-name{font-size:13px;font-weight:600;color:var(--forest);display:flex;align-items:center;gap:5px;}
     .car-seats{font-size:10px;font-weight:600;padding:2px 8px;border-radius:6px;}
     .car-seats.has-space{background:#e6f4ea;color:#2d8a4e;}
@@ -341,6 +343,32 @@
     }
     .toast.show{opacity:1;}
 
+    /* API loading overlay */
+    .api-loading{display:none;position:fixed;inset:0;background:rgba(255,255,255,0.7);z-index:900;align-items:center;justify-content:center;}
+    .api-loading.show{display:flex;}
+    .api-loading-box{background:var(--peak);border-radius:16px;padding:20px 30px;text-align:center;box-shadow:0 4px 20px var(--shadow);}
+    .api-loading-spinner{width:24px;height:24px;border:3px solid var(--cloud);border-top-color:var(--pine);border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 10px;}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .api-loading-text{font-size:13px;font-weight:600;color:var(--pine);}
+
+    /* Tabs */
+    .tab-bar{display:flex;gap:0;margin:0 auto 12px;background:var(--cloud);border-radius:14px;padding:3px;max-width:320px;}
+    .tab-btn{flex:1;padding:9px 12px;border:none;border-radius:12px;background:transparent;font-size:13px;font-weight:600;color:var(--stone);cursor:pointer;font-family:inherit;transition:all 0.2s;}
+    .tab-btn.active{background:var(--peak);color:var(--pine);box-shadow:0 1px 4px var(--shadow);}
+
+    /* Itinerary */
+    .itinerary-card{background:var(--peak);border-radius:20px;padding:18px;box-shadow:0 2px 20px var(--shadow);border-left:5px solid var(--sage);}
+    .itinerary-title{font-size:16px;font-weight:700;color:var(--forest);margin-bottom:14px;text-align:center;}
+    .itinerary-table{width:100%;border-collapse:collapse;}
+    .itinerary-table th{text-align:left;font-size:11px;font-weight:600;color:var(--peak);background:var(--pine);padding:8px 10px;}
+    .itinerary-table th:first-child{border-radius:8px 0 0 8px;width:60px;}
+    .itinerary-table th:last-child{border-radius:0 8px 8px 0;}
+    .itinerary-table td{padding:8px 10px;font-size:12px;color:var(--forest);border-bottom:1px solid var(--cloud);}
+    .itinerary-table tr:last-child td{border-bottom:none;}
+    .itinerary-table .time-cell{font-weight:700;color:var(--pine);font-family:'DM Sans',sans-serif;white-space:nowrap;vertical-align:top;}
+    .itinerary-table .note-cell{color:var(--stone);font-size:11px;}
+    .itinerary-highlight{background:var(--snow);}
+
     /* Share banner */
     .share-banner {
       background: var(--peak); border-radius: 16px;
@@ -420,7 +448,37 @@
     <div class="loading-pct" id="progress-pct">0%</div>
   </div>
 
+  <!-- Tab bar -->
+  <div class="tab-bar" id="tab-bar" style="display:none;">
+    <button class="tab-btn active" onclick="switchTab('signup')">📋 接龍報名</button>
+    <button class="tab-btn" onclick="switchTab('itinerary')">🗺 行程表</button>
+  </div>
+
   <div id="app" class="main" style="display:none;"></div>
+
+  <div id="itinerary-tab" class="main" style="display:none;">
+    <div class="itinerary-card">
+      <div class="itinerary-title">🥾 陽明山親子健行行程</div>
+      <table class="itinerary-table">
+        <thead><tr><th>時間</th><th>行程內容</th><th>地點 / 備註</th></tr></thead>
+        <tbody>
+          <tr><td class="time-cell">10:00</td><td>老同學相見歡</td><td class="note-cell">大屯1號停車場</td></tr>
+          <tr><td class="time-cell"></td><td>敘舊、話家常</td><td class="note-cell">請先吃飽早餐上山</td></tr>
+          <tr><td class="time-cell"></td><td>享用戶外小點</td><td class="note-cell">帶飯糰水果墊墊胃</td></tr>
+          <tr class="itinerary-highlight"><td class="time-cell">10:30</td><td>準時出發健行</td><td class="note-cell">自然公園＋二子坪</td></tr>
+          <tr class="itinerary-highlight"><td class="time-cell">12:45</td><td>整隊開車下山</td><td class="note-cell">往餐廳（車程25分）</td></tr>
+          <tr><td class="time-cell">13:15</td><td>抵達報到、洗手</td><td class="note-cell">松竹園</td></tr>
+          <tr class="itinerary-highlight"><td class="time-cell">13:30</td><td>米其林午餐 🍽</td><td class="note-cell">必比登推薦餐廳</td></tr>
+          <tr><td class="time-cell"></td><td>（人均約$400）</td><td class="note-cell">招牌白斬雞、熱炒</td></tr>
+          <tr><td class="time-cell">14:45</td><td>野人花園（自由）</td><td class="note-cell">續攤下午茶</td></tr>
+          <tr><td class="time-cell"></td><td>（可去可不去）</td><td class="note-cell">意猶未盡者再參加</td></tr>
+          <tr><td class="time-cell"></td><td>（門票$250/位）</td><td class="note-cell">可折抵一杯飲料</td></tr>
+          <tr class="itinerary-highlight"><td class="time-cell">16:00</td><td>快樂賦歸 🎉</td><td class="note-cell">安全開車回家</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="footer"><button class="refresh-btn" onclick="switchTab('signup')">← 回到接龍報名</button></div>
+  </div>
 
   <!-- Bottom mountains -->
   <div class="bottom-scene">
@@ -432,6 +490,7 @@
   </div>
 
   <div id="toast" class="toast"></div>
+  <div id="api-loading" class="api-loading"><div class="api-loading-box"><div class="api-loading-spinner"></div><div class="api-loading-text">資料存取中</div></div></div>
 
   <script>
     var API_URL="https://script.google.com/macros/s/AKfycbxSUTpxyMxOyN7EAd9hCf9OKAk7IHBcujCcJ1F4Yc7jTewwtUjf8dcne4frERhrDWM/exec";
@@ -553,6 +612,8 @@
 
     function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
     function getTotal(p){return p.reduce((s,x)=>s+x.count,0);}
+    function showApiLoading(){document.getElementById('api-loading').classList.add('show');}
+    function hideApiLoading(){document.getElementById('api-loading').classList.remove('show');}
 
     async function fetchData(){
       setProgress(30);
@@ -566,6 +627,7 @@
           render();
           document.getElementById('loading').style.display='none';
           document.getElementById('app').style.display='block';
+          document.getElementById('tab-bar').style.display='flex';
         }
       } catch(e) {}
 
@@ -604,31 +666,35 @@
       setTimeout(function(){
         document.getElementById('loading').style.display='none';
         document.getElementById('app').style.display='block';
+        document.getElementById('tab-bar').style.display='flex';
       }, 300);
     }
 
     async function addPerson(dk,n,c,nt,transport,seats,from){
+      showApiLoading();
       try{var p=new URLSearchParams({action:'add',dateKey:dk,name:n,count:c,note:nt||'',transport:transport||'',seats:seats||0,from:from||''});
       var r=await fetch(API_URL+'?'+p);var j=await r.json();
       if(j.data){if(j.data['4/12'])j.data['4/12'].date='4/12（日）';if(j.data['5/2'])j.data['5/2'].date='5/2（六）';data=j.data;}
       showToast('✓ 已加入');
-      }catch{showToast('儲存失敗');}render();
+      }catch{showToast('儲存失敗');}hideApiLoading();render();
     }
 
     async function boardCar(dk,rider,driver){
+      showApiLoading();
       try{var p=new URLSearchParams({action:'board',dateKey:dk,rider:rider,driver:driver});
       var r=await fetch(API_URL+'?'+p);var j=await r.json();
       if(j.data){if(j.data['4/12'])j.data['4/12'].date='4/12（日）';if(j.data['5/2'])j.data['5/2'].date='5/2（六）';data=j.data;}
       showToast('✓ 已上車');
-      }catch{showToast('操作失敗');}render();
+      }catch{showToast('操作失敗');}hideApiLoading();render();
     }
 
     async function unboardCar(dk,rider){
+      showApiLoading();
       try{var p=new URLSearchParams({action:'unboard',dateKey:dk,rider:rider});
       var r=await fetch(API_URL+'?'+p);var j=await r.json();
       if(j.data){if(j.data['4/12'])j.data['4/12'].date='4/12（日）';if(j.data['5/2'])j.data['5/2'].date='5/2（六）';data=j.data;}
       showToast('已下車');
-      }catch{showToast('操作失敗');}render();
+      }catch{showToast('操作失敗');}hideApiLoading();render();
     }
 
     function showBoardPrompt(dk,driverName){
@@ -667,26 +733,31 @@
       var found=ppl.find(function(p){return p.name===name;});
       if(!found){showToast('找不到「'+name+'」的報名資料');return;}
 
-      // If this person was a driver and now switching to rider, unboard all passengers first
       if(found.transport==='driver' && type==='rider'){
         var passengers=ppl.filter(function(p){return p.ride_with===name;});
+        showApiLoading();
         for(var i=0;i<passengers.length;i++){
           await fetch(API_URL+'?'+new URLSearchParams({action:'unboard',dateKey:dk,rider:passengers[i].name}));
         }
         if(passengers.length>0) showToast('已將 '+passengers.length+' 位乘客移回待安排');
+      } else {
+        showApiLoading();
       }
 
       var seats=0,from='';
       if(type==='driver'){
+        hideApiLoading();
         var seatsInput=prompt('可乘載幾人？（含你自己，例如填 4）','4');
-        if(!seatsInput)return;
+        if(!seatsInput){hideApiLoading();return;}
         seats=parseInt(seatsInput)||4;
         from=prompt('出發地點？（例：信義區）','')||'';
+        showApiLoading();
       }else{
+        hideApiLoading();
         from=prompt('你的出發地點？（方便配順路的車）','')||'';
+        showApiLoading();
       }
 
-      // Remove old entry and re-add with transport info
       try{
         await fetch(API_URL+'?'+new URLSearchParams({action:'remove',dateKey:dk,name:name}));
         var p=new URLSearchParams({action:'add',dateKey:dk,name:name,count:found.count,note:found.note||'',transport:type,seats:seats,from:from.trim()});
@@ -694,7 +765,7 @@
         if(j.data){if(j.data['4/12'])j.data['4/12'].date='4/12（日）';if(j.data['5/2'])j.data['5/2'].date='5/2（六）';data=j.data;}
         showToast(type==='driver'?'✓ 已登記開車':'✓ 已登記搭車');
       }catch{showToast('操作失敗');}
-      render();
+      hideApiLoading();render();
     }
 
     var _ek='',_en='';
@@ -798,12 +869,14 @@
     }
 
     async function deletePerson(dk,nm){
+      showApiLoading();
       try{var r=await fetch(API_URL+'?'+new URLSearchParams({action:'remove',dateKey:dk,name:nm}));var j=await r.json();
       if(j.data){if(j.data['4/12'])j.data['4/12'].date='4/12（日）';if(j.data['5/2'])j.data['5/2'].date='5/2（六）';data=j.data;}
-      showToast('已刪除 '+nm);}catch{showToast('刪除失敗');}render();
+      showToast('已刪除 '+nm);}catch{showToast('刪除失敗');}hideApiLoading();render();
     }
 
     async function updatePerson(dk,nm,ct,nt,transport,seats,from){
+      showApiLoading();
       try{
         // If changing from driver, unboard passengers first
         var ppl=data[dk]?.people||[];
@@ -819,7 +892,7 @@
         var r=await fetch(API_URL+'?'+p);var j=await r.json();
         if(j.data){if(j.data['4/12'])j.data['4/12'].date='4/12（日）';if(j.data['5/2'])j.data['5/2'].date='5/2（六）';data=j.data;}
         showToast('✓ 已更新');
-      }catch{showToast('更新失敗');}render();
+      }catch{showToast('更新失敗');}hideApiLoading();render();
     }
 
     function openForm(dk){
@@ -856,154 +929,132 @@
 
     function render(){
       if(!data) return;
-      var t1=getTotal(data['4/12']?.people||[]),t2=getTotal(data['5/2']?.people||[]);
-      var w=t1>t2?'4/12':t2>t1?'5/2':null;
 
       document.getElementById('status').innerHTML=
-        '<div class="status-pill '+(isOnline?'online':'offline')+'"><span class="status-dot"></span>'+(isOnline?'已連線 Google Sheet':'<span class="hiking-emoji">🥾</span> 正在連線資料庫...')+'</div>';
+        '<div class="status-pill '+(isOnline?'online':'offline')+'"><span class="status-dot"></span>'+(isOnline?'已連線 Google Sheet':'連線中<span class="connecting-dots"></span>')+'</div>';
 
       var h='';
 
-      // Vote section
-      h+='<div class="vote-section"><div class="vote-label">Current Votes</div>';
-      [['4/12',t1,'#d4882e','#e8a94a'],['5/2',t2,'#2d8a4e','#5cb870']].forEach(function(item){
-        var lb=item[0],tt=item[1],c1=item[2],c2=item[3];
-        var pct=Math.max((tt/Math.max(t1,t2,1))*100,3);
-        var isW=w===lb;
-        var bg=isW?'linear-gradient(90deg,'+c1+','+c2+')':'var(--cloud)';
-        var clr=isW?c1:'var(--stone)';
-        h+='<div class="vote-group">';
-        h+='<div class="vote-row"><span class="vote-date">'+lb+'</span><div class="vote-track"><div class="vote-fill" style="width:'+pct+'%;background:'+bg+'"></div></div><span class="vote-num" style="color:'+clr+'">'+tt+' 人</span></div>';
-        var ppl = data[lb]?.people||[];
-        if(ppl.length > 0) h += '<div class="vote-subtitle">'+ppl.length+' 組報名</div>';
-        h+='</div>';
-      });
-      if(w) h+='<div class="vote-result">🏆 目前 '+data[w].date+' 人數較多！</div>';
-      else if(t1>0) h+='<div class="vote-result">⚖️ 目前兩天人數相同</div>';
+      // 4/12 only - no vote section needed
+      var k='4/12';
+      var d=data[k];
+      if(!d) d={date:'4/12（日）',people:[]};
+      var tot=getTotal(d.people);
+      var sk=k.replace('/','_');
+      var hiking=d.people.filter(function(p){return !p.note||!p.note.includes('只吃飯');});
+      var mealOnly=d.people.filter(function(p){return p.note&&p.note.includes('只吃飯');});
+
+      // Date header card
+      h+='<div class="date-card lead-amber">';
+      h+='<div class="card-top"><div class="card-date-text">📅 '+d.date+'</div><div class="card-total">'+tot+' 人</div></div>';
+
+      // Carpool board - right after date header
+      var drivers=d.people.filter(function(p){return p.transport==='driver';});
+      var riders=d.people.filter(function(p){return p.transport==='rider';});
+
+      h+='<div class="carpool-section" style="margin-top:0;padding-top:0;border-top:none;">';
+      var totalSeats=0,takenSeats=0;
+      drivers.forEach(function(dr){totalSeats+=(dr.seats||4);var taken=d.people.filter(function(p){return p.ride_with===dr.name;}).length;takenSeats+=taken;});
+      h+='<div class="carpool-title">🚗 搭車安排 <span>'+(drivers.length>0?'剩餘 '+(totalSeats-takenSeats)+' 座位':'尚無車輛')+'</span></div>';
+
+      h+='<div style="margin-bottom:10px;">';
+      h+='<button class="register-transport-btn" data-dk="'+k+'" data-type="driver" style="width:100%;padding:9px 6px;border:1.5px solid var(--cloud);border-radius:10px;background:var(--peak);cursor:pointer;font-family:inherit;text-align:center;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:6px;"><span style="font-size:16px;">🚙</span><span style="font-size:12px;font-weight:600;color:var(--pine);">我可以開車</span></button>';
       h+='</div>';
 
-      // Cards
-      h+='<div class="cards-grid">';
-      ['4/12','5/2'].forEach(function(k){
-        var d=data[k];if(!d) return;
-        var tot=getTotal(d.people),isW=w===k;
-        var sk=k.replace('/','_');
-        var cls=isW?(k==='4/12'?'lead-amber':'lead-green'):'';
-        var hiking=d.people.filter(function(p){return !p.note||!p.note.includes('只吃飯');});
-        var mealOnly=d.people.filter(function(p){return p.note&&p.note.includes('只吃飯');});
-
-        h+='<div class="date-card '+cls+'">';
-        h+='<div class="card-top"><div class="card-date-text">📅 '+d.date+(isW?' <span class="lead-tag">★ 領先</span>':'')+'</div><div class="card-total">'+tot+' 人</div></div>';
-
-        // Hiking group
-        if(hiking.length>0){
-          h+='<div class="section-label">⛰️ 爬山＋吃飯 <span>'+getTotal(hiking)+' 人</span></div>';
-          h+='<div class="people">';
-          hiking.forEach(function(p){
-            var sid=(k+'-'+p.name).replace(/[^a-zA-Z0-9\u4e00-\u9fff]/g,'_');
-            var noteClean=p.note?p.note.replace('只吃飯','').replace(/^[,，\s]+|[,，\s]+$/g,''):'';
-            h+='<div class="person" id="row-'+sid+'"><div class="person-left">';
-            h+='<span class="person-name">'+esc(p.name)+'</span>';
-            if(p.count>1) h+='<span class="person-extra">+' +(p.count-1)+'</span>';
-            if(p.transport==='driver') h+='<span class="person-extra" style="background:#e6f4ea;color:#2d8a4e;">🚙 開車</span>';
-            else if(p.transport==='rider') h+='<span class="person-extra" style="background:#fff3e0;color:#e65100;">🙋 搭車</span>';
-            else if(p.transport==='undecided') h+='<span class="person-extra" style="background:#f0f0f0;color:#888;">🤔 未定</span>';
-            if(noteClean) h+='<span class="person-note">'+esc(noteClean)+'</span>';
-            h+='</div><div class="person-right"><span class="person-ct">'+p.count+' 人</span>';
-            h+='<button class="edit-btn" data-dk="'+k+'" data-nm="'+esc(p.name)+'" data-ct="'+p.count+'" data-nt="'+esc(p.note||'')+'">✏️</button>';
-            h+='</div></div>';
-          });
+      if(drivers.length>0){
+        h+='<div class="car-grid">';
+        drivers.forEach(function(dr){
+          var passengers=d.people.filter(function(p){return p.ride_with===dr.name;});
+          var maxSeats=dr.seats||4;
+          var isFull=(passengers.length+1)>=maxSeats;
+          var drMealOnly=dr.note&&dr.note.includes('只吃飯');
+          h+='<div class="car-card">';
+          h+='<div class="car-header"><div class="car-name">🚙 '+esc(dr.name)+(drMealOnly?' <span style="font-size:9px;font-weight:500;color:#e67e22;background:#fef3e2;padding:1px 5px;border-radius:3px;">🍽 只吃飯</span>':'')+'</div>';
+          h+='<span class="car-seats '+(isFull?'full':'has-space')+'">'+(passengers.length+1)+'/'+maxSeats+(isFull?' 滿':'')+'</span></div>';
+          if(dr.from) h+='<div class="car-from">📍 '+esc(dr.from)+'</div>';
+          h+='<div class="car-passengers">';
+          h+='<span class="car-passenger">'+esc(dr.name)+'（司機）</span>';
+          passengers.forEach(function(p){h+='<span class="car-passenger">'+esc(p.name)+'</span>';});
+          for(var s=0;s<maxSeats-1-passengers.length;s++){h+='<span class="car-empty-seat">空位</span>';}
           h+='</div>';
-        }
-
-        // Meal-only group
-        if(mealOnly.length>0){
-          if(hiking.length>0) h+='<div class="section-divider"></div>';
-          h+='<div class="section-label">🍽 只吃飯 <span>'+getTotal(mealOnly)+' 人</span></div>';
-          h+='<div class="people">';
-          mealOnly.forEach(function(p){
-            var sid=(k+'-'+p.name).replace(/[^a-zA-Z0-9\u4e00-\u9fff]/g,'_');
-            var noteClean=p.note.replace('只吃飯','').replace(/^[,，\s]+|[,，\s]+$/g,'');
-            h+='<div class="person" id="row-'+sid+'"><div class="person-left">';
-            h+='<span class="person-name">'+esc(p.name)+'</span>';
-            if(p.count>1) h+='<span class="person-extra">+'+(p.count-1)+'</span>';
-            h+='<span class="person-meal">🍽 只吃飯</span>';
-            if(noteClean) h+='<span class="person-note">'+esc(noteClean)+'</span>';
-            h+='</div><div class="person-right"><span class="person-ct">'+p.count+' 人</span>';
-            h+='<button class="edit-btn" data-dk="'+k+'" data-nm="'+esc(p.name)+'" data-ct="'+p.count+'" data-nt="'+esc(p.note||'')+'">✏️</button>';
-            h+='</div></div>';
-          });
+          if(!isFull) h+='<button class="board-btn" data-dk="'+k+'" data-driver="'+esc(dr.name)+'">🙋 上這台車</button>';
           h+='</div>';
-        }
-
-        // Empty state
-        if(d.people.length===0){
-          h+='<div style="text-align:center;padding:20px 0;color:var(--stone);font-size:13px;">尚無人報名</div>';
-        }
-
-        h+='<button class="add-btn" id="addbtn-'+sk+'" onclick="openForm(\''+k+'\')">＋ 我要接龍</button>';
-        h+='<div class="add-form" id="form-'+sk+'">';
-        h+='<input class="input input-name" placeholder="姓名">';
-        h+='<div class="form-row"><label class="form-label">人數（含家屬）</label><div class="stepper"><button class="step-btn" onclick="stepCount(\''+k+'\',-1)">−</button><span class="step-val">1</span><button class="step-btn" onclick="stepCount(\''+k+'\',1)">+</button></div></div>';
-        h+='<div class="toggle-row"><label class="toggle-label">🍽 只吃飯（不爬山）</label><label class="toggle-switch"><input type="checkbox" class="input-meal"><span class="toggle-slider"></span></label></div>';
-        // Transport section
-        h+='<div class="transport-section"><div class="transport-label">🚗 交通方式</div>';
-        h+='<div class="transport-options">';
-        h+='<label class="transport-opt active" data-form="'+sk+'"><input type="radio" name="transport" value="undecided" style="display:none" checked><div class="t-icon">🤔</div><div class="t-text">還沒決定</div></label>';
-        h+='<label class="transport-opt" data-form="'+sk+'"><input type="radio" name="transport" value="driver" style="display:none"><div class="t-icon">🚙</div><div class="t-text">我可以開車</div></label>';
-        h+='<label class="transport-opt" data-form="'+sk+'"><input type="radio" name="transport" value="rider" style="display:none"><div class="t-icon">🙋</div><div class="t-text">我需要搭車</div></label>';
+        });
         h+='</div>';
-        h+='<div class="transport-extra" id="transport-extra-'+sk+'" style="display:none">';
-        h+='<div class="form-row" id="seats-row-'+sk+'" style="display:none"><label class="form-label">可乘載人數</label><div class="stepper"><button class="step-btn" onclick="tSeats(\''+sk+'\',-1)">−</button><span class="step-val input-seats">4</span><button class="step-btn" onclick="tSeats(\''+sk+'\',1)">+</button></div></div>';
-        h+='<input class="input input-from" placeholder="出發地點（例：信義區）">';
-        h+='</div></div>';
-        h+='<input class="input input-note" placeholder="其他備註（選填）">';
-        h+='<div class="form-actions"><button class="cancel-btn" onclick="closeForm(\''+k+'\')">取消</button><button class="confirm-btn" onclick="submitForm(\''+k+'\')">✓ 加入</button></div>';
-        h+='</div>';
-        h+='<button class="export-btn" onclick="exportDate(\''+k+'\')">📋 匯出 '+d.date+' 名單</button>';
-
-        // Carpool board - always show
-        var drivers=d.people.filter(function(p){return p.transport==='driver';});
-        var riders=d.people.filter(function(p){return p.transport==='rider';});
-        var unassigned=riders.filter(function(p){return !p.ride_with;});
-
-        h+='<div class="carpool-section">';
-        var totalSeats=0,takenSeats=0;
-        drivers.forEach(function(dr){totalSeats+=(dr.seats||4);var taken=d.people.filter(function(p){return p.ride_with===dr.name;}).length;takenSeats+=taken;});
-        h+='<div class="carpool-title">🚗 搭車安排 <span>'+(drivers.length>0?'剩餘 '+(totalSeats-takenSeats)+' 座位':'尚無車輛')+'</span></div>';
-
-        // Only driver register button
-        h+='<div style="margin-bottom:10px;">';
-        h+='<button class="register-transport-btn" data-dk="'+k+'" data-type="driver" style="width:100%;padding:9px 6px;border:1.5px solid var(--cloud);border-radius:10px;background:var(--peak);cursor:pointer;font-family:inherit;text-align:center;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:6px;"><span style="font-size:16px;">🚙</span><span style="font-size:12px;font-weight:600;color:var(--pine);">我可以開車</span></button>';
-        h+='</div>';
-
-        if(drivers.length>0){
-          drivers.forEach(function(dr){
-            var passengers=d.people.filter(function(p){return p.ride_with===dr.name;});
-            var maxSeats=dr.seats||4;
-            var isFull=(passengers.length+1)>=maxSeats;
-            h+='<div class="car-card">';
-            h+='<div class="car-header"><div class="car-name">🚙 '+esc(dr.name)+'的車</div>';
-            h+='<span class="car-seats '+(isFull?'full':'has-space')+'">'+(passengers.length+1)+'/'+maxSeats+(isFull?' 滿座':'')+'</span></div>';
-            if(dr.from) h+='<div class="car-from">📍 '+esc(dr.from)+'出發</div>';
-            h+='<div class="car-passengers">';
-            h+='<span class="car-passenger">'+esc(dr.name)+'（司機）</span>';
-            passengers.forEach(function(p){h+='<span class="car-passenger">'+esc(p.name)+'</span>';});
-            for(var s=0;s<maxSeats-1-passengers.length;s++){h+='<span class="car-empty-seat">空位</span>';}
-            h+='</div>';
-            if(!isFull) h+='<button class="board-btn" data-dk="'+k+'" data-driver="'+esc(dr.name)+'">🙋 我要上這台車</button>';
-            h+='</div>';
-          });
-        } else {
-          h+='<div style="text-align:center;padding:14px 0;color:var(--stone);font-size:12px;">目前還沒有人登記開車<br>點上方「🚙 我可以開車」登記吧！</div>';
-        }
-
-        h+='</div>';
-        h+='</div>';
-      });
+      } else {
+        h+='<div style="text-align:center;padding:14px 0;color:var(--stone);font-size:12px;">目前還沒有人登記開車<br>點上方「🚙 我可以開車」登記吧！</div>';
+      }
       h+='</div>';
 
-      h+='<div class="footer"><p class="footer-rule">📌 哪天人數多就選哪天</p><button class="refresh-btn" onclick="location.reload()">🔄 重新整理</button></div>';
+      h+='<div class="section-divider"></div>';
+
+      // Hiking group
+      if(hiking.length>0){
+        h+='<div class="section-label">⛰️ 爬山＋吃飯 <span>'+getTotal(hiking)+' 人</span></div>';
+        h+='<div class="people">';
+        hiking.forEach(function(p){
+          var sid=(k+'-'+p.name).replace(/[^a-zA-Z0-9\u4e00-\u9fff]/g,'_');
+          var noteClean=p.note?p.note.replace('只吃飯','').replace(/^[,，\s]+|[,，\s]+$/g,''):'';
+          h+='<div class="person" id="row-'+sid+'"><div class="person-left">';
+          h+='<span class="person-name">'+esc(p.name)+'</span>';
+          if(p.count>1) h+='<span class="person-extra">+'+(p.count-1)+'</span>';
+          if(p.transport==='driver') h+='<span class="person-extra" style="background:#e6f4ea;color:#2d8a4e;">🚙 開車</span>';
+          else if(p.transport==='rider') h+='<span class="person-extra" style="background:#fff3e0;color:#e65100;">🙋 搭車</span>';
+          if(noteClean) h+='<span class="person-note">'+esc(noteClean)+'</span>';
+          h+='</div><div class="person-right"><span class="person-ct">'+p.count+' 人</span>';
+          h+='<button class="edit-btn" data-dk="'+k+'" data-nm="'+esc(p.name)+'" data-ct="'+p.count+'" data-nt="'+esc(p.note||'')+'">✏️</button>';
+          h+='</div></div>';
+        });
+        h+='</div>';
+      }
+
+      // Meal-only group
+      if(mealOnly.length>0){
+        if(hiking.length>0) h+='<div class="section-divider"></div>';
+        h+='<div class="section-label">🍽 只吃飯 <span>'+getTotal(mealOnly)+' 人</span></div>';
+        h+='<div class="people">';
+        mealOnly.forEach(function(p){
+          var sid=(k+'-'+p.name).replace(/[^a-zA-Z0-9\u4e00-\u9fff]/g,'_');
+          var noteClean=p.note.replace('只吃飯','').replace(/^[,，\s]+|[,，\s]+$/g,'');
+          h+='<div class="person" id="row-'+sid+'"><div class="person-left">';
+          h+='<span class="person-name">'+esc(p.name)+'</span>';
+          if(p.count>1) h+='<span class="person-extra">+'+(p.count-1)+'</span>';
+          h+='<span class="person-meal">🍽 只吃飯</span>';
+          if(noteClean) h+='<span class="person-note">'+esc(noteClean)+'</span>';
+          h+='</div><div class="person-right"><span class="person-ct">'+p.count+' 人</span>';
+          h+='<button class="edit-btn" data-dk="'+k+'" data-nm="'+esc(p.name)+'" data-ct="'+p.count+'" data-nt="'+esc(p.note||'')+'">✏️</button>';
+          h+='</div></div>';
+        });
+        h+='</div>';
+      }
+
+      // Empty state
+      if(d.people.length===0){
+        h+='<div style="text-align:center;padding:20px 0;color:var(--stone);font-size:13px;">尚無人報名</div>';
+      }
+
+      h+='<button class="add-btn" id="addbtn-'+sk+'" onclick="openForm(\''+k+'\')">＋ 我要接龍</button>';
+      h+='<div class="add-form" id="form-'+sk+'">';
+      h+='<input class="input input-name" placeholder="姓名">';
+      h+='<div class="form-row"><label class="form-label">人數（含家屬）</label><div class="stepper"><button class="step-btn" onclick="stepCount(\''+k+'\',-1)">−</button><span class="step-val">1</span><button class="step-btn" onclick="stepCount(\''+k+'\',1)">+</button></div></div>';
+      h+='<div class="toggle-row"><label class="toggle-label">🍽 只吃飯（不爬山）</label><label class="toggle-switch"><input type="checkbox" class="input-meal"><span class="toggle-slider"></span></label></div>';
+      h+='<div class="transport-section"><div class="transport-label">🚗 交通方式</div>';
+      h+='<div class="transport-options">';
+      h+='<label class="transport-opt" data-form="'+sk+'"><input type="radio" name="transport" value="driver" style="display:none"><div class="t-icon">🚙</div><div class="t-text">我可以開車</div></label>';
+      h+='<label class="transport-opt" data-form="'+sk+'"><input type="radio" name="transport" value="rider" style="display:none"><div class="t-icon">🙋</div><div class="t-text">我需要搭車</div></label>';
+      h+='</div>';
+      h+='<div class="transport-extra" id="transport-extra-'+sk+'" style="display:none">';
+      h+='<div class="form-row" id="seats-row-'+sk+'" style="display:none"><label class="form-label">可乘載人數</label><div class="stepper"><button class="step-btn" onclick="tSeats(\''+sk+'\',-1)">−</button><span class="step-val input-seats">4</span><button class="step-btn" onclick="tSeats(\''+sk+'\',1)">+</button></div></div>';
+      h+='<input class="input input-from" placeholder="出發地點（例：信義區）">';
+      h+='</div></div>';
+      h+='<input class="input input-note" placeholder="其他備註（選填）">';
+      h+='<div class="form-actions"><button class="cancel-btn" onclick="closeForm(\''+k+'\')">取消</button><button class="confirm-btn" onclick="submitForm(\''+k+'\')">✓ 加入</button></div>';
+      h+='</div>';
+      h+='<button class="export-btn" onclick="exportDate(\''+k+'\')">📋 匯出 '+d.date+' 名單</button>';
+
+      h+='</div>'; // close date-card
+
+      h+='<div class="footer"><p class="footer-rule">📌 4/12（日）確定出發！</p><button class="refresh-btn" onclick="location.reload()">🔄 重新整理</button></div>';
 
       document.getElementById('app').innerHTML=h;
       document.querySelectorAll('.edit-btn').forEach(function(b){
@@ -1056,6 +1107,20 @@
     }
     function dlTxt(txt,k){var b=new Blob([txt],{type:'text/plain;charset=utf-8'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='慧班登山趣_'+(k||'').replace('/','_')+'_名單.txt';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);showToast('✓ 名單已下載');}
     function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+
+    function switchTab(tab){
+      var btns=document.querySelectorAll('.tab-btn');
+      btns.forEach(function(b){b.classList.remove('active');});
+      if(tab==='itinerary'){
+        document.getElementById('app').style.display='none';
+        document.getElementById('itinerary-tab').style.display='block';
+        btns[1].classList.add('active');
+      } else {
+        document.getElementById('app').style.display='block';
+        document.getElementById('itinerary-tab').style.display='none';
+        btns[0].classList.add('active');
+      }
+    }
     setProgress(10);
     initLiff();
     fetchData();
