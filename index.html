@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preload" as="image" href="https://upload.wikimedia.org/wikipedia/zh/6/68/Taipei_Fuhsing_Private_School_Logo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;600;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -974,6 +975,11 @@
       }
       h+='</div>';
 
+      // Carpool map
+      if(drivers.length>0){
+        h+='<div id="carpool-map" style="height:220px;border-radius:12px;margin-top:10px;overflow:hidden;border:1px solid var(--cloud);"></div>';
+      }
+
       h+='<div class="section-divider"></div>';
 
       // Hiking group
@@ -1070,6 +1076,115 @@
           else{extra.style.display='none';}
         };
       });
+
+      // Initialize carpool map
+      initCarpoolMap();
+    }
+
+    var _map=null;
+    async function initCarpoolMap(){
+      var el=document.getElementById('carpool-map');
+      if(!el) return;
+      if(typeof L==='undefined'){
+        // Load Leaflet JS dynamically
+        await new Promise(function(resolve){
+          var s=document.createElement('script');
+          s.src='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';
+          s.onload=resolve;
+          document.head.appendChild(s);
+        });
+      }
+
+      var ppl=data['4/12']?.people||[];
+      var drivers=ppl.filter(function(p){return p.transport==='driver'&&p.from;});
+      if(drivers.length===0) return;
+
+      // Common Taipei locations → coordinates lookup
+      var locationDB={
+        '信義區':[25.0330,121.5654],'大安區':[25.0268,121.5436],'中山區':[25.0636,121.5225],
+        '松山區':[25.0497,121.5578],'中正區':[25.0320,121.5186],'萬華區':[25.0342,121.4998],
+        '大同區':[25.0633,121.5130],'南港區':[25.0548,121.6066],'內湖區':[25.0838,121.5887],
+        '士林區':[25.0927,121.5244],'北投區':[25.1316,121.5018],'文山區':[24.9886,121.5707],
+        '板橋':[25.0145,121.4592],'新莊':[25.0357,121.4507],'中和':[24.9990,121.4939],
+        '永和':[25.0076,121.5135],'三重':[25.0629,121.4873],'新店':[24.9675,121.5417],
+        '土城':[24.9722,121.4432],'蘆洲':[25.0848,121.4735],'汐止':[25.0633,121.6573],
+        '樹林':[24.9904,121.4207],'淡水':[25.1696,121.4408],'林口':[25.0775,121.3917],
+        '捷運永春站':[25.0408,121.5520],'捷運市政府站':[25.0410,121.5596],
+        '捷運忠孝復興站':[25.0416,121.5436],'捷運台北101站':[25.0335,121.5635],
+        '捷運象山站':[25.0330,121.5694],'捷運大安站':[25.0330,121.5436],
+        '捷運南京復興站':[25.0520,121.5440],'捷運中山站':[25.0530,121.5220],
+        '捷運松江南京站':[25.0518,121.5333],'捷運行天宮站':[25.0598,121.5330],
+        '捷運民權西路站':[25.0625,121.5190],'捷運劍潭站':[25.0844,121.5248],
+        '捷運士林站':[25.0936,121.5268],'捷運石牌站':[25.1158,121.5158],
+        '捷運北投站':[25.1318,121.4985],'捷運新北投站':[25.1370,121.5028],
+        '捷運景美站':[24.9948,121.5420],'捷運公館站':[25.0142,121.5340],
+        '捷運古亭站':[25.0260,121.5228],'捷運東門站':[25.0338,121.5288],
+        '捷運西門站':[25.0420,121.5080],'捷運台北車站':[25.0478,121.5170],
+        '捷運板橋站':[25.0140,121.4625],'捷運府中站':[25.0080,121.4590],
+        '捷運新埔站':[25.0248,121.4688],'捷運江子翠站':[25.0308,121.4730],
+        '捷運頂溪站':[25.0130,121.5130],'捷運景安站':[24.9935,121.4988],
+        '大屯1號停車場':[25.1728,121.5228],'大屯停車場':[25.1728,121.5228],
+        '松竹園':[25.1030,121.5080]
+      };
+
+      // Geocode drivers
+      var markers=[];
+      for(var i=0;i<drivers.length;i++){
+        var dr=drivers[i];
+        var loc=dr.from.trim();
+        var coord=null;
+
+        // Try exact match first
+        if(locationDB[loc]) coord=locationDB[loc];
+        // Try partial match
+        if(!coord){
+          for(var key in locationDB){
+            if(loc.includes(key)||key.includes(loc)){coord=locationDB[key];break;}
+          }
+        }
+        // Fallback: Nominatim geocoding
+        if(!coord){
+          try{
+            var res=await fetch('https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(loc+' 台北')+'&format=json&limit=1');
+            var geo=await res.json();
+            if(geo.length>0) coord=[parseFloat(geo[0].lat),parseFloat(geo[0].lon)];
+          }catch(e){}
+        }
+
+        if(coord){
+          var passengers=ppl.filter(function(p){return p.ride_with===dr.name;});
+          var maxSeats=dr.seats||4;
+          var remain=maxSeats-1-passengers.length;
+          markers.push({name:dr.name,from:loc,coord:coord,seats:maxSeats,remain:remain,mealOnly:dr.note&&dr.note.includes('只吃飯')});
+        }
+      }
+
+      if(markers.length===0) return;
+
+      // Create map
+      if(_map){_map.remove();_map=null;}
+      _map=L.map('carpool-map',{zoomControl:false,attributionControl:false}).setView([25.05,121.53],12);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18}).addTo(_map);
+      L.control.zoom({position:'bottomright'}).addTo(_map);
+
+      var bounds=[];
+      markers.forEach(function(m){
+        var color=m.remain>0?'#2d8a4e':'#d4882e';
+        var icon=L.divIcon({
+          className:'',
+          html:'<div style="background:'+color+';color:#fff;padding:4px 8px;border-radius:8px;font-size:11px;font-weight:600;font-family:\'Noto Sans TC\',sans-serif;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,0.2);border:2px solid #fff;">🚙 '+m.name+(m.mealOnly?' 🍽':'')+'</div>',
+          iconAnchor:[40,20]
+        });
+        var popup='<div style="font-family:\'Noto Sans TC\',sans-serif;font-size:12px;line-height:1.6;"><b>🚙 '+m.name+'</b><br>📍 '+m.from+'<br>座位：'+(m.seats-m.remain)+'/'+m.seats+(m.remain>0?' （剩 '+m.remain+' 位）':' 滿座')+(m.mealOnly?'<br>🍽 只吃飯':'')+'</div>';
+        L.marker(m.coord,{icon:icon}).addTo(_map).bindPopup(popup);
+        bounds.push(m.coord);
+      });
+
+      if(bounds.length===1){
+        _map.setView(bounds[0],14);
+      } else {
+        _map.fitBounds(bounds,{padding:[30,30],maxZoom:14});
+      }
     }
 
     function tSeats(sk,delta){
