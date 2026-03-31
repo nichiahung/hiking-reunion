@@ -954,8 +954,9 @@
 
       h+='<div class="carpool-section" style="margin-top:0;padding-top:0;border-top:none;">';
       var totalSeats=0,takenSeats=0;
-      drivers.forEach(function(dr){totalSeats+=(dr.seats||4);var taken=d.people.filter(function(p){return p.ride_with===dr.name;}).length;takenSeats+=taken;});
-      h+='<div class="carpool-title">🚗 搭車安排 <span>'+(drivers.length>0?'剩餘 '+(totalSeats-takenSeats)+' 座位':'尚無車輛')+'</span></div>';
+      drivers.forEach(function(dr){totalSeats+=(dr.seats||4);var taken=d.people.filter(function(p){return p.ride_with===dr.name;}).length;takenSeats+=taken+1;}); // +1 for driver
+      var remainSeats=totalSeats-takenSeats;
+      h+='<div class="carpool-title">🚗 搭車安排 <span>'+(drivers.length>0?'剩餘 '+remainSeats+' 座位':'尚無車輛')+'</span></div>';
 
       h+='<div style="margin-bottom:10px;">';
       h+='<button class="register-transport-btn" data-dk="'+k+'" data-type="driver" style="width:100%;padding:9px 6px;border:1.5px solid var(--cloud);border-radius:10px;background:var(--peak);cursor:pointer;font-family:inherit;text-align:center;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:6px;"><span style="font-size:16px;">🚙</span><span style="font-size:12px;font-weight:600;color:var(--pine);">我可以開車</span></button>';
