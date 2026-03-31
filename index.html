@@ -836,7 +836,7 @@
       if(!data) return;
 
       document.getElementById('status').innerHTML=
-        '<div class="status-pill '+(isOnline?'online':'offline')+'"><span class="status-dot"></span>'+(isOnline?'已連線 Google Sheet':'連線中<span class="connecting-dots"></span>')+'</div>';
+        '<div class="status-pill '+(isOnline?'online':'offline')+'"><span class="status-dot"></span>'+(isOnline?'已連線資料庫':'資料庫連線中<span class="connecting-dots"></span>')+'</div>';
 
       var h='';
 
@@ -1037,7 +1037,7 @@
       }
     }
 
-    // Bus data - uses Google Sheet with special dateKey format
+    // Bus data - uses the shared event data with the same dateKey format
     function renderBus(){
       if(!data) return;
       var el=document.getElementById('bus-content');

@@ -1,4 +1,5 @@
 /* eslint-disable require-jsdoc */
+const {createHash} = require("node:crypto");
 const {setGlobalOptions} = require("firebase-functions");
 const {onRequest} = require("firebase-functions/https");
 const logger = require("firebase-functions/logger");
@@ -82,8 +83,15 @@ function participantsCollection(dateKey) {
   return eventDoc(dateKey).collection("participants");
 }
 
+function participantId(dateKey, name) {
+  return "p_" + createHash("sha1")
+      .update(`${dateKey}:${cleanString(name)}`)
+      .digest("hex")
+      .slice(0, 24);
+}
+
 function participantDoc(dateKey, name) {
-  return participantsCollection(dateKey).doc(encodeURIComponent(name));
+  return participantsCollection(dateKey).doc(participantId(dateKey, name));
 }
 
 function defaultResponseData() {
@@ -140,7 +148,7 @@ function normalizeParticipant(data) {
   };
 }
 
-function toStoredParticipant(existing, input) {
+function toStoredParticipant(existing, input, id) {
   const now = Date.now();
   const createdAtMs = existing && existing.createdAtMs ?
     existing.createdAtMs :
@@ -156,6 +164,7 @@ function toStoredParticipant(existing, input) {
     transport: input.transport,
     seats: input.seats,
     from: input.from,
+    participant_id: id,
     ride_with: rideWith,
     bus: bus,
     createdAtMs: createdAtMs,
@@ -245,7 +254,7 @@ async function addAction(query) {
     const ref = participantDoc(dateKey, name);
     const snap = await tx.get(ref);
     const existing = snap.exists ? snap.data() : null;
-    tx.set(ref, toStoredParticipant(existing, input));
+    tx.set(ref, toStoredParticipant(existing, input, ref.id));
   });
 
   return {
