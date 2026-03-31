@@ -527,77 +527,63 @@
       }
     }
 
-    async function shareToLine(name, dateLabel, count, type) {
-      if (!liffReady || !liff.isLoggedIn()) return;
+    async function shareCarToLine(driverName) {
+      if (!liffReady || !liff.isLoggedIn()) {
+        showToast('請在 LINE 裡開啟才能分享');return;
+      }
       try {
-        if (!liff.isApiAvailable('shareTargetPicker')) return;
-        var typeText = type === 'meal' ? '🍽 只吃飯' : '⛰️ 爬山＋吃飯';
+        if (!liff.isApiAvailable('shareTargetPicker')) {showToast('分享功能未啟用');return;}
+        var ppl=data['4/12']?.people||[];
+        var dr=ppl.find(function(p){return p.name===driverName&&p.transport==='driver';});
+        if(!dr){showToast('找不到車輛資訊');return;}
+        var passengers=ppl.filter(function(p){return p.ride_with===driverName;});
+        var maxSeats=dr.seats||4;
+        var remain=maxSeats-1-passengers.length;
+        var drMealOnly=dr.note&&dr.note.includes('只吃飯');
+        var passengerNames=passengers.map(function(p){return p.name;});
+        var seatText=remain>0?'還有 '+remain+' 個空位！':'已滿座';
+        var bodyContents=[
+          {type:'text',text:'🚗 車位分享',size:'md',weight:'bold',color:'#1b3a26'},
+          {type:'separator',margin:'md'},
+          {type:'box',layout:'horizontal',margin:'md',spacing:'sm',contents:[
+            {type:'text',text:'司機',size:'sm',color:'#8a9085',flex:2},
+            {type:'text',text:driverName+(drMealOnly?' 🍽只吃飯':''),size:'sm',weight:'bold',color:'#1b3a26',flex:5}
+          ]},
+          {type:'box',layout:'horizontal',spacing:'sm',contents:[
+            {type:'text',text:'出發',size:'sm',color:'#8a9085',flex:2},
+            {type:'text',text:'📍 '+(dr.from||'待定'),size:'sm',weight:'bold',color:'#1b3a26',flex:5}
+          ]},
+          {type:'box',layout:'horizontal',spacing:'sm',contents:[
+            {type:'text',text:'座位',size:'sm',color:'#8a9085',flex:2},
+            {type:'text',text:(passengers.length+1)+'/'+maxSeats+'（'+seatText+'）',size:'sm',weight:'bold',color:remain>0?'#2d8a4e':'#d4882e',flex:5}
+          ]}
+        ];
+        if(passengerNames.length>0){
+          bodyContents.push({type:'box',layout:'horizontal',spacing:'sm',contents:[
+            {type:'text',text:'乘客',size:'sm',color:'#8a9085',flex:2},
+            {type:'text',text:passengerNames.join('、'),size:'sm',weight:'bold',color:'#1b3a26',flex:5,wrap:true}
+          ]});
+        }
         await liff.shareTargetPicker([{
-          type: 'flex',
-          altText: '✅ ' + name + ' 報名 ' + dateLabel + ' ' + count + '人 ' + typeText,
-          contents: {
-            type: 'bubble',
-            size: 'kilo',
-            header: {
-              type: 'box', layout: 'vertical',
-              backgroundColor: '#1b3a26',
-              paddingAll: '14px',
-              contents: [{
-                type: 'text', text: '慧班 Reunion · 登山趣',
-                color: '#ffffff', size: 'sm', weight: 'bold', align: 'center'
-              }]
+          type:'flex',
+          altText:'🚗 '+driverName+'的車'+(remain>0?'還有'+remain+'個空位':'已滿座')+'（'+(dr.from||'')+'出發）',
+          contents:{
+            type:'bubble',size:'kilo',
+            header:{type:'box',layout:'vertical',backgroundColor:'#1b3a26',paddingAll:'14px',
+              contents:[{type:'text',text:'慧班 Reunion · 登山趣',color:'#ffffff',size:'sm',weight:'bold',align:'center'}]
             },
-            body: {
-              type: 'box', layout: 'vertical', spacing: 'md',
-              paddingAll: '16px',
-              contents: [
-                { type: 'text', text: '✅ 新報名！', size: 'md', weight: 'bold', color: '#1b3a26' },
-                { type: 'separator', margin: 'md' },
-                {
-                  type: 'box', layout: 'horizontal', margin: 'md', spacing: 'sm',
-                  contents: [
-                    { type: 'text', text: '姓名', size: 'sm', color: '#8a9085', flex: 2 },
-                    { type: 'text', text: name, size: 'sm', weight: 'bold', color: '#1b3a26', flex: 5 }
-                  ]
-                },
-                {
-                  type: 'box', layout: 'horizontal', spacing: 'sm',
-                  contents: [
-                    { type: 'text', text: '日期', size: 'sm', color: '#8a9085', flex: 2 },
-                    { type: 'text', text: '📅 ' + dateLabel, size: 'sm', weight: 'bold', color: '#1b3a26', flex: 5 }
-                  ]
-                },
-                {
-                  type: 'box', layout: 'horizontal', spacing: 'sm',
-                  contents: [
-                    { type: 'text', text: '人數', size: 'sm', color: '#8a9085', flex: 2 },
-                    { type: 'text', text: count + ' 人', size: 'sm', weight: 'bold', color: '#1b3a26', flex: 5 }
-                  ]
-                },
-                {
-                  type: 'box', layout: 'horizontal', spacing: 'sm',
-                  contents: [
-                    { type: 'text', text: '類型', size: 'sm', color: '#8a9085', flex: 2 },
-                    { type: 'text', text: typeText, size: 'sm', weight: 'bold', color: type === 'meal' ? '#e67e22' : '#2d8a4e', flex: 5 }
-                  ]
-                }
-              ]
-            },
-            footer: {
-              type: 'box', layout: 'vertical',
-              paddingAll: '12px',
-              contents: [{
-                type: 'button', style: 'primary', color: '#2d5a3f',
-                action: {
-                  type: 'uri', label: '我也要報名',
-                  uri: 'https://liff.line.me/' + LIFF_ID
-                }
+            body:{type:'box',layout:'vertical',spacing:'md',paddingAll:'16px',contents:bodyContents},
+            footer:remain>0?{type:'box',layout:'vertical',paddingAll:'12px',
+              contents:[{type:'button',style:'primary',color:'#2d5a3f',
+                action:{type:'uri',label:'我要上這台車',uri:'https://liff.line.me/'+LIFF_ID}
               }]
-            }
+            }:undefined
           }
         }]);
-      } catch (e) {
-        console.log('Share failed:', e);
+        showToast('✓ 已分享');
+      } catch(e){
+        console.log('Share failed:',e);
+        showToast('分享失敗');
       }
     }
 
@@ -979,7 +965,10 @@
           passengers.forEach(function(p){h+='<span class="car-passenger">'+esc(p.name)+'</span>';});
           for(var s=0;s<maxSeats-1-passengers.length;s++){h+='<span class="car-empty-seat">空位</span>';}
           h+='</div>';
-          if(!isFull) h+='<button class="board-btn" data-dk="'+k+'" data-driver="'+esc(dr.name)+'">🙋 上這台車</button>';
+          h+='<div style="display:flex;gap:4px;">';
+          if(!isFull) h+='<button class="board-btn" data-dk="'+k+'" data-driver="'+esc(dr.name)+'" style="flex:1;">🙋 上這台車</button>';
+          h+='<button class="share-car-btn" data-driver="'+esc(dr.name)+'" style="padding:6px 10px;border:1.5px solid var(--cloud);border-radius:6px;background:var(--peak);cursor:pointer;font-family:inherit;font-size:11px;font-weight:500;color:var(--pine);display:flex;align-items:center;gap:3px;transition:background 0.15s;'+(isFull?'flex:1;justify-content:center;':'')+'"><span style="font-size:13px;">📤</span> 分享</button>';
+          h+='</div>';
           h+='</div>';
         });
         h+='</div>';
@@ -1068,6 +1057,9 @@
       });
       document.querySelectorAll('.register-transport-btn').forEach(function(b){
         b.onclick=function(){registerTransport(b.dataset.dk,b.dataset.type);};
+      });
+      document.querySelectorAll('.share-car-btn').forEach(function(b){
+        b.onclick=function(){shareCarToLine(b.dataset.driver);};
       });
       // Transport option toggles
       document.querySelectorAll('.transport-opt').forEach(function(opt){
