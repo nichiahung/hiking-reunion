@@ -702,6 +702,14 @@
       document.querySelectorAll('.edit-form').forEach(f=>f.remove());_ek=dk;_en=nm;
       var rid='row-'+(dk+'-'+nm).replace(/[^a-zA-Z0-9\u4e00-\u9fff]/g,'_');
       var row=document.getElementById(rid);if(!row)return;
+
+      // Find person's current transport data
+      var ppl=data[dk]?.people||[];
+      var person=ppl.find(function(p){return p.name===nm;})||{};
+      var curTransport=person.transport||'';
+      var curSeats=person.seats||4;
+      var curFrom=person.from||'';
+
       var d=document.createElement('div');d.className='edit-form';
       d.style.cssText='display:flex;flex-direction:column;gap:10px;padding:14px;background:var(--snow);border-radius:14px;border:1px solid var(--cloud);margin-top:6px;';
       var lb=document.createElement('div');lb.style.cssText='font-size:14px;font-weight:700;color:var(--pine);';lb.textContent='編輯 '+nm;d.appendChild(lb);
@@ -723,13 +731,69 @@
       var ti=document.createElement('input');ti.type='checkbox';ti.checked=hasMeal;
       var tsp=document.createElement('span');tsp.className='toggle-slider';
       ts.appendChild(ti);ts.appendChild(tsp);tr.appendChild(tl);tr.appendChild(ts);d.appendChild(tr);
+
+      // Transport selector
+      var tsec=document.createElement('div');tsec.style.cssText='border-top:1px solid var(--cloud);padding-top:10px;margin-top:4px;';
+      var tlab=document.createElement('div');tlab.style.cssText='font-size:12px;font-weight:600;color:var(--stone);margin-bottom:8px;';tlab.textContent='🚗 交通方式';tsec.appendChild(tlab);
+      var topts=document.createElement('div');topts.style.cssText='display:flex;gap:6px;margin-bottom:8px;';
+
+      var _editTransport=curTransport;
+
+      function makeOpt(val,icon,text){
+        var btn=document.createElement('div');
+        btn.style.cssText='flex:1;padding:8px 4px;border:1.5px solid var(--cloud);border-radius:8px;text-align:center;cursor:pointer;transition:all 0.15s;';
+        if(val===curTransport){btn.style.borderColor='var(--pine)';btn.style.background='#e6f4ea';}
+        var ic=document.createElement('div');ic.style.fontSize='16px';ic.textContent=icon;
+        var tx=document.createElement('div');tx.style.cssText='font-size:10px;font-weight:600;color:'+(val===curTransport?'var(--pine)':'var(--stone)');tx.textContent=text;
+        btn.appendChild(ic);btn.appendChild(tx);
+        btn.onclick=function(){
+          _editTransport=val;
+          topts.querySelectorAll('div').forEach(function(b){if(b.parentElement===topts){b.style.borderColor='var(--cloud)';b.style.background='var(--peak)';b.querySelectorAll('div')[1].style.color='var(--stone)';}});
+          btn.style.borderColor='var(--pine)';btn.style.background='#e6f4ea';tx.style.color='var(--pine)';
+          editExtra.style.display=(val==='driver'||val==='rider')?'':'none';
+          editSeatsRow.style.display=val==='driver'?'':'none';
+        };
+        return btn;
+      }
+      topts.appendChild(makeOpt('','🤔','未決定'));
+      topts.appendChild(makeOpt('driver','🚙','我開車'));
+      topts.appendChild(makeOpt('rider','🙋','搭別人'));
+      tsec.appendChild(topts);
+
+      var editExtra=document.createElement('div');editExtra.style.cssText='background:var(--snow);border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:8px;';
+      editExtra.style.display=(curTransport==='driver'||curTransport==='rider')?'':'none';
+
+      var editSeatsRow=document.createElement('div');editSeatsRow.className='form-row';
+      editSeatsRow.style.display=curTransport==='driver'?'':'none';
+      var esl=document.createElement('label');esl.className='form-label';esl.textContent='可乘載人數';
+      var est=document.createElement('div');est.className='stepper';
+      var emb=document.createElement('button');emb.className='step-btn';emb.textContent='−';
+      var ecs=document.createElement('span');ecs.className='step-val';ecs.textContent=curSeats;
+      var epb=document.createElement('button');epb.className='step-btn';epb.textContent='+';
+      emb.onclick=function(){var v=parseInt(ecs.textContent)-1;if(v<2)v=2;ecs.textContent=v;};
+      epb.onclick=function(){ecs.textContent=parseInt(ecs.textContent)+1;};
+      est.appendChild(emb);est.appendChild(ecs);est.appendChild(epb);
+      editSeatsRow.appendChild(esl);editSeatsRow.appendChild(est);
+      editExtra.appendChild(editSeatsRow);
+
+      var efi=document.createElement('input');efi.className='input';efi.placeholder='出發地點（例：信義區）';efi.value=curFrom;
+      editExtra.appendChild(efi);
+      tsec.appendChild(editExtra);
+      d.appendChild(tsec);
+
       var ac=document.createElement('div');ac.className='form-actions';ac.style.cssText='display:flex;gap:8px;';
       var db=document.createElement('button');db.className='cancel-btn';db.textContent='🗑 刪除';
       db.style.cssText='flex:0 0 auto;padding:10px 14px;border:1.5px solid #f5c6c6;border-radius:10px;background:#fff5f5;color:#c0392b;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;';
       db.onclick=function(){if(confirm('確定要刪除 '+nm+' 嗎？')){deletePerson(_ek,_en);d.remove();}};
       var cb=document.createElement('button');cb.className='cancel-btn';cb.textContent='取消';cb.onclick=function(){d.remove();};
       var sb=document.createElement('button');sb.className='confirm-btn';sb.textContent='✓ 儲存';
-      sb.onclick=function(){var nn=[ti.checked?'只吃飯':'',ni.value.trim()].filter(Boolean).join('，');updatePerson(_ek,_en,parseInt(cs.textContent),nn);};
+      sb.onclick=function(){
+        var nn=[ti.checked?'只吃飯':'',ni.value.trim()].filter(Boolean).join('，');
+        var newTransport=_editTransport;
+        var newSeats=newTransport==='driver'?parseInt(ecs.textContent)||4:0;
+        var newFrom=(newTransport==='driver'||newTransport==='rider')?efi.value.trim():'';
+        updatePerson(_ek,_en,parseInt(cs.textContent),nn,newTransport,newSeats,newFrom);
+      };
       ac.appendChild(db);ac.appendChild(cb);ac.appendChild(sb);d.appendChild(ac);row.after(d);
     }
 
@@ -739,11 +803,23 @@
       showToast('已刪除 '+nm);}catch{showToast('刪除失敗');}render();
     }
 
-    async function updatePerson(dk,nm,ct,nt){
-      try{await fetch(API_URL+'?'+new URLSearchParams({action:'remove',dateKey:dk,name:nm}));
-      var r=await fetch(API_URL+'?'+new URLSearchParams({action:'add',dateKey:dk,name:nm,count:ct,note:nt||''}));var j=await r.json();
-      if(j.data){if(j.data['4/12'])j.data['4/12'].date='4/12（日）';if(j.data['5/2'])j.data['5/2'].date='5/2（六）';data=j.data;}
-      showToast('✓ 已更新');}catch{showToast('更新失敗');}render();
+    async function updatePerson(dk,nm,ct,nt,transport,seats,from){
+      try{
+        // If changing from driver, unboard passengers first
+        var ppl=data[dk]?.people||[];
+        var old=ppl.find(function(p){return p.name===nm;});
+        if(old&&old.transport==='driver'&&transport!=='driver'){
+          var passengers=ppl.filter(function(p){return p.ride_with===nm;});
+          for(var i=0;i<passengers.length;i++){
+            await fetch(API_URL+'?'+new URLSearchParams({action:'unboard',dateKey:dk,rider:passengers[i].name}));
+          }
+        }
+        await fetch(API_URL+'?'+new URLSearchParams({action:'remove',dateKey:dk,name:nm}));
+        var p=new URLSearchParams({action:'add',dateKey:dk,name:nm,count:ct,note:nt||'',transport:transport||'',seats:seats||0,from:from||''});
+        var r=await fetch(API_URL+'?'+p);var j=await r.json();
+        if(j.data){if(j.data['4/12'])j.data['4/12'].date='4/12（日）';if(j.data['5/2'])j.data['5/2'].date='5/2（六）';data=j.data;}
+        showToast('✓ 已更新');
+      }catch{showToast('更新失敗');}render();
     }
 
     function openForm(dk){
