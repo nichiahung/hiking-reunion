@@ -570,6 +570,7 @@
     }
 
     async function addPerson(dk,n,c,nt,transport,seats,from){
+      if(!isOnline){showToast('尚未連線，請稍後再試');return;}
       showApiLoading();
       try{var p=new URLSearchParams({action:'add',dateKey:dk,name:n,count:c,note:nt||'',transport:transport||'',seats:seats||0,from:from||''});
       var r=await fetch(API_URL+'?'+p);var j=await r.json();
@@ -597,6 +598,7 @@
     }
 
     function showBoardPrompt(dk,driverName){
+      if(!isOnline){showToast('尚未連線，請稍後再試');return;}
       var name=prompt('請輸入你的姓名（需與報名時相同）');
       if(!name)return; name=name.trim();
       var ppl=data[dk]?.people||[];
@@ -626,6 +628,7 @@
     }
 
     async function registerTransport(dk,type){
+      if(!isOnline){showToast('尚未連線，請稍後再試');return;}
       var name=prompt('請輸入你的姓名（需與報名時相同）');
       if(!name)return; name=name.trim();
       var ppl=data[dk]?.people||[];
@@ -769,6 +772,7 @@
     }
 
     async function deletePerson(dk,nm){
+      if(!isOnline){showToast('尚未連線，請稍後再試');return;}
       showApiLoading();
       try{var r=await fetch(API_URL+'?'+new URLSearchParams({action:'remove',dateKey:dk,name:nm}));var j=await r.json();
       if(j.data){if(j.data['4/12'])j.data['4/12'].date='4/12（日）';if(j.data['5/2'])j.data['5/2'].date='5/2（六）';data=j.data;}
@@ -776,6 +780,7 @@
     }
 
     async function updatePerson(dk,nm,ct,nt,transport,seats,from){
+      if(!isOnline){showToast('尚未連線，請稍後再試');return;}
       showApiLoading();
       try{
         // If changing from driver, unboard passengers first
@@ -1032,7 +1037,7 @@
       }
     }
 
-    // Bus data - uses bus field on 4/12 signups
+    // Bus data - uses Google Sheet with special dateKey format
     function renderBus(){
       if(!data) return;
       var el=document.getElementById('bus-content');
@@ -1100,6 +1105,7 @@
     }
 
     async function toggleBus(busNum,name,count){
+      if(!isOnline){showToast('尚未連線，請稍後再試');return;}
       var ppl=data['4/12']?.people||[];
       var person=ppl.find(function(p){return p.name===name;});
       if(!person) return;
@@ -1115,7 +1121,7 @@
       // Optimistic UI update
       person.bus=newVal;
       if(isOn){showToast(name+' 已取消包車');}
-      else{showToast('✓ '+name+(count>1?' ('+count+'人)':'')+'');}
+      else{showToast('✓ '+name+(count>1?' ('+count+'人)':''));}
       renderBus();
 
       // Sync to API in background
