@@ -1101,26 +1101,33 @@
       var list=getBusPassengers(busNum);
       var isOn=list.find(function(p){return p.name===name;});
 
-      showApiLoading();
+      // Optimistic UI update - change immediately
+      if(!isOn){
+        var totalPeople=list.reduce(function(s,p){return s+p.count;},0);
+        if(totalPeople+count>8){showToast('空位不夠（剩 '+(8-totalPeople)+' 位，需 '+count+' 位）');return;}
+        // Add locally first
+        if(!data['bus'+busNum]) data['bus'+busNum]={date:'包車第'+busNum+'趟',people:[]};
+        data['bus'+busNum].people.push({name:name,count:count,note:'包車第'+busNum+'趟'});
+        showToast('✓ '+name+(count>1?' ('+count+'人)':''));
+      } else {
+        // Remove locally first
+        data['bus'+busNum].people=list.filter(function(p){return p.name!==name;});
+        showToast(name+' 已取消');
+      }
+      renderBus();
+
+      // Sync to API in background (no loading overlay)
       try{
         if(isOn){
-          // Remove from bus
-          var p=new URLSearchParams({action:'remove',dateKey:'bus'+busNum,name:name});
-          var r=await fetch(API_URL+'?'+p);var j=await r.json();
-          if(j.data){if(j.data['4/12'])j.data['4/12'].date='4/12（日）';data=j.data;}
-          showToast(name+' 已取消包車');
+          await fetch(API_URL+'?'+new URLSearchParams({action:'remove',dateKey:'bus'+busNum,name:name}));
         } else {
-          // Check capacity
-          var totalPeople=list.reduce(function(s,p){return s+p.count;},0);
-          if(totalPeople+count>8){showToast('空位不夠（剩 '+(8-totalPeople)+' 位，需 '+count+' 位）');hideApiLoading();return;}
-          // Add to bus
-          var p=new URLSearchParams({action:'add',dateKey:'bus'+busNum,name:name,count:count,note:'包車第'+busNum+'趟'});
-          var r=await fetch(API_URL+'?'+p);var j=await r.json();
-          if(j.data){if(j.data['4/12'])j.data['4/12'].date='4/12（日）';data=j.data;}
-          showToast('✓ '+name+(count>1?' ('+count+'人)':'')+' 搭第'+busNum+'趟');
+          await fetch(API_URL+'?'+new URLSearchParams({action:'add',dateKey:'bus'+busNum,name:name,count:count,note:'包車第'+busNum+'趟'}));
         }
-      }catch{showToast('操作失敗');}
-      hideApiLoading();renderBus();
+      }catch(e){
+        // If API fails, revert and re-fetch
+        showToast('同步失敗，重新載入...');
+        fetchData();
+      }
     }
     setProgress(10);
     fetchData();
