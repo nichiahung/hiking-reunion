@@ -232,6 +232,39 @@
     }
     .export-btn:hover{background:var(--cloud);color:var(--forest);}
 
+    /* Transport selector */
+    .transport-section{border-top:1px solid var(--cloud);padding-top:10px;margin-top:4px;}
+    .transport-label{font-size:12px;font-weight:600;color:var(--stone);margin-bottom:8px;}
+    .transport-options{display:flex;gap:6px;margin-bottom:10px;}
+    .transport-opt{flex:1;padding:10px 6px;border:1.5px solid var(--cloud);border-radius:10px;text-align:center;cursor:pointer;transition:all 0.15s;background:var(--peak);}
+    .transport-opt.active{border-color:var(--pine);background:#e6f4ea;}
+    .transport-opt .t-icon{font-size:18px;margin-bottom:2px;}
+    .transport-opt .t-text{font-size:11px;font-weight:600;color:var(--stone);}
+    .transport-opt.active .t-text{color:var(--pine);}
+    .transport-extra{background:var(--snow);border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:8px;}
+
+    /* Carpool board */
+    .carpool-section{margin-top:12px;padding-top:12px;border-top:1px solid var(--cloud);}
+    .carpool-title{font-size:12px;font-weight:600;color:var(--stone);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;}
+    .carpool-title span{color:var(--sage);font-size:11px;}
+    .car-card{background:var(--snow);border-radius:12px;padding:12px;margin-bottom:6px;border:1px solid var(--cloud);}
+    .car-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
+    .car-name{font-size:13px;font-weight:600;color:var(--forest);display:flex;align-items:center;gap:5px;}
+    .car-seats{font-size:10px;font-weight:600;padding:2px 8px;border-radius:6px;}
+    .car-seats.has-space{background:#e6f4ea;color:#2d8a4e;}
+    .car-seats.full{background:#fef3e2;color:var(--amber);}
+    .car-from{font-size:11px;color:var(--stone);margin-bottom:6px;}
+    .car-passengers{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;}
+    .car-passenger{font-size:11px;background:var(--cloud);color:var(--pine);padding:2px 8px;border-radius:6px;}
+    .car-passenger.is-me{background:#e6f4ea;color:#2d8a4e;border:1px solid #b8e0c0;font-weight:600;}
+    .car-empty-seat{font-size:11px;color:var(--mist);padding:2px 8px;border-radius:6px;border:1px dashed var(--cloud);}
+    .board-btn{width:100%;padding:8px;border:none;border-radius:8px;background:var(--pine);color:var(--peak);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:background 0.15s;}
+    .board-btn:hover{background:var(--forest);}
+    .unboard-btn{width:100%;padding:8px;border:1px solid #f5c6c6;border-radius:8px;background:#fff5f5;color:#c0572b;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;}
+    .unassigned{background:#fff9f0;border-radius:10px;padding:10px;border:1px dashed #e6c9a0;margin-bottom:6px;}
+    .unassigned-title{font-size:12px;font-weight:600;color:#e65100;margin-bottom:6px;display:flex;align-items:center;gap:5px;}
+    .unassigned-person{font-size:11px;background:#fff3e0;color:#e65100;padding:2px 8px;border-radius:6px;display:inline-block;margin:2px;}
+
     /* Forms */
     .add-form{display:none;flex-direction:column;gap:10px;padding:16px;background:var(--snow);border-radius:14px;border:1px solid var(--cloud);}
     .add-form.active{display:flex;}
@@ -574,13 +607,48 @@
       }, 300);
     }
 
-    async function addPerson(dk,n,c,nt){
-      var isMeal = nt && nt.includes('只吃飯');
-      try{var p=new URLSearchParams({action:'add',dateKey:dk,name:n,count:c,note:nt||''});
+    async function addPerson(dk,n,c,nt,transport,seats,from){
+      try{var p=new URLSearchParams({action:'add',dateKey:dk,name:n,count:c,note:nt||'',transport:transport||'',seats:seats||0,from:from||''});
       var r=await fetch(API_URL+'?'+p);var j=await r.json();
       if(j.data){if(j.data['4/12'])j.data['4/12'].date='4/12（日）';if(j.data['5/2'])j.data['5/2'].date='5/2（六）';data=j.data;}
       showToast('✓ 已加入');
       }catch{showToast('儲存失敗');}render();
+    }
+
+    async function boardCar(dk,rider,driver){
+      try{var p=new URLSearchParams({action:'board',dateKey:dk,rider:rider,driver:driver});
+      var r=await fetch(API_URL+'?'+p);var j=await r.json();
+      if(j.data){if(j.data['4/12'])j.data['4/12'].date='4/12（日）';if(j.data['5/2'])j.data['5/2'].date='5/2（六）';data=j.data;}
+      showToast('✓ 已上車');
+      }catch{showToast('操作失敗');}render();
+    }
+
+    async function unboardCar(dk,rider){
+      try{var p=new URLSearchParams({action:'unboard',dateKey:dk,rider:rider});
+      var r=await fetch(API_URL+'?'+p);var j=await r.json();
+      if(j.data){if(j.data['4/12'])j.data['4/12'].date='4/12（日）';if(j.data['5/2'])j.data['5/2'].date='5/2（六）';data=j.data;}
+      showToast('已下車');
+      }catch{showToast('操作失敗');}render();
+    }
+
+    function showBoardPrompt(dk,driverName){
+      var name=prompt('請輸入你的姓名（需與報名時相同）');
+      if(!name)return; name=name.trim();
+      var ppl=data[dk]?.people||[];
+      var found=ppl.find(function(p){return p.name===name;});
+      if(!found){showToast('找不到「'+name+'」的報名資料');return;}
+      if(found.transport==='driver'){showToast('你是開車的人哦');return;}
+      if(found.ride_with){showToast('你已經在 '+found.ride_with+' 的車上了，請先下車');return;}
+      boardCar(dk,name,driverName);
+    }
+
+    function showUnboardPrompt(dk){
+      var name=prompt('請輸入你的姓名');
+      if(!name)return; name=name.trim();
+      var ppl=data[dk]?.people||[];
+      var found=ppl.find(function(p){return p.name===name;});
+      if(!found||!found.ride_with){showToast('找不到搭車記錄');return;}
+      unboardCar(dk,name);
     }
 
     var _ek='',_en='';
@@ -647,7 +715,21 @@
       var f=document.getElementById('form-'+dk.replace('/','_'));
       var nm=f.querySelector('.input-name').value.trim(),ct=parseInt(f.querySelector('.step-val').textContent),nt=f.querySelector('.input-note').value.trim();
       var meal=f.querySelector('.input-meal').checked;if(!nm){showToast('請輸入姓名');return;}
-      var fn=[meal?'只吃飯':'',nt].filter(Boolean).join('，');closeForm(dk);addPerson(dk,nm,ct,fn);
+      var fn=[meal?'只吃飯':'',nt].filter(Boolean).join('，');
+      // Transport
+      var transportEl=f.querySelector('input[name="transport"]:checked');
+      var transport=transportEl?transportEl.value:'';
+      var seats=0,from='';
+      if(transport==='driver'){
+        var seatsEl=f.querySelector('.input-seats');
+        seats=seatsEl?parseInt(seatsEl.textContent)||4:4;
+        var fromEl=f.querySelector('.input-from');
+        from=fromEl?fromEl.value.trim():'';
+      }else if(transport==='rider'){
+        var fromEl=f.querySelector('.input-from');
+        from=fromEl?fromEl.value.trim():'';
+      }
+      closeForm(dk);addPerson(dk,nm,ct,fn,transport,seats,from);
     }
 
     function render(){
@@ -701,6 +783,8 @@
             h+='<div class="person" id="row-'+sid+'"><div class="person-left">';
             h+='<span class="person-name">'+esc(p.name)+'</span>';
             if(p.count>1) h+='<span class="person-extra">+' +(p.count-1)+'</span>';
+            if(p.transport==='driver') h+='<span class="person-extra" style="background:#e6f4ea;color:#2d8a4e;">🚙 開車</span>';
+            else if(p.transport==='rider') h+='<span class="person-extra" style="background:#fff3e0;color:#e65100;">🙋 搭車</span>';
             if(noteClean) h+='<span class="person-note">'+esc(noteClean)+'</span>';
             h+='</div><div class="person-right"><span class="person-ct">'+p.count+' 人</span>';
             h+='<button class="edit-btn" data-dk="'+k+'" data-nm="'+esc(p.name)+'" data-ct="'+p.count+'" data-nt="'+esc(p.note||'')+'">✏️</button>';
@@ -739,10 +823,64 @@
         h+='<input class="input input-name" placeholder="姓名">';
         h+='<div class="form-row"><label class="form-label">人數（含家屬）</label><div class="stepper"><button class="step-btn" onclick="stepCount(\''+k+'\',-1)">−</button><span class="step-val">1</span><button class="step-btn" onclick="stepCount(\''+k+'\',1)">+</button></div></div>';
         h+='<div class="toggle-row"><label class="toggle-label">🍽 只吃飯（不爬山）</label><label class="toggle-switch"><input type="checkbox" class="input-meal"><span class="toggle-slider"></span></label></div>';
+        // Transport section
+        h+='<div class="transport-section"><div class="transport-label">🚗 交通方式</div>';
+        h+='<div class="transport-options">';
+        h+='<label class="transport-opt" data-form="'+sk+'"><input type="radio" name="transport" value="driver" style="display:none"><div class="t-icon">🚙</div><div class="t-text">我可以開車</div></label>';
+        h+='<label class="transport-opt" data-form="'+sk+'"><input type="radio" name="transport" value="rider" style="display:none"><div class="t-icon">🙋</div><div class="t-text">我需要搭車</div></label>';
+        h+='</div>';
+        h+='<div class="transport-extra" id="transport-extra-'+sk+'" style="display:none">';
+        h+='<div class="form-row" id="seats-row-'+sk+'" style="display:none"><label class="form-label">可乘載人數</label><div class="stepper"><button class="step-btn" onclick="tSeats(\''+sk+'\',-1)">−</button><span class="step-val input-seats">4</span><button class="step-btn" onclick="tSeats(\''+sk+'\',1)">+</button></div></div>';
+        h+='<input class="input input-from" placeholder="出發地點（例：信義區）">';
+        h+='</div></div>';
         h+='<input class="input input-note" placeholder="其他備註（選填）">';
         h+='<div class="form-actions"><button class="cancel-btn" onclick="closeForm(\''+k+'\')">取消</button><button class="confirm-btn" onclick="submitForm(\''+k+'\')">✓ 加入</button></div>';
         h+='</div>';
         h+='<button class="export-btn" onclick="exportDate(\''+k+'\')">📋 匯出 '+d.date+' 名單</button>';
+
+        // Carpool board
+        var drivers=d.people.filter(function(p){return p.transport==='driver';});
+        var riders=d.people.filter(function(p){return p.transport==='rider';});
+        var unassigned=riders.filter(function(p){return !p.ride_with;});
+        if(drivers.length>0||riders.length>0){
+          h+='<div class="carpool-section">';
+          var totalSeats=0,takenSeats=0;
+          drivers.forEach(function(dr){totalSeats+=(dr.seats||4);var taken=d.people.filter(function(p){return p.ride_with===dr.name;}).length;takenSeats+=taken;});
+          h+='<div class="carpool-title">🚗 搭車安排 <span>剩餘 '+(totalSeats-takenSeats)+' 座位</span></div>';
+
+          drivers.forEach(function(dr){
+            var passengers=d.people.filter(function(p){return p.ride_with===dr.name;});
+            var maxSeats=dr.seats||4;
+            var isFull=passengers.length>=maxSeats;
+            h+='<div class="car-card">';
+            h+='<div class="car-header"><div class="car-name">🚙 '+esc(dr.name)+'的車</div>';
+            h+='<span class="car-seats '+(isFull?'full':'has-space')+'">'+(passengers.length+1)+'/'+maxSeats+(isFull?' 滿座':'')+'</span></div>';
+            if(dr.from) h+='<div class="car-from">📍 '+esc(dr.from)+'出發</div>';
+            h+='<div class="car-passengers">';
+            h+='<span class="car-passenger">'+esc(dr.name)+'（司機）</span>';
+            passengers.forEach(function(p){h+='<span class="car-passenger">'+esc(p.name)+'</span>';});
+            for(var s=0;s<maxSeats-1-passengers.length;s++){h+='<span class="car-empty-seat">空位</span>';}
+            h+='</div>';
+            if(!isFull) h+='<button class="board-btn" data-dk="'+k+'" data-driver="'+esc(dr.name)+'">🙋 我要上這台車</button>';
+            h+='</div>';
+          });
+
+          if(unassigned.length>0){
+            h+='<div class="unassigned"><div class="unassigned-title">🙋 尚未安排（'+unassigned.length+' 人）</div>';
+            unassigned.forEach(function(p){
+              h+='<span class="unassigned-person">'+esc(p.name)+(p.from?'（'+esc(p.from)+'）':'')+'</span>';
+            });
+            h+='</div>';
+          }
+
+          var boarded=riders.filter(function(p){return p.ride_with;});
+          if(boarded.length>0){
+            h+='<button class="unboard-btn" data-dk="'+k+'" style="margin-top:6px;">🚪 我要下車（換別台）</button>';
+          }
+
+          h+='</div>';
+        }
+
         h+='</div>';
       });
       h+='</div>';
@@ -753,6 +891,33 @@
       document.querySelectorAll('.edit-btn').forEach(function(b){
         b.onclick=function(){editPerson(b.dataset.dk,b.dataset.nm,parseInt(b.dataset.ct),b.dataset.nt);};
       });
+      // Carpool buttons
+      document.querySelectorAll('.board-btn').forEach(function(b){
+        b.onclick=function(){showBoardPrompt(b.dataset.dk,b.dataset.driver);};
+      });
+      document.querySelectorAll('.unboard-btn').forEach(function(b){
+        b.onclick=function(){showUnboardPrompt(b.dataset.dk);};
+      });
+      // Transport option toggles
+      document.querySelectorAll('.transport-opt').forEach(function(opt){
+        opt.onclick=function(){
+          var radio=opt.querySelector('input[type=radio]');
+          var formId=opt.dataset.form;
+          opt.parentElement.querySelectorAll('.transport-opt').forEach(function(o){o.classList.remove('active');});
+          opt.classList.add('active');
+          radio.checked=true;
+          var extra=document.getElementById('transport-extra-'+formId);
+          var seatsRow=document.getElementById('seats-row-'+formId);
+          if(radio.value==='driver'){extra.style.display='';seatsRow.style.display='';}
+          else if(radio.value==='rider'){extra.style.display='';seatsRow.style.display='none';}
+          else{extra.style.display='none';}
+        };
+      });
+    }
+
+    function tSeats(sk,delta){
+      var el=document.getElementById('seats-row-'+sk).querySelector('.input-seats');
+      var v=parseInt(el.textContent)+delta;if(v<2)v=2;if(v>8)v=8;el.textContent=v;
     }
 
     function exportDate(k){
