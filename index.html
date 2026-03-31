@@ -369,35 +369,6 @@
     .itinerary-table .note-cell{color:var(--stone);font-size:11px;}
     .itinerary-highlight{background:var(--snow);}
 
-    /* Share banner */
-    .share-banner {
-      background: var(--peak); border-radius: 16px;
-      border: 1.5px solid #06C755;
-      padding: 16px; margin-bottom: 16px;
-      display: flex; flex-direction: column; align-items: center; gap: 10px;
-      animation: fadeUp 0.4s ease-out both;
-      box-shadow: 0 2px 16px rgba(6,199,85,0.12);
-    }
-    .share-banner-text {
-      font-size: 14px; font-weight: 600; color: var(--forest); text-align: center;
-    }
-    .share-banner-sub {
-      font-size: 12px; color: var(--stone); text-align: center;
-    }
-    .share-btn {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 10px 24px; border: none; border-radius: 12px;
-      background: #06C755; color: #fff;
-      font-size: 14px; font-weight: 700; cursor: pointer;
-      font-family: inherit; transition: background 0.2s;
-      box-shadow: 0 2px 8px rgba(6,199,85,0.25);
-    }
-    .share-btn:hover { background: #05b34c; }
-    .share-dismiss {
-      font-size: 12px; color: var(--stone); background: none;
-      border: none; cursor: pointer; font-family: inherit;
-      text-decoration: underline;
-    }
   </style>
 </head>
 <body>
@@ -461,46 +432,45 @@
   <div id="bus-tab" class="main" style="display:none;">
     <div class="date-card lead-amber">
       <div class="card-top"><div class="card-date-text">🚌 包車報名</div></div>
-      <div style="font-size:12px;color:var(--stone);margin-bottom:12px;line-height:1.6;">
-        📍 上車地點：<b style="color:var(--forest);">復興實驗國小</b><br>
-        每車最多 <b style="color:var(--forest);">8 位</b>，請選擇要搭哪一趟：
-      </div>
+      <div style="font-size:12px;color:var(--stone);margin-bottom:4px;">📍 上車地點：<b style="color:var(--forest);">復興實驗國小</b></div>
+      <div style="font-size:11px;color:var(--mist);margin-bottom:14px;">每車最多 8 位，點下方按鈕報名</div>
 
-      <!-- Bus 1: 9:00 -->
-      <div class="car-card" id="bus-card-1" style="margin-bottom:8px;">
-        <div class="car-header">
-          <div class="car-name">🚌 第一趟 · 9:00 發車</div>
-          <span class="car-seats has-space" id="bus1-seats">0/8</span>
+      <div class="car-grid">
+        <!-- Bus 1: 9:00 -->
+        <div class="car-card" id="bus-card-1">
+          <div style="text-align:center;margin-bottom:8px;">
+            <div style="font-size:13px;font-weight:700;color:var(--forest);margin-bottom:2px;">⛰️ 第一趟</div>
+            <div style="font-size:18px;font-weight:700;color:var(--pine);font-family:'DM Sans',sans-serif;">9:00</div>
+            <div style="font-size:10px;color:var(--stone);">爬山＋吃飯</div>
+          </div>
+          <div style="font-size:10px;color:var(--stone);margin-bottom:6px;text-align:center;">復興國小 → 大屯停車場</div>
+          <div style="text-align:center;margin-bottom:8px;">
+            <span class="car-seats has-space" id="bus1-seats" style="font-size:12px;padding:3px 12px;">0/8</span>
+          </div>
+          <div class="car-passengers" id="bus1-passengers" style="justify-content:center;margin-bottom:8px;">
+            <span class="car-empty-seat">尚無人</span>
+          </div>
+          <button class="board-btn" onclick="busSignup(1)" style="width:100%;padding:8px;font-size:12px;">🙋 我搭這趟</button>
+          <button onclick="busCancel(1)" style="width:100%;padding:4px;border:none;background:none;color:var(--stone);font-size:10px;cursor:pointer;font-family:inherit;margin-top:4px;text-decoration:underline;">取消報名</button>
         </div>
-        <div class="car-from">📍 復興實驗國小 → 大屯1號停車場</div>
-        <div class="car-passengers" id="bus1-passengers">
-          <span class="car-empty-seat">尚無人報名</span>
-        </div>
-        <div style="display:flex;gap:4px;">
-          <button class="board-btn" style="flex:1;" onclick="busSignup(1)">🙋 我搭這趟</button>
-          <button class="unboard-btn" style="flex:0 0 auto;padding:6px 10px;font-size:11px;" onclick="busCancel(1)">取消</button>
-        </div>
-      </div>
 
-      <!-- Bus 2: 12:30 -->
-      <div class="car-card" id="bus-card-2">
-        <div class="car-header">
-          <div class="car-name">🚌 第二趟 · 12:30 發車</div>
-          <span class="car-seats has-space" id="bus2-seats">0/8</span>
+        <!-- Bus 2: 12:30 -->
+        <div class="car-card" id="bus-card-2">
+          <div style="text-align:center;margin-bottom:8px;">
+            <div style="font-size:13px;font-weight:700;color:var(--amber);margin-bottom:2px;">🍽 第二趟</div>
+            <div style="font-size:18px;font-weight:700;color:var(--pine);font-family:'DM Sans',sans-serif;">12:30</div>
+            <div style="font-size:10px;color:var(--stone);">只吃飯（不爬山）</div>
+          </div>
+          <div style="font-size:10px;color:var(--stone);margin-bottom:6px;text-align:center;">復興國小 → 松竹園餐廳</div>
+          <div style="text-align:center;margin-bottom:8px;">
+            <span class="car-seats has-space" id="bus2-seats" style="font-size:12px;padding:3px 12px;">0/8</span>
+          </div>
+          <div class="car-passengers" id="bus2-passengers" style="justify-content:center;margin-bottom:8px;">
+            <span class="car-empty-seat">尚無人</span>
+          </div>
+          <button class="board-btn" onclick="busSignup(2)" style="width:100%;padding:8px;font-size:12px;">🙋 我搭這趟</button>
+          <button onclick="busCancel(2)" style="width:100%;padding:4px;border:none;background:none;color:var(--stone);font-size:10px;cursor:pointer;font-family:inherit;margin-top:4px;text-decoration:underline;">取消報名</button>
         </div>
-        <div class="car-from">📍 復興實驗國小 → 松竹園餐廳（🍽 只吃飯）</div>
-        <div class="car-passengers" id="bus2-passengers">
-          <span class="car-empty-seat">尚無人報名</span>
-        </div>
-        <div style="display:flex;gap:4px;">
-          <button class="board-btn" style="flex:1;" onclick="busSignup(2)">🙋 我搭這趟</button>
-          <button class="unboard-btn" style="flex:0 0 auto;padding:6px 10px;font-size:11px;" onclick="busCancel(2)">取消</button>
-        </div>
-      </div>
-
-      <div style="margin-top:10px;font-size:11px;color:var(--stone);text-align:center;line-height:1.6;">
-        ⚠️ 第一趟 9:00 → 爬山＋吃飯<br>
-        ⚠️ 第二趟 12:30 → 只吃飯（不爬山）
       </div>
     </div>
     <div class="footer"><button class="refresh-btn" onclick="switchTab('signup')">← 回到接龍報名</button></div>
@@ -545,97 +515,6 @@
   <script>
     var API_URL="https://script.google.com/macros/s/AKfycbxSUTpxyMxOyN7EAd9hCf9OKAk7IHBcujCcJ1F4Yc7jTewwtUjf8dcne4frERhrDWM/exec";
     var data=null, isOnline=false;
-
-    // ⬇️⬇️⬇️ 把你的 LIFF ID 貼在這裡 ⬇️⬇️⬇️
-    var LIFF_ID = "2009625448-S6TA7geC";
-    // ⬆️⬆️⬆️ 格式像 1234567890-abcdefgh ⬆️⬆️⬆️
-
-    var liffReady = false;
-    var liffProfile = null;
-
-    async function initLiff() {
-      if (!LIFF_ID || LIFF_ID.includes('YOUR_LIFF')) return;
-      // Only load LIFF SDK inside LINE
-      var isInLine = /Line/i.test(navigator.userAgent);
-      if (!isInLine) return;
-      try {
-        // Dynamically load SDK
-        await new Promise(function(resolve, reject) {
-          var s = document.createElement('script');
-          s.src = 'https://static.line-scdn.net/liff/edge/versions/2.22.3/sdk.js';
-          s.onload = resolve;
-          s.onerror = reject;
-          document.head.appendChild(s);
-        });
-        await liff.init({ liffId: LIFF_ID });
-        liffReady = true;
-        if (liff.isLoggedIn()) {
-          liffProfile = await liff.getProfile();
-        }
-      } catch (e) {
-        console.log('LIFF init failed');
-      }
-    }
-
-    async function shareCarToLine(driverName) {
-      if (!liffReady || !liff.isLoggedIn()) {
-        showToast('請在 LINE 裡開啟才能分享');return;
-      }
-      try {
-        if (!liff.isApiAvailable('shareTargetPicker')) {showToast('分享功能未啟用');return;}
-        var ppl=data['4/12']?.people||[];
-        var dr=ppl.find(function(p){return p.name===driverName&&p.transport==='driver';});
-        if(!dr){showToast('找不到車輛資訊');return;}
-        var passengers=ppl.filter(function(p){return p.ride_with===driverName;});
-        var maxSeats=dr.seats||4;
-        var remain=maxSeats-1-passengers.length;
-        var drMealOnly=dr.note&&dr.note.includes('只吃飯');
-        var passengerNames=passengers.map(function(p){return p.name;});
-        var seatText=remain>0?'還有 '+remain+' 個空位！':'已滿座';
-        var bodyContents=[
-          {type:'text',text:'🚗 車位分享',size:'md',weight:'bold',color:'#1b3a26'},
-          {type:'separator',margin:'md'},
-          {type:'box',layout:'horizontal',margin:'md',spacing:'sm',contents:[
-            {type:'text',text:'司機',size:'sm',color:'#8a9085',flex:2},
-            {type:'text',text:driverName+(drMealOnly?' 🍽只吃飯':''),size:'sm',weight:'bold',color:'#1b3a26',flex:5}
-          ]},
-          {type:'box',layout:'horizontal',spacing:'sm',contents:[
-            {type:'text',text:'出發',size:'sm',color:'#8a9085',flex:2},
-            {type:'text',text:'📍 '+(dr.from||'待定'),size:'sm',weight:'bold',color:'#1b3a26',flex:5}
-          ]},
-          {type:'box',layout:'horizontal',spacing:'sm',contents:[
-            {type:'text',text:'座位',size:'sm',color:'#8a9085',flex:2},
-            {type:'text',text:(passengers.length+1)+'/'+maxSeats+'（'+seatText+'）',size:'sm',weight:'bold',color:remain>0?'#2d8a4e':'#d4882e',flex:5}
-          ]}
-        ];
-        if(passengerNames.length>0){
-          bodyContents.push({type:'box',layout:'horizontal',spacing:'sm',contents:[
-            {type:'text',text:'乘客',size:'sm',color:'#8a9085',flex:2},
-            {type:'text',text:passengerNames.join('、'),size:'sm',weight:'bold',color:'#1b3a26',flex:5,wrap:true}
-          ]});
-        }
-        await liff.shareTargetPicker([{
-          type:'flex',
-          altText:'🚗 '+driverName+'的車'+(remain>0?'還有'+remain+'個空位':'已滿座')+'（'+(dr.from||'')+'出發）',
-          contents:{
-            type:'bubble',size:'kilo',
-            header:{type:'box',layout:'vertical',backgroundColor:'#1b3a26',paddingAll:'14px',
-              contents:[{type:'text',text:'慧班 Reunion · 登山趣',color:'#ffffff',size:'sm',weight:'bold',align:'center'}]
-            },
-            body:{type:'box',layout:'vertical',spacing:'md',paddingAll:'16px',contents:bodyContents},
-            footer:remain>0?{type:'box',layout:'vertical',paddingAll:'12px',
-              contents:[{type:'button',style:'primary',color:'#2d5a3f',
-                action:{type:'uri',label:'我要上這台車',uri:'https://liff.line.me/'+LIFF_ID}
-              }]
-            }:undefined
-          }
-        }]);
-        showToast('✓ 已分享');
-      } catch(e){
-        console.log('Share failed:',e);
-        showToast('分享失敗');
-      }
-    }
 
     var _progress = 0;
     function setProgress(pct) {
@@ -937,7 +816,7 @@
       document.querySelectorAll('.add-btn').forEach(b=>b.style.display='');
       var sk=dk.replace('/','_'),f=document.getElementById('form-'+sk),b=document.getElementById('addbtn-'+sk);
       if(f){f.classList.add('active');b.style.display='none';}
-      f.querySelector('.input-name').value=liffProfile?liffProfile.displayName:'';f.querySelector('.input-note').value='';
+      f.querySelector('.input-name').value='';f.querySelector('.input-note').value='';
       f.querySelector('.step-val').textContent='1';f.querySelector('.input-meal').checked=false;
       f.querySelector('.input-name').focus();
     }
@@ -1179,15 +1058,17 @@
         var list=getBusPassengers(n);
         var el=document.getElementById('bus'+n+'-passengers');
         var seats=document.getElementById('bus'+n+'-seats');
-        var isFull=list.length>=8;
-        seats.textContent=list.length+'/8';
+        var totalPeople=list.reduce(function(s,p){return s+p.count;},0);
+        var isFull=totalPeople>=8;
+        seats.textContent=totalPeople+'/8';
         seats.className='car-seats '+(isFull?'full':'has-space');
         if(list.length===0){
           el.innerHTML='<span class="car-empty-seat">尚無人報名</span>';
         } else {
           var h='';
-          list.forEach(function(p){h+='<span class="car-passenger">'+esc(p.name)+(p.count>1?' +' +(p.count-1):'')+'</span>';});
-          for(var s=0;s<8-list.length;s++){h+='<span class="car-empty-seat">空位</span>';}
+          list.forEach(function(p){h+='<span class="car-passenger">'+esc(p.name)+(p.count>1?' <span style="font-size:9px;background:#e6f4ea;color:#2d8a4e;padding:0 3px;border-radius:3px;">+' +(p.count-1)+'</span>':'')+'</span>';});
+          var remain=8-totalPeople;
+          if(remain>0) h+='<span class="car-empty-seat">剩 '+remain+' 位</span>';
           el.innerHTML=h;
         }
       });
@@ -1200,13 +1081,22 @@
       if(list.find(function(p){return p.name===name;})){showToast(name+' 已經在這趟車上了');return;}
       var other=getBusPassengers(n===1?2:1);
       if(other.find(function(p){return p.name===name;})){showToast(name+' 已在第'+(n===1?'二':'一')+'趟，請先取消');return;}
-      if(list.length>=8){showToast('這趟已滿座');return;}
+
+      // Look up person's count from 4/12 signup data
+      var mainPpl=data['4/12']?.people||[];
+      var found=mainPpl.find(function(p){return p.name===name;});
+      var count=found?found.count:1;
+
+      // Check if bus has enough space
+      var totalPeople=list.reduce(function(s,p){return s+p.count;},0);
+      if(totalPeople+count>8){showToast('空位不夠（剩 '+(8-totalPeople)+' 位，你有 '+count+' 人）');return;}
+
       showApiLoading();
       try{
-        var p=new URLSearchParams({action:'add',dateKey:'bus'+n,name:name,count:1,note:'包車第'+n+'趟'});
+        var p=new URLSearchParams({action:'add',dateKey:'bus'+n,name:name,count:count,note:'包車第'+n+'趟'});
         var r=await fetch(API_URL+'?'+p);var j=await r.json();
         if(j.data){if(j.data['4/12'])j.data['4/12'].date='4/12（日）';data=j.data;}
-        showToast('✓ '+name+' 已報名第'+n+'趟');
+        showToast('✓ '+name+(count>1?' ('+count+'人)':'')+' 已報名第'+n+'趟');
       }catch{showToast('操作失敗');}
       hideApiLoading();renderBus();
     }
@@ -1226,7 +1116,6 @@
       hideApiLoading();renderBus();
     }
     setProgress(10);
-    initLiff();
     fetchData();
     setInterval(fetchData,30000);
   </script>
