@@ -554,11 +554,16 @@
 
       setProgress(100);
       render();
-      setTimeout(function(){
-        document.getElementById('loading').style.display='none';
-        document.getElementById('app').style.display='block';
-        document.getElementById('tab-bar').style.display='flex';
-      }, 300);
+      // Also update bus tab if it's currently visible
+      if(document.getElementById('bus-tab').style.display==='block') renderBus();
+      var isFirstLoad=document.getElementById('loading').style.display!=='none';
+      if(isFirstLoad){
+        setTimeout(function(){
+          document.getElementById('loading').style.display='none';
+          document.getElementById('app').style.display='block';
+          document.getElementById('tab-bar').style.display='flex';
+        }, 300);
+      }
     }
 
     async function addPerson(dk,n,c,nt,transport,seats,from){
@@ -1131,7 +1136,7 @@
     }
     setProgress(10);
     fetchData();
-    setInterval(fetchData,30000);
+    setInterval(fetchData,60000);
   </script>
 </body>
 </html>
