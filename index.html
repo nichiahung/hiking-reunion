@@ -567,6 +567,7 @@
   <div id="bus-tab" class="main" style="display:none;">
     <div class="date-card lead-amber">
       <div class="card-top"><div class="card-date-text">🚌 包車報名</div></div>
+      <button class="export-btn" onclick="exportBus()" style="margin-top:0;margin-bottom:10px;">📋 匯出包車名單</button>
       <div style="font-size:12px;color:var(--stone);margin-bottom:4px;">📍 上車地點：<b style="color:var(--forest);">復興實驗國小</b>　｜　每車最多 8 位</div>
       <div id="bus-content"></div>
     </div>
@@ -1237,6 +1238,32 @@
         txt+='  '+(i+1)+'. '+p.name+'（'+p.count+'人）';if(n)txt+=' — '+n;txt+='\n';});txt+='\n';}
       txt+='═══════════════════════\n';
       if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(function(){showToast('✓ '+d.date+' 名單已複製');}).catch(function(){dlTxt(txt,k);});}else{dlTxt(txt,k);}
+    }
+    function exportBus(){
+      if(!data||!data['4/12'])return;
+      var ppl=data['4/12'].people||[];
+      var hiking=ppl.filter(function(p){return !p.note||!p.note.includes('只吃飯');});
+      var mealOnly=ppl.filter(function(p){return p.note&&p.note.includes('只吃飯');});
+      var bus1=hiking.filter(function(p){return p.bus==='1';});
+      var bus2=mealOnly.filter(function(p){return p.bus==='2';});
+      var now=new Date().toLocaleString('zh-TW',{timeZone:'Asia/Taipei'});
+      function sectionTotal(arr){return arr.reduce(function(s,p){return s+p.count;},0);}
+      function lineFor(p,i){
+        var txt='  '+(i+1)+'. '+p.name+'（'+p.count+'人）';
+        if(p.note) txt+=' — '+p.note;
+        return txt+'\n';
+      }
+      var txt='═══════════════════════\n  慧班 Reunion · 包車名單\n  📅 4/12（日）\n═══════════════════════\n';
+      txt+='匯出時間：'+now+'\n\n';
+      txt+='⛰️ 第一趟 9:00 發車（'+sectionTotal(bus1)+'/8 位）\n──────────────────\n';
+      if(bus1.length){bus1.forEach(function(p,i){txt+=lineFor(p,i);});}
+      else txt+='  尚無名單\n';
+      txt+='\n';
+      txt+='🍽 第二趟 12:30 發車（'+sectionTotal(bus2)+'/8 位）\n──────────────────\n';
+      if(bus2.length){bus2.forEach(function(p,i){txt+=lineFor(p,i);});}
+      else txt+='  尚無名單\n';
+      txt+='\n═══════════════════════\n';
+      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(function(){showToast('✓ 包車名單已複製');}).catch(function(){dlTxt(txt,'4_12_包車');});}else{dlTxt(txt,'4_12_包車');}
     }
     function dlTxt(txt,k){var b=new Blob([txt],{type:'text/plain;charset=utf-8'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='慧班登山趣_'+(k||'').replace('/','_')+'_名單.txt';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);showToast('✓ 名單已下載');}
     function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
